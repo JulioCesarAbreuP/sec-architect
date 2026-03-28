@@ -112,7 +112,7 @@
         .card h3 {
             font-size: 1.7rem;
             color: #fff;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             font-weight: 700;
         }
 
@@ -156,11 +156,11 @@
             font-size: 1.1rem;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             transition: 0.3s;
         }
 
-        .cta-link:hover { opacity: 0.8; gap: 14px; }
+        .cta-link:hover { opacity: 0.8; gap: 18px; }
 
         .contact-section {
             max-width: 850px;
@@ -259,8 +259,16 @@
                     <span class="bullet-desc">Visibilidad total de dispositivos y software dentro de la red corporativa.</span>
                 </div>
                 <div class="bullet-item">
+                    <span class="bullet-title">Protección de Datos</span>
+                    <span class="bullet-desc">Cifrado de información sensible y control de recursos críticos expuestos.</span>
+                </div>
+                <div class="bullet-item">
                     <span class="bullet-title">Vulnerabilidades Técnicas</span>
-                    <span class="bullet-desc">Gestión proactiva de parches (CVE) y endurecimiento de sistemas.</span>
+                    <span class="bullet-desc">Gestión proactiva de parches (CVE) y endurecimiento de sistemas operativos.</span>
+                </div>
+                <div class="bullet-item">
+                    <span class="bullet-title">Integridad de Backups</span>
+                    <span class="bullet-desc">Validación estructural de resiliencia ante ataques de Ransomware.</span>
                 </div>
                 <div class="card-label"><span>FRAMEWORK: CIS_CONTROLS_V8</span></div>
             </div>
@@ -272,13 +280,21 @@
                 <h3>Cloud SEC Managed</h3>
                 <div class="bullet-item">
                     <span class="bullet-title">Protección 24/7</span>
-                    <span class="bullet-desc">Monitorización continua de telemetría y eventos anómalos.</span>
+                    <span class="bullet-desc">Monitorización continua de telemetría y eventos anómalos en su infraestructura.</span>
+                </div>
+                <div class="bullet-item">
+                    <span class="bullet-title">Hardening Cloud</span>
+                    <span class="bullet-desc">Aplicación de políticas avanzadas para endurecer sus activos en la nube.</span>
                 </div>
                 <div class="bullet-item">
                     <span class="bullet-title">Respuesta Incidentes</span>
                     <span class="bullet-desc">Aislamiento preventivo y mitigación de amenazas en tiempo real.</span>
                 </div>
-                <div class="card-label"><span>STACK: AZURE_CLOUD_SEC</span></div>
+                <div class="bullet-item">
+                    <span class="bullet-title">Consultoría Estratégica</span>
+                    <span class="bullet-desc">Asesoramiento técnico continuo para la escalabilidad segura de su negocio.</span>
+                </div>
+                <div class="card-label"><span>STACK: HIGH_AVAILABILITY_CLOUD_DEFENSE</span></div>
             </div>
 
             <div class="card">
@@ -288,11 +304,19 @@
                 <h3>Zero Trust IAM</h3>
                 <div class="bullet-item">
                     <span class="bullet-title">Acceso Condicional</span>
-                    <span class="bullet-desc">Validación dinámica de identidad basada en riesgo y ubicación.</span>
+                    <span class="bullet-desc">Validación dinámica de identidad basada en riesgo, ubicación y salud del terminal.</span>
                 </div>
                 <div class="bullet-item">
-                    <span class="bullet-title">MFA Avanzado</span>
-                    <span class="bullet-desc">Despliegue de tecnologías de acceso Passwordless y robusto.</span>
+                    <span class="bullet-title">Gobernanza Identity</span>
+                    <span class="bullet-desc">Auditoría y eliminación de cuentas con privilegios administrativos excesivos.</span>
+                </div>
+                <div class="bullet-item">
+                    <span class="bullet-title">Autenticación Robusta</span>
+                    <span class="bullet-desc">MFA avanzado y despliegue de tecnologías de acceso Passwordless.</span>
+                </div>
+                <div class="bullet-item">
+                    <span class="bullet-title">Privilegio Mínimo</span>
+                    <span class="bullet-desc">Restricción dinámica basada exclusivamente en la necesidad operativa real.</span>
                 </div>
                 <div class="card-label"><span>ARCHITECT: IDENTITY_EXPERT</span></div>
             </div>
@@ -301,7 +325,7 @@
         <div class="grid-cta">
             <a href="#contacto" class="cta-link">
                 Solicitar evaluación de arquitectura 
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 5px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
         </div>
     </section>
@@ -338,7 +362,6 @@
             const btn = document.getElementById('submitBtn');
             const status = document.getElementById('formStatus');
             const formData = new FormData(this);
-
             if (formData.get('_hp_filter')) return;
 
             const sanitize = (text) => {
