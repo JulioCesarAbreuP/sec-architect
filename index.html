@@ -102,10 +102,12 @@
             box-shadow: 0 20px 40px rgba(2, 12, 27, 0.5);
         }
 
+        /* --- CENTRADO DE ICONO Y TÍTULO --- */
         .card-icon {
             color: var(--azure-blue);
             margin-bottom: 1.5rem;
             display: flex;
+            justify-content: center; /* Centra el SVG */
             align-items: center;
         }
 
@@ -114,6 +116,7 @@
             color: #fff;
             margin-bottom: 3rem;
             font-weight: 700;
+            text-align: center; /* Centra el texto del título */
         }
 
         .bullet-item { margin-bottom: 2.2rem; }
@@ -364,16 +367,6 @@
             const formData = new FormData(this);
             if (formData.get('_hp_filter')) return;
 
-            const sanitize = (text) => {
-                const temp = document.createElement('div');
-                temp.textContent = text;
-                return temp.innerHTML;
-            };
-
-            const empresa = sanitize(formData.get('empresa').trim());
-            const email = formData.get('email').trim();
-            const mensaje = sanitize(formData.get('mensaje').trim());
-
             btn.disabled = true;
             btn.innerHTML = 'ENVIANDO...';
             status.style.display = "block";
@@ -382,7 +375,11 @@
             try {
                 const response = await fetch('https://formspree.io/f/mojpjoqk', {
                     method: 'POST',
-                    body: JSON.stringify({ empresa, email, mensaje }),
+                    body: JSON.stringify({ 
+                        empresa: formData.get('empresa'), 
+                        email: formData.get('email'), 
+                        mensaje: formData.get('mensaje') 
+                    }),
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
                 });
 
