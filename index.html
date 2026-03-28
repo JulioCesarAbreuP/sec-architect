@@ -102,12 +102,11 @@
             box-shadow: 0 20px 40px rgba(2, 12, 27, 0.5);
         }
 
-        /* --- CENTRADO DE ICONO Y TÍTULO --- */
         .card-icon {
             color: var(--azure-blue);
             margin-bottom: 1.5rem;
             display: flex;
-            justify-content: center; /* Centra el SVG */
+            justify-content: center;
             align-items: center;
         }
 
@@ -116,7 +115,7 @@
             color: #fff;
             margin-bottom: 3rem;
             font-weight: 700;
-            text-align: center; /* Centra el texto del título */
+            text-align: center;
         }
 
         .bullet-item { margin-bottom: 2.2rem; }
@@ -229,6 +228,19 @@
         .footer-linkedin:hover { transform: scale(1.1); }
 
         @media (max-width: 1200px) { .grid { grid-template-columns: 1fr; } .footer-content { flex-direction: column; gap: 2rem; text-align: center; } }
+
+        /* --- NUEVO BLOQUE SOLICITADO --- */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .footer-linkedin {
+                margin-top: 8px;
+            }
+        }
     </style>
 </head>
 <body>
