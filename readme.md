@@ -1,36 +1,35 @@
-# SEC_ARCHITECT | Enterprise Resilience Framework
+# 🛡️ SEC_ARCHITECT | Enterprise Resilience Architecture
 
-![Azure](https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
-![Security](https://img.shields.io/badge/Security-NIST_800--53-red?style=for-the-badge)
+Este repositorio contiene la arquitectura de una Landing Page de **Alta Disponibilidad** y **Seguridad Endurecida (Hardening)**, diseñada por un **Cloud Security Architect** para la captación de activos críticos en servicios de consultoría para PYMEs.
 
-Este repositorio contiene la arquitectura de una Landing Page de alta disponibilidad y seguridad endurecida (Hardening), diseñada específicamente para la captación de leads en servicios de consultoría de ciberseguridad para PYMEs.
+El proyecto no es una simple web estática; es un caso de estudio sobre **Defensa en Profundidad** aplicada a infraestructuras web modernas.
 
-## 🛡️ Pilares de la Arquitectura de Seguridad
+## 🚀 Pilares de la Arquitectura de Seguridad (Hardening)
 
-El despliegue no es solo visual; sigue estrictos controles de seguridad para mitigar vectores de ataque comunes en infraestructuras web:
+El despliegue sigue estrictos controles de seguridad para mitigar vectores de ataque en infraestructuras críticas:
 
-### 1. Control de Integridad (SRI)
-Se utiliza **Subresource Integrity (SRI)** en todas las librerías externas (FontAwesome, Google Fonts). Esto garantiza que si un nodo de la CDN es comprometido, el navegador bloqueará la ejecución de scripts que no coincidan con el hash de integridad verificado.
+### 1. Mitigación Avanzada de XSS & Injection
+* **Content Security Policy (CSP) v3:** Implementación de políticas de control de origen para restringir la ejecución de scripts y conexiones salientes (`connect-src`), neutralizando la exfiltración de datos.
+* **Sanitización Dinámica del DOM:** El motor de transporte (Fetch API) integra una capa de limpieza de caracteres maliciosos, evitando que inyecciones de código (HTML/JS) alcancen el backend de correo.
 
-### 2. Mitigación de XSS (Content Security Policy)
-Implementación de políticas de seguridad de contenido para restringir la ejecución de scripts maliciosos y prevenir la inyección de código de terceros no autorizados.
+### 2. Control de Integridad y Red
+* **Subresource Integrity (SRI):** Verificación de hashes en librerías externas (FontAwesome, Google Fonts). Si un nodo de la CDN es comprometido, el navegador bloquea la carga automáticamente.
+* **SSL/TLS Enforcement:** Configuración de `upgrade-insecure-requests` para garantizar que toda comunicación viaje por túneles cifrados.
 
-### 3. Defensa Anti-Bot (Honeypot Strategy)
-El formulario de diagnóstico técnico integra un **Honeypot** (campo trampa invisible para humanos). Los scripts de spam automatizados completan este campo, permitiendo su detección y bloqueo inmediato en el lado del cliente y del transporte de datos.
+### 3. Resiliencia y Anti-Spam (DoS Protection)
+* **Rate Limiting (Client-Side):** Control de inundación mediante *throttling* de 30 segundos entre envíos para prevenir ataques de denegación de servicio (DoS) y agotamiento de cuotas de API.
+* **Honeypot Strategy:** Integración de campos trampa invisibles para humanos que detectan y descartan instantáneamente el tráfico de bots automatizados.
 
-### 4. Alineación Normativa
-La estructura de servicios y el manejo de datos están diseñados bajo los marcos:
-* **CIS Controls v8:** Enfoque en inventario de activos y gestión de vulnerabilidades.
-* **NIST Cybersecurity Framework:** Estrategias de Identificación, Protección y Respuesta.
+## ☁️ Alineación con Certificaciones de Industria
 
-## ☁️ Enfoque Cloud Multi-Vendor
+Como especialista en **Arquitectura de Infraestructura Cloud**, este proyecto refleja competencias críticas evaluadas en:
 
-Como especialista en administración de infraestructura nube, este proyecto refleja competencias críticas evaluadas en certificaciones de industria:
-
-* **Microsoft Azure (AZ-104 / SC-300):** Gestión de identidades (Entra ID), despliegue de Static Web Apps y configuración de políticas de acceso condicional.
-* **AWS (Cloud Practitioner):** Conceptos de alta disponibilidad, almacenamiento en S3 y distribución global vía CloudFront.
+* **Microsoft Azure (AZ-305 / SC-300 / AZ-104):** Diseño de soluciones resilientes, gobernanza de identidades (Microsoft Entra ID) y configuración de políticas de acceso condicional (Zero Trust).
+* **AWS (Cloud Practitioner):** Conceptos de alta disponibilidad, almacenamiento inmutable y distribución global de contenido.
+* **Cybersecurity Frameworks:** Alineación con **CIS Controls v8** (Gestión de Vulnerabilidades) y **NIST** (Protección y Respuesta).
 
 ---
 **Contacto Profesional:**
-Para auditorías de infraestructura o despliegues de seguridad gestionada, contácteme vía [LinkedIn](https://www.linkedin.com/in/TU_PERFIL).
+[LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)
+
+*Diseñado para garantizar la continuidad de negocio y la integridad de la información corporativa.*
