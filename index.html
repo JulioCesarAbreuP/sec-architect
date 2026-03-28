@@ -103,6 +103,8 @@
             display: flex;
             flex-direction: column;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; /* Para el hover effect */
+            overflow: hidden;
         }
 
         .card:hover { 
@@ -111,18 +113,23 @@
             box-shadow: 0 20px 40px rgba(2, 12, 27, 0.5);
         }
 
+        /* --- NUEVO: Estilo para los iconos de las tarjetas --- */
         .card-icon {
             color: var(--azure-blue);
-            font-size: 24px;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            font-size: 2rem; /* Tamaño grande y claro */
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+        .card:hover .card-icon {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         .card h3 {
             font-size: 1.7rem;
             color: #fff;
-            margin-bottom: 3rem;
-            text-align: center; 
+            margin-bottom: 2.5rem;
             font-weight: 700;
         }
 
@@ -166,11 +173,15 @@
             font-size: 1.1rem;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 12px; /* Espacio entre texto e icono */
             transition: 0.3s;
         }
 
-        .cta-link:hover { opacity: 0.8; gap: 18px; }
+        /* --- NUEVO: Hover effect para el CTA link --- */
+        .cta-link:hover { 
+            opacity: 0.8; 
+            gap: 16px; /* La flecha se mueve un poco a la derecha */
+        }
 
         .contact-section {
             max-width: 850px;
@@ -331,7 +342,9 @@
         </div>
 
         <div class="grid-cta">
-            <a href="#contacto" class="cta-link">Solicitar evaluación de arquitectura <i class="fas fa-arrow-right"></i></a>
+            <a href="#contacto" class="cta-link">
+                Solicitar evaluación de arquitectura <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
     </section>
 
@@ -362,6 +375,7 @@
     </footer>
 
     <script>
+        // ... (El script permanece igual, es seguro y tiene rate limiting) ...
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
