@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; upgrade-insecure-requests;">
+    <title>Identidad vs Cuenta | SEC_ARCHITECT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --deep-navy: #0a192f;
+            --card-bg: #112240;
+            --accent-cyan: #64ffda;
+            --text-main: #e6f1ff;
+            --text-sub: #8892b0;
+            --border-line: rgba(136, 146, 176, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--deep-navy);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+        h2 { font-size: 1.8rem; font-weight: 600; color: var(--accent-cyan); margin: 2rem 0 1rem; }
+        p { margin-bottom: 1rem; color: var(--text-sub); }
+        ul { margin-left: 2rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+
+        .back-link { display: inline-block; margin-top: 2rem; color: var(--azure-blue); text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Identidad vs Cuenta: Conceptos Fundamentales en Seguridad Empresarial</h1>
+        <div class="hero-image">
+            <img src="img/identity-account-diagram.svg" alt="Diagrama ilustrativo de la relación entre Identidad y Cuenta" style="max-width: 100%; height: auto; border-radius: 8px;">
+        </div>
+    </header>
+
+    <article>
+        <p>En el mundo de la ciberseguridad y la arquitectura de sistemas, es crucial entender la diferencia entre <strong>identidad</strong> y <strong>cuenta</strong>. Estos conceptos, aunque relacionados, representan aspectos distintos de la autenticación y autorización en entornos empresariales.</p>
+
+        <h2>¿Qué es la Identidad?</h2>
+        <p>La identidad se refiere a la representación única de un individuo, dispositivo o entidad en un sistema. Es el "quién" en el contexto de seguridad. Una identidad puede estar asociada con:</p>
+        <ul>
+            <li>Atributos personales (nombre, email, rol)</li>
+            <li>Características biométricas</li>
+            <li>Identificadores únicos (UUID, GUID)</li>
+        </ul>
+
+        <h2>¿Qué es una Cuenta?</h2>
+        <p>Una cuenta, por otro lado, es el mecanismo técnico que permite el acceso a recursos. Es el "cómo" se autentica y autoriza. Las cuentas incluyen:</p>
+        <ul>
+            <li>Credenciales (usuario/contraseña, tokens)</li>
+            <li>Permisos y roles asignados</li>
+            <li>Estado de la cuenta (activa, bloqueada, expirada)</li>
+        </ul>
+
+        <h2>Diferencias Clave</h2>
+        <p>La principal diferencia radica en que una identidad puede tener múltiples cuentas, pero una cuenta está ligada a una sola identidad. Por ejemplo, un empleado puede tener una cuenta de email corporativo, otra para el sistema ERP, y una tercera para el VPN, todas bajo la misma identidad.</p>
+
+        <h2>Implicaciones en Seguridad</h2>
+        <p>Entender esta distinción es fundamental para implementar controles de seguridad efectivos:</p>
+        <ul>
+            <li><strong>Gestión de Identidades (IdM):</strong> Enfocada en el ciclo de vida de las identidades</li>
+            <li><strong>Gestión de Cuentas:</strong> Control de accesos y permisos</li>
+            <li><strong>Principio de Menor Privilegio:</strong> Asignar solo los permisos necesarios</li>
+        </ul>
+
+        <p>En arquitecturas modernas, soluciones como Azure Active Directory o AWS IAM ayudan a gestionar tanto identidades como cuentas de manera segura y escalable.</p>
+    </article>
+
+    <a href="../index.html" class="back-link" rel="noopener">← Volver al Blog</a>
+</body>
+</html>
