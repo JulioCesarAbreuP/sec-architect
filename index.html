@@ -3,154 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://formspree.io https://*.formspree.io;">
     <title>SEC_ARCHITECT | Enterprise Resilience Architecture</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --azure-blue: #0078d4;
             --deep-navy: #0a192f;
             --card-bg: #112240;
-            --accent-cyan: #64ffda;
             --text-main: #e6f1ff;
             --text-sub: #8892b0;
-            --border-line: rgba(136, 146, 176, 0.1);
+            --border: rgba(136, 146, 176, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--deep-navy);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
+        body { background-color: var(--deep-navy); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.6; }
 
         header {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2.5rem 2rem;
+            padding: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo { font-weight: 800; font-size: 1.4rem; color: #fff; text-decoration: none; letter-spacing: -0.5px; }
+        .logo { font-weight: 800; font-size: 1.5rem; color: #fff; text-decoration: none; }
         .logo span { color: var(--azure-blue); }
 
-        .hero {
-            max-width: 1100px;
-            margin: 6rem auto 8rem;
-            text-align: center;
-            padding: 0 2rem;
-        }
+        .solutions-container { max-width: 1200px; margin: 4rem auto; padding: 0 2rem; }
 
-        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.2rem); font-weight: 800; margin-bottom: 2rem; line-height: 1.1; color: #fff; }
-        .hero h1 span { color: var(--azure-blue); }
-        .hero p { font-size: 1.25rem; color: var(--text-sub); max-width: 850px; margin: 0 auto; }
-
-        .solutions-container {
-            max-width: 1400px;
-            margin: 0 auto 10rem;
-            padding: 0 2rem;
-        }
-
-        .section-header { text-align: center; margin-bottom: 6rem; }
-
+        /* Contenedor Grid Centrado */
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
-            justify-items: center; /* Centra las cajas horizontalmente */
+            justify-items: center; /* Centra las cajas en el eje horizontal */
         }
 
         .card {
             background: var(--card-bg);
             padding: 3rem 2rem;
             border-radius: 16px;
-            border: 1px solid var(--border-line);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 380px; /* Evita que se estiren demasiado */
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
-            width: 100%;
-            max-width: 400px; /* Limita el ancho para que no se deformen */
+            transition: transform 0.3s ease;
         }
 
-        .card:hover { 
-            border-color: var(--azure-blue);
-            transform: translateY(-5px);
-        }
+        .card:hover { transform: translateY(-10px); border-color: var(--azure-blue); }
 
-        .card h3 {
-            font-size: 1.5rem;
-            color: #fff;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+        .card-icon { color: var(--azure-blue); margin-bottom: 1.5rem; text-align: center; }
+        .card h3 { font-size: 1.6rem; color: #fff; margin-bottom: 2rem; text-align: center; }
 
         .bullet-item { margin-bottom: 1.5rem; }
-        .bullet-title { color: var(--azure-blue); font-weight: 600; display: block; margin-bottom: 4px; }
-        .bullet-desc { font-size: 0.9rem; color: var(--text-sub); display: block; }
+        .bullet-title { color: var(--azure-blue); font-weight: 700; display: block; margin-bottom: 0.3rem; }
+        .bullet-desc { color: var(--text-sub); font-size: 0.95rem; display: block; }
 
         .card-label {
             margin-top: auto;
             padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--accent-cyan);
-            border-top: 1px solid rgba(136, 146, 176, 0.1);
+            font-size: 0.75rem;
+            color: var(--azure-blue);
             text-align: center;
-        }
-
-        .contact-section {
-            max-width: 600px;
-            margin: 0 auto 10rem;
-            padding: 0 2rem;
-        }
-
-        .contact-section h2 { text-align: center; margin-bottom: 3rem; color: #fff; }
-
-        input, textarea {
-            width: 100%;
-            padding: 1rem;
-            background: #020c1b;
-            border: 1px solid #233554;
-            color: #fff;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-family: inherit;
-        }
-
-        .submit-btn {
-            background: var(--azure-blue);
-            color: #fff;
-            padding: 1rem;
-            border: none;
-            border-radius: 8px;
-            width: 100%;
-            font-weight: 700;
-            cursor: pointer;
+            letter-spacing: 1px;
         }
 
         footer {
+            margin-top: 6rem;
             padding: 4rem 2rem;
-            border-top: 1px solid var(--border-line);
+            border-top: 1px solid var(--border);
+            text-align: center;
         }
 
-        .footer-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
+        .footer-linkedin {
+            display: inline-flex;
             align-items: center;
+            gap: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
-        .footer-linkedin { display: flex; align-items: center; text-decoration: none; }
+        .footer-linkedin:hover { color: var(--azure-blue); }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
-            .footer-content { flex-direction: column; gap: 2rem; text-align: center; }
+            .card { max-width: 100%; }
         }
     </style>
 </head>
@@ -158,80 +101,69 @@
 
     <header>
         <a href="#" class="logo">SEC_<span>ARCHITECT</span></a>
-        <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" rel="noopener noreferrer" class="footer-linkedin">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+        <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" rel="noopener noreferrer">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#0078d4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
         </a>
     </header>
 
-    <section class="hero">
-        <h1>Arquitectura de <span>Defensa</span> Estructural para PYMEs.</h1>
-        <p>Garantizamos la resiliencia operativa mediante el despliegue de capas de seguridad avanzadas y gobernanza técnica en la nube.</p>
-    </section>
-
     <section class="solutions-container">
-        <div class="section-header">
-            <h2 class="section-title-large">Tres Capas de Defensa Moderna</h2>
-        </div>
-
         <div class="grid">
             <div class="card">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
                 <h3>Auditoría CIS</h3>
                 <div class="bullet-item">
                     <span class="bullet-title">Inventario de Activos</span>
-                    <span class="bullet-desc">Visibilidad total de dispositivos y software.</span>
+                    <span class="bullet-desc">Visibilidad total de dispositivos y software dentro de la red corporativa.</span>
                 </div>
                 <div class="bullet-item">
-                    <span class="bullet-title">Protección de Datos</span>
-                    <span class="bullet-desc">Cifrado de información sensible y control de recursos.</span>
+                    <span class="bullet-title">Vulnerabilidades</span>
+                    <span class="bullet-desc">Gestión proactiva de parches y endurecimiento de sistemas.</span>
                 </div>
-                <div class="card-label">FRAMEWORK: CIS_CONTROLS_V8</div>
+                <div class="card-label">FRAMEWORK: CIS_V8</div>
             </div>
 
             <div class="card">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a3.5 3.5 0 0 0 0-7h-1.5V9a6 6 0 1 0-12 0v1h1"/><path d="M12 12v6"/><path d="M9 15h6"/></svg>
+                </div>
                 <h3>Cloud SEC Managed</h3>
                 <div class="bullet-item">
                     <span class="bullet-title">Protección 24/7</span>
-                    <span class="bullet-desc">Monitorización continua de telemetría y eventos.</span>
+                    <span class="bullet-desc">Monitorización continua de telemetría y eventos anómalos.</span>
                 </div>
                 <div class="bullet-item">
-                    <span class="bullet-title">Hardening Cloud</span>
-                    <span class="bullet-desc">Endurecimiento de activos en la nube.</span>
+                    <span class="bullet-title">Respuesta Incidentes</span>
+                    <span class="bullet-desc">Aislamiento preventivo y mitigación de amenazas en tiempo real.</span>
                 </div>
-                <div class="card-label">STACK: HIGH_AVAILABILITY_CLOUD</div>
+                <div class="card-label">STACK: CLOUD_DEFENSE</div>
             </div>
 
             <div class="card">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="11" r="3"/><path d="M7 21v-2a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2"/></svg>
+                </div>
                 <h3>Zero Trust IAM</h3>
                 <div class="bullet-item">
                     <span class="bullet-title">Acceso Condicional</span>
-                    <span class="bullet-desc">Validación dinámica de identidad basada en riesgo.</span>
+                    <span class="bullet-desc">Validación dinámica de identidad basada en riesgo y ubicación.</span>
                 </div>
                 <div class="bullet-item">
                     <span class="bullet-title">Privilegio Mínimo</span>
-                    <span class="bullet-desc">Restricción dinámica basada en necesidad real.</span>
+                    <span class="bullet-desc">Restricción dinámica basada exclusivamente en la necesidad real.</span>
                 </div>
-                <div class="card-label">ARCHITECT: IDENTITY_EXPERT</div>
+                <div class="card-label">IDENTITY EXPERT</div>
             </div>
         </div>
     </section>
 
-    <section class="contact-section" id="contacto">
-        <h2>Inicie su Diagnóstico</h2>
-        <form id="contactForm">
-            <input type="text" name="empresa" placeholder="Entidad o Empresa" required>
-            <input type="email" name="email" placeholder="Correo electrónico" required>
-            <textarea name="mensaje" placeholder="Mensaje..." rows="4" required></textarea>
-            <button type="submit" id="submitBtn" class="submit-btn">Solicitar Consultoría</button>
-        </form>
-    </section>
-
     <footer>
-        <div class="footer-content">
-            <p>&copy; 2026 SEC_ARCHITECT</p>
-            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" rel="noopener noreferrer" class="footer-linkedin">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6C1.13 6 0 4.88 0 3.5C0 2.12 1.13 1 2.5 1C3.87 1 4.98 2.12 4.98 3.5ZM0.22 8H4.78V24H0.22V8ZM8.98 8H13.36V10.08H13.42C14.02 8.92 15.52 7.7 17.78 7.7C22.22 7.7 24 10.48 24 15.02V24H19.44V15.98C19.44 13.52 18.88 11.92 16.86 11.92C14.84 11.92 13.98 13.38 13.98 15.98V24H9.42V8H8.98Z"/></svg>
-            </a>
-        </div>
+        <p style="margin-bottom: 1.5rem; color: var(--text-sub);">Ingeniería de Resiliencia Digital &copy; 2026</p>
+        <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" rel="noopener noreferrer" class="footer-linkedin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            Conectar en LinkedIn
+        </a>
     </footer>
 
 </body>
