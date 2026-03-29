@@ -1,91 +1,208 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; upgrade-insecure-requests;">
-    <title>Identidad vs Cuenta | SEC_ARCHITECT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Identidad vs Cuenta vs Credencial</title>
+
+    <!-- Seguridad y buenas prácticas -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; upgrade-insecure-requests;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" />
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="description" content="Diferencia arquitectónica entre identidad, cuenta y credencial. El modelo mental correcto para diseñar seguridad moderna." />
+
+    <!-- Estilo mínimo para lectura -->
     <style>
-        :root {
-            --azure-blue: #0078d4;
-            --deep-navy: #0a192f;
-            --card-bg: #112240;
-            --accent-cyan: #64ffda;
-            --text-main: #e6f1ff;
-            --text-sub: #8892b0;
-            --border-line: rgba(136, 146, 176, 0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            background-color: var(--deep-navy);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            padding: 2rem;
+            font-family: system-ui, sans-serif;
             max-width: 800px;
-            margin: 0 auto;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+            color: #222;
+        }
+        h1, h2 {
+            font-weight: 700;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        h2 {
+            margin-top: 40px;
+        }
+        p {
+            margin-bottom: 18px;
+        }
+        ul {
+            margin-bottom: 18px;
+        }
+        strong {
+            font-weight: 600;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
+        /* Espacio para imagen referencial */
+        .hero-image {
+            width: 100%;
+            height: 260px;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            margin: 25px 0 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 14px;
+            font-style: italic;
         }
-
-        h1 { font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
-        h2 { font-size: 1.8rem; font-weight: 600; color: var(--accent-cyan); margin: 2rem 0 1rem; }
-        p { margin-bottom: 1rem; color: var(--text-sub); }
-        ul { margin-left: 2rem; margin-bottom: 1rem; }
-        li { margin-bottom: 0.5rem; }
-
-        .back-link { display: inline-block; margin-top: 2rem; color: var(--azure-blue); text-decoration: none; }
-        .back-link:hover { text-decoration: underline; }
     </style>
 </head>
+
 <body>
-    <header>
-        <h1>Identidad vs Cuenta: Conceptos Fundamentales en Seguridad Empresarial</h1>
-        <div class="hero-image">
-            <img src="img/identity-account-diagram.svg" alt="Diagrama ilustrativo de la relación entre Identidad y Cuenta" style="max-width: 100%; height: auto; border-radius: 8px;">
-        </div>
-    </header>
 
-    <article>
-        <p>En el mundo de la ciberseguridad y la arquitectura de sistemas, es crucial entender la diferencia entre <strong>identidad</strong> y <strong>cuenta</strong>. Estos conceptos, aunque relacionados, representan aspectos distintos de la autenticación y autorización en entornos empresariales.</p>
+    <h1>Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna</h1>
 
-        <h2>¿Qué es la Identidad?</h2>
-        <p>La identidad se refiere a la representación única de un individuo, dispositivo o entidad en un sistema. Es el "quién" en el contexto de seguridad. Una identidad puede estar asociada con:</p>
-        <ul>
-            <li>Atributos personales (nombre, email, rol)</li>
-            <li>Características biométricas</li>
-            <li>Identificadores únicos (UUID, GUID)</li>
-        </ul>
+    <div class="hero-image">
+        <img src="img/mi-imagen.png" alt="Imagen referencial del artículo" style="max-width:100%; height:auto;">
+    </div>
 
-        <h2>¿Qué es una Cuenta?</h2>
-        <p>Una cuenta, por otro lado, es el mecanismo técnico que permite el acceso a recursos. Es el "cómo" se autentica y autoriza. Las cuentas incluyen:</p>
-        <ul>
-            <li>Credenciales (usuario/contraseña, tokens)</li>
-            <li>Permisos y roles asignados</li>
-            <li>Estado de la cuenta (activa, bloqueada, expirada)</li>
-        </ul>
+    <p>
+        Este artículo explica, desde una perspectiva arquitectónica, la diferencia entre identidad, cuenta y credencial. 
+        Aunque suelen usarse como sinónimos, representan conceptos distintos que afectan directamente al diseño de seguridad, 
+        acceso, gobernanza y cumplimiento en cualquier arquitectura cloud.
+    </p>
 
-        <h2>Diferencias Clave</h2>
-        <p>La principal diferencia radica en que una identidad puede tener múltiples cuentas, pero una cuenta está ligada a una sola identidad. Por ejemplo, un empleado puede tener una cuenta de email corporativo, otra para el sistema ERP, y una tercera para el VPN, todas bajo la misma identidad.</p>
+    <p>
+        Comprender esta separación conceptual es clave para diseñar entornos seguros, escalables y gobernables, 
+        especialmente cuando se integran múltiples sistemas, proveedores y dominios.
+    </p>
 
-        <h2>Implicaciones en Seguridad</h2>
-        <p>Entender esta distinción es fundamental para implementar controles de seguridad efectivos:</p>
-        <ul>
-            <li><strong>Gestión de Identidades (IdM):</strong> Enfocada en el ciclo de vida de las identidades</li>
-            <li><strong>Gestión de Cuentas:</strong> Control de accesos y permisos</li>
-            <li><strong>Principio de Menor Privilegio:</strong> Asignar solo los permisos necesarios</li>
-        </ul>
+    <p>
+        En seguridad, las palabras importan. Confundir identidad, cuenta y credencial lleva a errores de diseño que se traducen en 
+        accesos incorrectos, privilegios excesivos, auditorías incompletas y arquitecturas difíciles de gobernar.
+    </p>
 
-        <p>En arquitecturas modernas, soluciones como Azure Active Directory o AWS IAM ayudan a gestionar tanto identidades como cuentas de manera segura y escalable.</p>
-    </article>
+    <p>
+        Un arquitecto no piensa en “usuarios”, sino en entidades, representaciones y mecanismos de autenticación. 
+        Ese es el verdadero modelo mental.
+    </p>
 
-    <a href="../index.html" class="back-link" rel="noopener">← Volver al Blog</a>
+    <h2>1. Identidad: quién eres en el sistema</h2>
+
+    <p>
+        La identidad es el concepto más abstracto y más importante. Es la representación de una entidad dentro de un sistema: 
+        una persona, un servicio, un dispositivo o una aplicación.
+    </p>
+
+    <p><strong>Una identidad define quién eres, no cómo accedes.</strong></p>
+
+    <p>Características clave:</p>
+    <ul>
+        <li>Es única dentro del dominio.</li>
+        <li>No depende de una contraseña o token.</li>
+        <li>Puede existir sin credenciales activas.</li>
+        <li>Tiene atributos, roles, políticas y relaciones.</li>
+    </ul>
+
+    <p>
+        La identidad es el “sujeto” en un modelo de seguridad. Todo lo demás gira alrededor de ella.
+    </p>
+
+    <h2>2. Cuenta: la implementación de la identidad en un sistema</h2>
+
+    <p>
+        La cuenta es la materialización técnica de una identidad dentro de un sistema específico.
+        Mientras la identidad es conceptual, la cuenta es operativa.
+    </p>
+
+    <p>Ejemplos:</p>
+    <ul>
+        <li>Una identidad humana puede tener una cuenta en Azure AD.</li>
+        <li>Una identidad de servicio puede tener una cuenta administrada.</li>
+        <li>Una identidad externa puede tener una cuenta federada.</li>
+    </ul>
+
+    <p>La cuenta define:</p>
+    <ul>
+        <li>dónde existe la identidad,</li>
+        <li>cómo se gestiona,</li>
+        <li>qué políticas se le aplican,</li>
+        <li>y qué recursos puede ver o administrar.</li>
+    </ul>
+
+    <p>
+        Una identidad puede tener múltiples cuentas en distintos sistemas, pero todas representan al mismo sujeto.
+    </p>
+
+    <h2>3. Credencial: el mecanismo que prueba que eres quien dices ser</h2>
+
+    <p>
+        La credencial es el elemento más concreto y más frágil del modelo. Es el mecanismo que permite demostrar la identidad.
+    </p>
+
+    <p>Ejemplos:</p>
+    <ul>
+        <li>contraseña</li>
+        <li>certificado</li>
+        <li>token</li>
+        <li>clave privada</li>
+        <li>secreto de aplicación</li>
+        <li>autenticación biométrica</li>
+        <li>llave FIDO2</li>
+    </ul>
+
+    <p>
+        La credencial no es la identidad. La credencial no es la cuenta. 
+        La credencial es solo la prueba. Y como toda prueba, puede expirar, revocarse, rotarse o comprometerse.
+    </p>
+
+    <p>
+        Un diseño maduro minimiza el uso de credenciales estáticas y favorece mecanismos modernos como autenticación sin contraseña, 
+        tokens de corta duración y claves administradas.
+    </p>
+
+    <h2>Cómo se relacionan: el modelo arquitectónico correcto</h2>
+
+    <p>La forma más clara de entenderlo es esta:</p>
+
+    <ul>
+        <li><strong>Identidad → quién eres</strong></li>
+        <li><strong>Cuenta → dónde existes</strong></li>
+        <li><strong>Credencial → cómo demuestras que eres tú</strong></li>
+    </ul>
+
+    <p>Cuando estos tres conceptos se mezclan, aparecen problemas como:</p>
+
+    <ul>
+        <li>privilegios excesivos</li>
+        <li>accesos no auditables</li>
+        <li>credenciales huérfanas</li>
+        <li>identidades sin dueño</li>
+        <li>cuentas sin propósito</li>
+        <li>fallos de gobernanza</li>
+    </ul>
+
+    <p>
+        Cuando se separan correctamente, la arquitectura se vuelve más segura, más gobernable y más fácil de automatizar.
+    </p>
+
+    <h2>Conclusión</h2>
+
+    <p>
+        Identidad, cuenta y credencial no son sinónimos: son capas distintas de un mismo modelo. 
+        La identidad define al sujeto, la cuenta lo representa en un sistema y la credencial demuestra que es quien dice ser.
+    </p>
+
+    <p>
+        Cuando un arquitecto entiende esta separación, puede diseñar políticas coherentes, accesos mínimos, automatización segura 
+        y gobernanza real. La seguridad no empieza en las herramientas: empieza en el modelo mental.
+    </p>
+
+</body>
+</html>
+
 </body>
 </html>
