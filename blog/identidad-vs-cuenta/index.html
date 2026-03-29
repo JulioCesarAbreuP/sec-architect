@@ -6,7 +6,7 @@
     <title>Identidad vs Cuenta vs Credencial</title>
 
     <!-- Seguridad y buenas prácticas -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; upgrade-insecure-requests;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; upgrade-insecure-requests;" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
@@ -17,46 +17,126 @@
 
     <!-- Estilo mínimo para lectura -->
     <style>
-        body {
-            font-family: system-ui, sans-serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
-            line-height: 1.6;
-            color: #222;
-        }
-        h1, h2 {
-            font-weight: 700;
-        }
-        h1 {
-            margin-bottom: 10px;
-        }
-        h2 {
-            margin-top: 40px;
-        }
-        p {
-            margin-bottom: 18px;
-        }
-        ul {
-            margin-bottom: 18px;
-        }
-        strong {
-            font-weight: 600;
+        /* VARIABLES BASE (modo claro por defecto) */
+        :root {
+            --bg: #fafafa;
+            --text: #1a1a1a;
+            --card: #ffffff;
+            --accent: #0078d4;
         }
 
-        /* Espacio para imagen referencial */
+        /* MODO OSCURO */
+        [data-theme="dark"] {
+            --bg: #0f0f0f;
+            --text: #e6e6e6;
+            --card: #1a1a1a;
+            --accent: #4da3ff;
+        }
+
+        /* ESTILO BASE MOBILE-FIRST */
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", system-ui, sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.75;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* SELECTOR DE MODO */
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 30px 0;
+        }
+
+        .theme-switcher button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .theme-switcher button:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* TITULOS FLUIDOS */
+        h1 {
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: clamp(1.3rem, 3vw, 1.6rem);
+            margin-top: 40px;
+            margin-bottom: 12px;
+        }
+
+        /* TEXTO */
+        p {
+            margin-bottom: 20px;
+            font-size: clamp(1rem, 2.5vw, 1.08rem);
+        }
+
+        /* LISTAS */
+        ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* IMAGEN DESTACADA */
         .hero-image {
             width: 100%;
-            height: 260px;
-            background-color: #f2f2f2;
-            border: 1px solid #ddd;
+            height: auto;
+            background-color: var(--card);
+            border-radius: 8px;
+            overflow: hidden;
             margin: 25px 0 40px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #777;
-            font-size: 14px;
-            font-style: italic;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* DIVISOR */
+        .divider {
+            height: 1px;
+            background: #ccc;
+            margin: 40px 0;
+        }
+
+        /* AJUSTES PARA MÓVILES */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+            .hero-image {
+                margin: 20px 0 30px 0;
+            }
+            .theme-switcher {
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     </style>
 </head>
@@ -64,6 +144,12 @@
 <body>
 
     <h1>Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna</h1>
+
+    <!-- Selector de modo -->
+    <div class="theme-switcher">
+        <button data-set-theme="light">☀️ Claro</button>
+        <button data-set-theme="dark">🌙 Oscuro</button>
+    </div>
 
     <div class="hero-image">
         <img src="img/1774429023296.jpeg" alt="Diagrama ilustrativo de identidad, cuenta y credencial" style="max-width:100%; height:auto;">
@@ -201,8 +287,14 @@
         y gobernanza real. La seguridad no empieza en las herramientas: empieza en el modelo mental.
     </p>
 
-</body>
-</html>
+    <script>
+        document.querySelectorAll("[data-set-theme]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const theme = btn.getAttribute("data-set-theme");
+                document.body.setAttribute("data-theme", theme);
+            });
+        });
+    </script>
 
 </body>
 </html>
