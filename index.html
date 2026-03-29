@@ -218,8 +218,11 @@
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column; /* Centrado vertical */
+            align-items: center;    /* Centrado horizontal */
+            justify-content: center;
+            text-align: center;     /* Centrado de texto */
+            gap: 1.5rem;
         }
 
         .footer-info { color: var(--text-sub); font-size: 0.85rem; }
@@ -237,18 +240,6 @@
             .card {
                 max-width: 500px; 
             }
-            .footer-content { flex-direction: column; gap: 2rem; text-align: center; } 
-        }
-
-        @media (max-width: 768px) {
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-            .footer-linkedin {
-                margin-top: 8px;
-            }
         }
     </style>
 </head>
@@ -256,7 +247,7 @@
 
     <header>
         <a href="#" class="logo">SEC_<span>ARCHITECT</span></a>
-        <a href="https://www.linkedin.com/in/julio-cesar-abreup/" target="_blank" class="footer-linkedin">
+        <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" class="footer-linkedin">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
         </a>
     </header>
@@ -372,7 +363,7 @@
                 <span class="footer-tagline">Ingeniería de Resiliencia Digital</span>
                 <p>&copy; 2026 SEC_ARCHITECT</p>
             </div>
-            <a href="https://www.linkedin.com/in/julio-cesar-abreup/" target="_blank" class="footer-linkedin">
+            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" class="footer-linkedin">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6C1.13 6 0 4.88 0 3.5C0 2.12 1.13 1 2.5 1C3.87 1 4.98 2.12 4.98 3.5ZM0.22 8H4.78V24H0.22V8ZM8.98 8H13.36V10.08H13.42C14.02 8.92 15.52 7.7 17.78 7.7C22.22 7.7 24 10.48 24 15.02V24H19.44V15.98C19.44 13.52 18.88 11.92 16.86 11.92C14.84 11.92 13.98 13.38 13.98 15.98V24H9.42V8H8.98Z"/>
                 </svg>
