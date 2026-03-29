@@ -11,10 +11,8 @@
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta name="description" content="Diferencia arquitectónica entre identidad, cuenta y credencial." />
 
     <style>
-        /* IMPORTACIÓN DE FUENTE DESDE TU REPOSITORIO */
         @font-face {
             font-family: 'Segoe Fluent Icons';
             src: url('https://raw.githubusercontent.com/JulioCesarAbreuP/sec-architect/main/blog/fonts/segui-fluent-icons.woff2') format('woff2');
@@ -48,20 +46,13 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* TÍTULO Y HEADER CENTRADOS */
         header {
             text-align: center;
             margin-bottom: 3rem;
             position: relative;
         }
 
-        h1 {
-            font-size: clamp(1.8rem, 5vw, 2.6rem);
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-        }
-
-        /* BOTÓN DE TEMA CON ICONO FLUENT */
+        /* BOTÓN DE TEMA */
         .theme-toggle {
             position: absolute;
             top: 0;
@@ -69,13 +60,21 @@
             background: none;
             border: none;
             color: var(--text);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             cursor: pointer;
             padding: 10px;
-            font-family: 'Segoe Fluent Icons';
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* MAPEO DE ICONOS ESPECÍFICOS */
+        /* FORZAR USO DE FUENTE EN ICONOS */
+        .fluent-icon {
+            font-family: 'Segoe Fluent Icons' !important;
+            font-style: normal;
+        }
+
+        /* MAPEO HEXADECIMAL SEGURO */
         .icon-sun::before { content: "\E706"; }
         .icon-moon::before { content: "\E8B5"; }
         .icon-github::before { content: "\E902"; margin-right: 8px; }
@@ -89,10 +88,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .hero-image img {
-            width: 100%;
-            display: block;
-        }
+        .hero-image img { width: 100%; display: block; }
 
         h2 {
             color: var(--accent);
@@ -101,15 +97,6 @@
             margin-top: 2.5rem;
         }
 
-        .highlight-box {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            margin: 2rem 0;
-        }
-
-        /* FOOTER CENTRADO */
         footer {
             margin-top: 4rem;
             padding: 40px 20px;
@@ -128,21 +115,15 @@
             color: var(--accent);
             text-decoration: none;
             font-weight: 700;
-            font-size: 1.1rem;
             display: flex;
             align-items: center;
-        }
-
-        .footer-links a::before {
-            font-family: 'Segoe Fluent Icons';
-            font-size: 1.2rem;
         }
     </style>
 </head>
 <body data-theme="dark">
 
     <header>
-        <button class="theme-toggle icon-sun" data-set-theme="light" title="Cambiar a modo claro"></button>
+        <button class="theme-toggle fluent-icon icon-sun" data-set-theme="light" id="themeBtn" title="Cambiar modo"></button>
         <h1>Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna</h1>
     </header>
 
@@ -151,74 +132,49 @@
     </div>
 
     <main>
+        <p>Este artículo explica la diferencia entre identidad, cuenta y credencial en arquitecturas cloud modernas.</p>
+        
         <section>
-            <p>Este artículo explica, desde una perspectiva arquitectónica, la diferencia entre identidad, cuenta y credencial. Aunque suelen usarse como sinónimos, representan conceptos distintos que afectan directamente al diseño de seguridad, acceso, gobernanza y cumplimiento en cualquier arquitectura cloud.</p>
-        </section>
-
-        <div class="highlight-box">
-            <p><strong>El modelo mental:</strong> Un arquitecto no piensa en “usuarios”, sino en entidades, representaciones y mecanismos de autenticación.</p>
-        </div>
-
-        <section>
-            <h2>1. Identidad: quién eres en el sistema</h2>
-            <p>La identidad es la representación de una entidad (persona, servicio o dispositivo). Define quién eres, no cómo accedes.</p>
-            <ul>
-                <li>Es única dentro del dominio.</li>
-                <li>No depende de una contraseña o token.</li>
-                <li>Puede existir sin credenciales activas.</li>
-                <li>Tiene atributos, roles y políticas.</li>
-            </ul>
+            <h2>1. Identidad</h2>
+            <p>Representa quién eres (sujeto). Es única y abstracta.</p>
         </section>
 
         <section>
-            <h2>2. Cuenta: la implementación técnica</h2>
-            <p>La cuenta es la materialización de una identidad en un sistema como Azure AD. Define dónde existe y qué recursos administra.</p>
-            <ul>
-                <li>Identidad humana -> cuenta en Azure AD.</li>
-                <li>Identidad de servicio -> cuenta administrada.</li>
-                <li>Identidad externa -> cuenta federada.</li>
-            </ul>
+            <h2>2. Cuenta</h2>
+            <p>Es la materialización técnica donde resides (ej. Azure AD).</p>
         </section>
 
         <section>
-            <h2>3. Credencial: el mecanismo de prueba</h2>
-            <p>Es el mecanismo que permite demostrar la identidad (contraseña, token, biometría). Es solo la prueba y puede ser revocada.</p>
-        </section>
-
-        <section>
-            <h2>Resumen del Modelo Correcto</h2>
-            <ul>
-                <li><strong>Identidad</strong> &rarr; quién eres </li>
-                <li><strong>Cuenta</strong> &rarr; dónde existes </li>
-                <li><strong>Credencial</strong> &rarr; cómo demuestras que eres tú </li>
-            </ul>
+            <h2>3. Credencial</h2>
+            <p>Es el mecanismo de prueba (token, biometría, contraseña).</p>
         </section>
     </main>
 
     <footer>
         <div class="footer-links">
-            <a href="https://github.com/JulioCesarAbreuP" target="_blank" class="icon-github">GitHub</a>
-            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" class="icon-linkedin">LinkedIn</a>
+            <a href="https://github.com/JulioCesarAbreuP" target="_blank" class="fluent-icon icon-github">GitHub</a>
+            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" class="fluent-icon icon-linkedin">LinkedIn</a>
         </div>
         <p>© 2026 - SEC_ARCHITECT</p>
     </footer>
 
     <script>
-        document.querySelectorAll("[data-set-theme]").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const theme = btn.getAttribute("data-set-theme");
-                document.body.setAttribute("data-theme", theme);
-                
-                if (theme === "light") {
-                    btn.setAttribute("data-set-theme", "dark");
-                    btn.classList.replace("icon-sun", "icon-moon");
-                    btn.title = "Cambiar a modo oscuro";
-                } else {
-                    btn.setAttribute("data-set-theme", "light");
-                    btn.classList.replace("icon-moon", "icon-sun");
-                    btn.title = "Cambiar a modo claro";
-                }
-            });
+        const btn = document.getElementById('themeBtn');
+        btn.addEventListener("click", () => {
+            const currentTheme = document.body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            
+            document.body.setAttribute("data-theme", newTheme);
+            btn.setAttribute("data-set-theme", newTheme);
+
+            // Intercambio de clases para asegurar que cambie el icono
+            if (newTheme === "light") {
+                btn.classList.remove("icon-moon");
+                btn.classList.add("icon-sun");
+            } else {
+                btn.classList.remove("icon-sun");
+                btn.classList.add("icon-moon");
+            }
         });
     </script>
 </body>
