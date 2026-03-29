@@ -18,6 +18,14 @@
             --border-line: rgba(136, 146, 176, 0.1);
         }
 
+        [data-theme="light"] {
+            --deep-navy: #fafafa;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-sub: #666666;
+            --border-line: rgba(0,0,0,0.1);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -39,6 +47,21 @@
 
         .logo { font-weight: 800; font-size: 1.4rem; color: #fff; text-decoration: none; letter-spacing: -0.5px; }
         .logo span { color: var(--azure-blue); }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card-bg);
+        }
 
         .hero {
             max-width: 1100px;
@@ -243,13 +266,16 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <header>
         <a href="#" class="logo">SEC_<span>ARCHITECT</span></a>
-        <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" class="footer-linkedin">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-        </a>
+        <div class="header-right">
+            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" class="footer-linkedin">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+            <button class="theme-toggle" data-set-theme="light" title="Cambiar a modo claro">☀️</button>
+        </div>
     </header>
 
     <section class="hero">
@@ -405,6 +431,24 @@
                 status.innerText = "✘ ERROR. Reintente.";
                 btn.disabled = false;
             }
+        });
+    </script>
+    <script>
+        document.querySelectorAll("[data-set-theme]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const theme = btn.getAttribute("data-set-theme");
+                document.body.setAttribute("data-theme", theme);
+                // Toggle the button text/icon
+                if (theme === "light") {
+                    btn.setAttribute("data-set-theme", "dark");
+                    btn.textContent = "🌙";
+                    btn.title = "Cambiar a modo oscuro";
+                } else {
+                    btn.setAttribute("data-set-theme", "light");
+                    btn.textContent = "☀️";
+                    btn.title = "Cambiar a modo claro";
+                }
+            });
         });
     </script>
 </body>

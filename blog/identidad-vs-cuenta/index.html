@@ -45,6 +45,30 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card);
+        }
+
         /* SELECTOR DE MODO */
         .theme-switcher {
             display: flex;
@@ -141,15 +165,10 @@
     </style>
 </head>
 
-<body>
+<body data-theme="dark">
+    <button class="theme-toggle" data-set-theme="light" title="Cambiar a modo claro">☀️</button>
 
     <h1>Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna</h1>
-
-    <!-- Selector de modo -->
-    <div class="theme-switcher">
-        <button data-set-theme="light">☀️ Claro</button>
-        <button data-set-theme="dark">🌙 Oscuro</button>
-    </div>
 
     <div class="hero-image">
         <img src="img/1774429023296.jpeg" alt="Diagrama ilustrativo de identidad, cuenta y credencial" style="max-width:100%; height:auto;">
@@ -292,6 +311,16 @@
             btn.addEventListener("click", () => {
                 const theme = btn.getAttribute("data-set-theme");
                 document.body.setAttribute("data-theme", theme);
+                // Toggle the button
+                if (theme === "light") {
+                    btn.setAttribute("data-set-theme", "dark");
+                    btn.textContent = "🌙";
+                    btn.title = "Cambiar a modo oscuro";
+                } else {
+                    btn.setAttribute("data-set-theme", "light");
+                    btn.textContent = "☀️";
+                    btn.title = "Cambiar a modo claro";
+                }
             });
         });
     </script>
