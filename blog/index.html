@@ -44,37 +44,40 @@
 
         h1 {
             font-size: clamp(1.8rem, 5vw, 2.6rem);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
         }
 
-        /* BOTÓN DE TEMA (Solo texto, sin iconos extraños) */
+        /* BOTÓN DE TEMA */
         .theme-toggle {
             background: var(--accent);
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 8px 18px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.85rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .hero-image {
             width: 100%;
             border-radius: 12px;
             overflow: hidden;
-            margin: 2rem 0;
+            margin: 2.5rem 0;
             text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .hero-image img { max-width: 100%; border-radius: 8px; }
+        .hero-image img { width: 100%; display: block; }
 
         h2 { color: var(--accent); margin-top: 2.5rem; }
 
-        /* FOOTER CENTRADO CON ICONOS SVG SEGUROS */
+        /* FOOTER CENTRADO CON ICONOS SVG */
         footer {
-            margin-top: 4rem;
+            margin-top: 5rem;
             padding: 40px 20px;
             border-top: 1px solid #333;
             text-align: center;
@@ -82,39 +85,39 @@
 
         .footer-links {
             display: flex;
-            gap: 25px;
+            gap: 30px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             align-items: center;
         }
 
         .footer-links a {
-            color: var(--accent);
+            color: var(--text);
             text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 600;
+            font-size: 1rem;
             display: inline-flex;
             align-items: center;
-            gap: 10px; /* Espacio entre icono y texto */
-            transition: opacity 0.2s;
+            gap: 12px;
+            transition: color 0.2s;
         }
 
-        .footer-links a:hover { opacity: 0.8; }
+        .footer-links a:hover { color: var(--accent); }
 
-        /* Estilos para los SVGs embebidos */
+        /* Estilos para los iconos SVG */
         .footer-links svg {
             width: 24px;
             height: 24px;
-            fill: var(--accent); /* Usamos el color de acento */
+            fill: currentColor; /* El icono toma el color del texto/acento automáticamente */
         }
 
-        .copyright { font-size: 0.9rem; opacity: 0.7; }
+        .copyright { font-size: 0.85rem; opacity: 0.6; letter-spacing: 1px; }
     </style>
 </head>
 <body data-theme="dark">
 
     <header>
-        <h1>Identidad vs. Cuenta vs. Credencial</h1>
+        <h1>Identidad vs. Cuenta vs. Credencial: El triángulo de la seguridad</h1>
         <button id="themeBtn" class="theme-toggle">Modo Claro</button>
     </header>
 
@@ -123,16 +126,17 @@
             <img src="https://raw.githubusercontent.com/JulioCesarAbreuP/sec-architect/main/img/1774429023296.jpeg" alt="Arquitectura de Seguridad">
         </div>
 
-        <p>Este artículo explica la diferencia entre identidad, cuenta y credencial en arquitecturas modernas...</p>
-        
         <section>
-            <h2>1. Identidad</h2>
-            <p>Representa quién eres (sujeto). Única y abstracta.</p>
-        </section>
+            <p>Este artículo explica, desde una perspectiva arquitectónica, la diferencia entre identidad, cuenta y credencial. Aunque suelen usarse como sinónimos, representan conceptos distintos que afectan directamente al diseño de seguridad en cualquier arquitectura cloud.</p>
+            
+            <h2>1. Identidad: Quién eres</h2>
+            <p>La identidad es la representación de una entidad (persona, servicio o dispositivo). Es el concepto más abstracto y define quién es el sujeto en el sistema.</p>
 
-        <section>
-            <h2>2. Cuenta</h2>
-            <p>Implementación técnica (donde resides). Ej: Azure AD.</p>
+            <h2>2. Cuenta: Dónde existes</h2>
+            <p>La cuenta es la materialización técnica de la identidad en un directorio o sistema específico, como Microsoft Entra ID (Azure AD).</p>
+
+            <h2>3. Credencial: Cómo lo pruebas</h2>
+            <p>Es el mecanismo de prueba (biometría, token, contraseña). La credencial puede ser robada o rotada sin que la identidad cambie.</p>
         </section>
     </main>
 
@@ -155,7 +159,8 @@
         const body = document.body;
 
         btn.addEventListener('click', () => {
-            if (body.getAttribute('data-theme') === 'dark') {
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            if (isDark) {
                 body.setAttribute('data-theme', 'light');
                 btn.textContent = 'Modo Oscuro';
             } else {
