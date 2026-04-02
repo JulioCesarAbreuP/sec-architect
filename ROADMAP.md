@@ -1,85 +1,179 @@
-# ROADMAP - SEC_ARCHITECT
+# ROADMAP — SEC_ARCHITECT
 
-## Vision
-SEC_ARCHITECT evoluciona como una plataforma estatica resiliente, centrada en seguridad por defecto, operacion predecible y contenido tecnico de alto valor para arquitectura defensiva en PYMEs.
+> Hoja de ruta técnica del proyecto. Organizada por horizontes temporales.
+> Orientada a arquitectura de seguridad, UX/UI y evolución de infraestructura.
 
-## 1) Objetivos a corto, medio y largo plazo
+---
 
-### Corto plazo (0-3 meses)
-- Consolidar baseline de seguridad en todas las paginas HTML y JS.
-- Mantener modo oscuro por defecto y consistencia visual cross-page.
-- Cerrar deuda tecnica de CSP y dependencias externas.
-- Formalizar pruebas manuales repetibles en TESTING.md.
+## 1. Objetivos a Corto Plazo (0–3 meses)
 
-### Medio plazo (3-9 meses)
-- Integrar pipeline CI para validaciones de seguridad y calidad.
-- Introducir versionado de contenido tecnico del blog con calidad editorial.
-- Implementar politicas de cache y entrega optimizada para escala regional.
-- Definir SLO operativos para disponibilidad y tiempo de recuperacion.
+### Seguridad
+- [ ] Integrar DOMPurify en `markdown.js` como sanitizador de producción.
+- [ ] Activar CSP `report-to` con endpoint de reporte (Report URI o equivalente).
+- [ ] Mover scripts inline restantes en `blog/index.html` y artículos a JS externos.
+- [ ] Añadir SRI a hojas de estilo de Google Fonts.
+- [ ] Revisar y actualizar el hash SRI de marked.js trimestralmente.
 
-### Largo plazo (9-18 meses)
-- Integrar capa perimetral avanzada con Azure Front Door + WAF.
-- Migrar a estrategia de CDN global con controles de integridad.
-- Automatizar auditorias de headers y regresion de CSP.
-- Elevar modelo de gobernanza a esquema enterprise multi-equipo.
+### UX/UI
+- [ ] Validar accesibilidad WCAG 2.1 AA con axe o Lighthouse.
+- [ ] Añadir `aria-label` a todos los iconos SVG del footer y toggle.
+- [ ] Optimizar tiempo de carga (LCP < 2.5s) en Lighthouse.
+- [ ] Añadir animaciones de entrada suaves en las tarjetas de posts.
 
-## 2) Mejoras planificadas en seguridad
-- Endurecer CSP hacia politica sin excepciones innecesarias.
-- Reducir dependencia de terceros con self-host de recursos criticos.
-- Introducir scanner de secretos y reglas de bloqueo en pull requests.
-- Revisar sanitizacion de Markdown con pruebas de payloads XSS regresivos.
-- Establecer baseline de cabeceras para futura capa reverse proxy.
-- Definir matriz de riesgo viva enlazada con THREAT_MODEL.md.
+### Blog
+- [ ] Publicar al menos 3 posts técnicos iniciales.
+- [ ] Implementar paginación básica en el listado de posts.
+- [ ] Añadir campo `tags` al front matter de los posts.
+- [ ] Mostrar tags como filtros visuales en `blog.html`.
 
-## 3) Mejoras planificadas en UX/UI
-- Refinar sistema de tipografia y espaciado para legibilidad tecnica.
-- Mejorar navegacion entre home, blog y posts con enfoque task-oriented.
-- Introducir componentes reutilizables para consistencia de interfaz.
-- Mejorar estados de carga, vacio y error en blog dinamico.
-- Fortalecer accesibilidad: contraste, foco visible, navegacion por teclado.
+---
 
-## 4) Evolucion del blog dinamico
-- Soporte robusto de front matter (title, date, tags, author, summary).
-- Taxonomias tecnicas: categorias, etiquetas, nivel de profundidad.
-- Indice de contenidos por post y lectura recomendada relacionada.
-- Pre-render opcional de indice de posts para menor latencia inicial.
-- Politicas editoriales y checklist de seguridad por publicacion.
+## 2. Objetivos a Medio Plazo (3–9 meses)
 
-## 5) Integracion futura con Azure Front Door
-- Publicar sitio detras de Azure Front Door Standard/Premium.
-- Activar WAF gestionado con reglas OWASP y reglas custom.
-- Habilitar TLS end-to-end y redireccion forzada HTTPS.
-- Definir reglas de enrutamiento, cache y failover por region.
-- Instrumentar observabilidad con logs de WAF y metricas de edge.
+### Seguridad
+- [ ] Desplegar detrás de Azure Front Door o Cloudflare para habilitar
+      cabeceras HTTP reales (HSTS, COOP, CORP, frame-ancestors efectivo).
+- [ ] Implementar `require-trusted-types-for 'script'` en CSP.
+- [ ] Activar WAF básico en Front Door para filtrar tráfico automatizado.
+- [ ] Realizar auditoría completa con OWASP ZAP o Nikto.
+- [ ] Integrar Dependabot o Renovate para alertas de dependencias.
 
-## 6) Migracion futura a CDN global
-- Estrategia de cache control por tipo de recurso.
-- Hashing/asset versioning para invalidaciones seguras.
-- Distribucion Anycast para reducir latencia geografica.
-- Politicas de origen con minimo privilegio y control de acceso.
+### UX/UI
+- [ ] Añadir barra de progreso de lectura en posts individuales.
+- [ ] Implementar búsqueda de posts client-side (Fuse.js o similar).
+- [ ] Añadir modo de impresión optimizado para artículos.
+- [ ] Responsive design completo para dispositivos <375px.
 
-## 7) Automatizacion de pruebas de seguridad
-- Lighthouse CI en cada PR con umbrales minimos.
-- Validacion automatica de CSP esperada por pagina.
-- Pruebas de payloads XSS contra parser Markdown.
-- Verificacion de headers de seguridad en entorno publicado.
-- SAST/regex checks para detectar patrones inseguros en JS/HTML.
+### Blog
+- [ ] Automatizar la actualización de `posts.json` con un script de Node o Python.
+- [ ] Soporte para categorías y posts relacionados.
+- [ ] Añadir tiempo estimado de lectura a cada post.
+- [ ] Soporte para código con resaltado de sintaxis (Prism.js o highlight.js con SRI).
 
-## 8) Expansion del contenido tecnico
-- Serie de articulos: Zero Trust, CIS v8, NIST 800-53 aplicado.
-- Casos practicos de hardening para PYMEs con arquitectura real.
-- Guias de resiliencia operativa y respuesta a incidentes.
-- Seccion de patrones anti-patron en seguridad web estatica.
+---
 
-## 9) Estandares de calidad del proyecto
-- Seguridad como requisito de aceptacion, no como mejora opcional.
-- Cambios documentados en CHANGELOG.md bajo version semantica.
-- Toda funcionalidad nueva debe incluir plan de pruebas.
-- Criterios de mantenibilidad: simplicidad, trazabilidad, observabilidad.
-- Revisions tecnicas por pares para cambios sensibles.
+## 3. Objetivos a Largo Plazo (9+ meses)
 
-## Hitos de control sugeridos
-- M1: Baseline de seguridad y pruebas manuales estables.
-- M2: Automatizacion CI de seguridad y Lighthouse.
-- M3: Integracion edge (Front Door/WAF) en entorno staging.
-- M4: Operacion madura con monitoreo, reportes y mejora continua.
+### Seguridad
+- [ ] Obtener puntuación A+ en securityheaders.com.
+- [ ] Implementar Certificate Transparency monitoring.
+- [ ] Explorar firma GPG de commits como práctica de integridad editorial.
+- [ ] Diagramar y documentar el modelo de amenazas anualmente.
+
+### UX/UI
+- [ ] Internacionalización (i18n) en inglés/español.
+- [ ] Dark/light/system theme con detección de `prefers-color-scheme`.
+- [ ] Tipografía variable para mayor flexibilidad de diseño.
+
+### Infraestructura
+- [ ] Migrar a CDN global multi-región con failover automático.
+- [ ] Evaluar migración a Cloudflare Pages como alternativa a GitHub Pages
+      por su soporte nativo de headers y Workers.
+- [ ] Implementar mirror de contenido en IPFS o Arweave como respaldo inmutable.
+
+---
+
+## 4. Mejoras Planificadas en Seguridad
+
+| Mejora | Prioridad | Complejidad | Impacto |
+|--------|-----------|-------------|---------|
+| DOMPurify | Alta | Baja | Muy alto |
+| CSP report-to | Alta | Media | Alto |
+| Front Door / Cloudflare | Alta | Alta | Muy alto |
+| SRI en Google Fonts | Media | Baja | Medio |
+| Trusted Types | Media | Alta | Alto |
+| WAF básico | Media | Media | Alto |
+| Auditoría OWASP ZAP | Media | Media | Alto |
+| Dependabot | Baja | Baja | Medio |
+
+---
+
+## 5. Mejoras Planificadas en UX/UI
+
+| Mejora | Estado | Notas |
+|--------|--------|-------|
+| Accesibilidad WCAG 2.1 AA | Pendiente | Revisión con axe |
+| Búsqueda de posts | Pendiente | Fuse.js sin servidor |
+| Paginación del blog | Pendiente | Client-side simple |
+| Filtro por tags | Pendiente | DOM dinámico |
+| Barra de progreso de lectura | Pendiente | JS nativo con IntersectionObserver |
+| Resaltado de sintaxis | Pendiente | Prism.js con SRI |
+
+---
+
+## 6. Evolución del Blog Dinámico
+
+**Fase actual**: Manifiesto `posts.json` manual + renderizador Markdown client-side.
+
+**Fase 1**: Script de generación automática de `posts.json` a partir de archivos `.md`.
+
+**Fase 2**: Añadir metadatos (tags, categorías, tiempo de lectura) al manifiesto.
+
+**Fase 3**: Búsqueda client-side sobre el manifiesto JSON.
+
+**Fase 4** (largo plazo): Evaluar generador de sitios estáticos (11ty, Hugo)
+si el volumen de posts supera los 50 artículos y la complejidad de gestión crece.
+
+---
+
+## 7. Integración Futura con Azure Front Door
+
+```
+Usuario
+  │
+  ▼
+Azure Front Door (WAF, TLS, cabeceras HTTP, caché global)
+  │
+  ├─► Reglas WAF: bloqueo de scanners, rate limiting, geofencing
+  ├─► Cabeceras HTTP custom: HSTS, COOP, CORP, CSP real
+  ├─► Caché de assets estáticos con TTL largo
+  └─► Failover a origen secundario (Cloudflare Pages)
+  │
+  ▼
+GitHub Pages (origen primario)
+```
+
+Beneficios sobre GitHub Pages puro:
+- Cabeceras HTTP reales (no meta tags).
+- WAF gestionado con reglas OWASP.
+- Analytics de tráfico sin cookies.
+- Aceleración global con PoPs de Azure.
+
+---
+
+## 8. Migración Futura a CDN Global
+
+| Fase | Acción |
+|------|--------|
+| Evaluación | Comparar GitHub Pages vs Cloudflare Pages vs Netlify vs Azure Static Web Apps |
+| Piloto | Mirror en Cloudflare Pages con headers custom habilitados |
+| Migración | DNS cutover con TTL reducido; monitorización 48h |
+| Post-migración | Validar CSP real, HSTS preloading, performance en regiones objetivo |
+
+---
+
+## 9. Automatización de Pruebas de Seguridad
+
+- **CI/CD con GitHub Actions**: Lighthouse CI en cada PR para validar no regresión.
+- **Escaneo de links rotos**: lychee o broken-link-checker en pipeline.
+- **Validación de CSP**: CSP Evaluator en pipeline vía API.
+- **Escaneo OWASP ZAP**: modo AJAX Spider en staging antes de producción.
+- **Renovate/Dependabot**: alertas semanales de dependencias desactualizadas.
+
+---
+
+## 10. Expansión del Contenido Técnico
+
+**Áreas de contenido planificadas**:
+- Arquitectura Zero Trust en entornos Azure.
+- Comparativas de marcos de seguridad (NIST, CIS, ISO 27001, SABSA).
+- Guías de hardening para GitHub Pages y Azure Static Web Apps.
+- Posts sobre certificaciones AZ-305, SC-300 y AZ-104.
+- Casos de estudio de modelos de amenazas en proyectos reales.
+- Tutoriales de implementación de CSP en distintos frameworks.
+
+---
+
+> El roadmap sigue una visión arquitectónica basada en capas, coherente con marcos
+> como SABSA: desde los objetivos de negocio y seguridad (capa contextual) hasta
+> las acciones técnicas específicas por componente (capa física).

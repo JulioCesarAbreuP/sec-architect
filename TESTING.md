@@ -1,148 +1,314 @@
-# TESTING - SEC_ARCHITECT
+# TESTING — SEC_ARCHITECT
 
-Este documento define una estrategia de pruebas tecnicas y de seguridad para un sitio estatico con blog dinamico en Markdown.
+> Estrategia de pruebas técnicas del sitio estático SEC_ARCHITECT.
+> Cubre seguridad, rendimiento, accesibilidad, compatibilidad y resiliencia.
+> Última actualización: 2026-04-02.
 
-## Alcance
-- Home, blog, post, articulos y recursos estaticos.
-- JS de formulario, tema global, listado de posts y render Markdown.
-- Controles de seguridad de navegador (CSP y cabeceras).
+---
 
-## 1) Pruebas de Lighthouse
+## 1. Pruebas de Lighthouse
 
-### Objetivo
-Garantizar calidad minima en Performance, SEO, Best Practices y Accessibility.
+Lighthouse es la herramienta principal de auditoría de calidad del sitio.
 
-### Procedimiento
-1. Ejecutar Lighthouse para `index.html`, `blog.html`, `post.html`.
-2. Repetir en Desktop y Mobile.
-3. Comparar contra baseline historico.
+### 1.1 Configuración de Prueba
 
-### Criterios sugeridos
-- Performance >= 85
-- Accessibility >= 90
-- Best Practices >= 90
-- SEO >= 90
+| Parámetro | Valor |
+|-----------|-------|
+| Herramienta | Chrome DevTools → Lighthouse / lhci CLI |
+| URL de prueba | `http://127.0.0.1:5500` (local) y URL de GitHub Pages (producción) |
+| Modos | Mobile (throttling 4G) + Desktop |
+| Categorías | Performance, Accessibility, Best Practices, SEO |
 
-## 2) Pruebas de CSP
+### 1.2 Umbrales Objetivo
 
-### Objetivo
-Validar que solo se ejecuten recursos permitidos.
+| Categoría | Local | Producción |
+|-----------|-------|------------|
+| Performance | ≥ 85 | ≥ 90 |
+| Accessibility | ≥ 90 | ≥ 95 |
+| Best Practices | ≥ 90 | ≥ 95 |
+| SEO | ≥ 85 | ≥ 90 |
 
-### Casos
-- Intentar cargar script remoto no permitido y confirmar bloqueo.
-- Inyectar handler inline en DevTools y confirmar denegacion.
-- Verificar en consola ausencia de violaciones legitimas.
-- Confirmar `form-action` restringido a origenes autorizados.
+### 1.3 Métricas Web Vitals
 
-### Evidencia
-- Capturas de consola y Network.
-- Registro de directiva violada y ruta.
+| Métrica | Objetivo |
+|---------|----------|
+| LCP (Largest Contentful Paint) | < 2.5s |
+| FID / INP (Interaction to Next Paint) | < 200ms |
+| CLS (Cumulative Layout Shift) | < 0.1 |
+| TTFB (Time to First Byte) | < 600ms |
+| FCP (First Contentful Paint) | < 1.8s |
 
-## 3) Pruebas de sanitizacion del blog
+### 1.4 Ejecución
 
-### Objetivo
-Evitar XSS y HTML peligroso en contenido Markdown.
+```bash
+# CLI
+npm install -g @lhci/cli
+lhci autorun --collect.url=http://127.0.0.1:5500/index.html
+lhci autorun --collect.url=http://127.0.0.1:5500/blog.html
+lhci autorun --collect.url="http://127.0.0.1:5500/post.html?post=test.md"
+```
 
-### Casos
-- Payload con `<script>alert(1)</script>`.
-- Payload con `javascript:` en enlaces.
-- Payload con atributos `onerror`, `onclick`.
-- Payload con `iframe` embebido no permitido.
+---
 
-### Resultado esperado
-- Elementos/atributos peligrosos removidos.
-- Sin ejecucion de codigo activo en navegador.
+## 2. Pruebas de CSP
 
-## 4) Pruebas del formulario
+### 2.1 Validación Estática
 
-### Objetivo
-Verificar robustez operativa y controles anti-abuso.
+**Herramienta**: CSP Evaluator — https://csp-evaluator.withgoogle.com/
 
-### Casos
-- Submit valido con campos requeridos.
-- Submit invalido (email mal formado, campos vacios).
-- Prueba de honeypot `_hp_filter` con valor no vacio.
-- Manejo de timeout o error de servicio externo.
+**Proceso**:
+1. Copiar la CSP completa de cada página HTML.
+2. Pegar en CSP Evaluator.
+3. Verificar que no hay hallazgos de severidad HIGH o CRITICAL.
+4. Severidad MEDIUM: evaluar y documentar si se acepta el riesgo.
 
-### Resultado esperado
-- Mensajeria clara al usuario.
-- No fuga de detalles internos en errores.
+**CSPs a validar**:
+- `index.html` — política base completa.
+- `post.html` — política con `cdn.jsdelivr.net` en `script-src`.
+- `blog.html` — política base.
+- `blog/index.html` — verificar coherencia.
 
-## 5) Pruebas de accesibilidad
+### 2.2 Validación Dinámica (consola del navegador)
 
-### Objetivo
-Asegurar uso correcto por teclado y lectores de pantalla.
+1. Abrir el sitio con Live Server.
+2. DevTools → Console.
+3. Navegar por todas las páginas e interactuar con:
+   - Toggle de tema.
+   - Listado de posts.
+   - Render de un post.
+   - Envío del formulario (opcional: test con datos ficticios).
+4. **Resultado esperado**: cero errores de violación CSP en consola.
 
-### Casos
-- Navegacion completa con teclado.
-- Foco visible en elementos interactivos.
-- Contraste suficiente en tema oscuro y claro.
-- `aria-label` correcto en iconos sociales y botones.
+### 2.3 Prueba de Bypass Intencional
 
-## 6) Pruebas de carga (simuladas)
+Intentar manualmente los siguientes vectores para confirmar que CSP los bloquea:
 
-### Objetivo
-Evaluar comportamiento bajo picos moderados en sitio estatico.
+```javascript
+// En consola del navegador — debe ser bloqueado por CSP:
+eval("alert(1)")
+document.write("<script>alert(1)<\/script>")
+```
 
-### Casos sugeridos
-- Multiples cargas concurrentes de `index.html` y `blog.html`.
-- Solicitudes repetidas de assets CSS/JS/SVG.
-- Navegacion simultanea a posts dinamicos.
+**Resultado esperado**: error de CSP en consola; sin ejecución.
 
-### Metricas
-- Tiempo de respuesta promedio.
-- Errores HTTP observados.
-- Variacion de latencia por recurso.
+---
 
-## 7) Pruebas de resiliencia del sitio estatico
+## 3. Pruebas de Sanitización del Blog
 
-### Objetivo
-Comprobar continuidad ante fallos parciales.
+### 3.1 Posts de Prueba con Payloads XSS
 
-### Casos
-- Fallo de CDN externo (fuentes/librerias) y degradacion controlada.
-- Error en `posts.json` o ausencia de archivo.
-- Post inexistente solicitado por query param.
-- Falla de Formspree durante envio.
+Crear un archivo `/blog/test-xss.md` con contenido:
 
-### Resultado esperado
-- Mensajes de error controlados.
-- Sitio navegable aun con degradacion parcial.
+```markdown
+---
+title: Test XSS
+date: 2026-04-02
+---
+# Test de Sanitización
 
-## 8) Pruebas de compatibilidad de navegadores
+<script>alert('XSS')</script>
 
-### Objetivo
-Validar funcionamiento en navegadores principales.
+<img src="x" onerror="alert('XSS')">
 
-### Matriz minima
-- Chromium (Chrome/Edge)
-- Firefox
-- Safari (si aplica)
+<a href="javascript:alert('XSS')">Click</a>
 
-### Casos
-- Render visual consistente.
-- Tema oscuro/claro persistente.
-- Footer e iconos SVG correctos.
-- Blog dinamico funcional.
+<iframe src="https://evil.com"></iframe>
+```
 
-## 9) Pruebas del modo oscuro y claro
+**Añadir a `posts.json`**: `"test-xss.md"`
 
-### Objetivo
-Asegurar experiencia consistente y persistente.
+**Resultado esperado**:
+- `<script>` eliminado; no aparece en el DOM.
+- `<img onerror>` eliminado o atributo `onerror` removido.
+- `href="javascript:"` reemplazado por `href="#"` o eliminado.
+- `<iframe>` eliminado completamente.
 
-### Casos
-- Carga inicial en oscuro por defecto.
-- Cambio manual a claro y persistencia con localStorage.
-- Reapertura de pagina manteniendo preferencia.
-- Contraste y legibilidad en ambos temas.
+**Eliminar el archivo de prueba** después de confirmar el resultado.
 
-## Cadencia recomendada
-- En cada PR: smoke test (navegacion, CSP, tema, formulario).
-- Semanal: Lighthouse completo + regresion de sanitizacion.
-- Mensual: pruebas de resiliencia y compatibilidad cross-browser.
+### 3.2 Prueba de Path Traversal
 
-## Evidencia minima por release
-- Reporte Lighthouse.
-- Checklist de seguridad y CSP.
-- Resultado de pruebas de blog/formulario.
-- Incidencias abiertas y plan de remediacion.
+Visitar las siguientes URLs y confirmar que no se carga contenido no previsto:
+
+```
+post.html?post=../../index.html
+post.html?post=../posts.json
+post.html?post=<script>
+post.html?post=test.exe
+post.html?post=test
+```
+
+**Resultado esperado**: mensaje de error controlado; sin carga de contenido ajeno.
+
+---
+
+## 4. Pruebas del Formulario
+
+### 4.1 Validación Client-Side
+
+| Prueba | Acción | Resultado esperado |
+|--------|--------|-------------------|
+| Campo nombre vacío | Enviar sin nombre | Mensaje de error visible; sin envío |
+| Email inválido | Introducir "texto" en email | Mensaje de formato incorrecto |
+| Todos los campos válidos | Rellenar correctamente | Envío a Formspree; mensaje de éxito |
+| Honeypot activado | Rellenar `_hp_filter` via JS | Formspree descarta el envío |
+
+### 4.2 Prueba de CSP en Formulario
+
+1. Modificar temporalmente el `action` del formulario a `https://evil.com`.
+2. Resultado esperado: violación de CSP `form-action`; el envío es bloqueado.
+
+### 4.3 Prueba de Accesibilidad del Formulario
+
+- Navegar el formulario solo con teclado (Tab, Enter, Space).
+- Verificar que todos los campos tienen `<label>` asociado.
+- Screen reader: usar NVDA o VoiceOver para confirmar que los errores son anunciados.
+
+---
+
+## 5. Pruebas de Accesibilidad
+
+### 5.1 Herramientas
+
+| Herramienta | Uso |
+|-------------|-----|
+| axe DevTools (extensión) | Análisis automático de accesibilidad WCAG 2.1 |
+| Lighthouse (categoría Accessibility) | Puntuación general |
+| NVDA / VoiceOver | Verificación manual con screen reader |
+| Keyboard navigation | Tab, Enter, Escape; sin trampa de teclado |
+
+### 5.2 Verificaciones Obligatorias
+
+- [ ] Ratio de contraste de texto ≥ 4.5:1 (modo oscuro y claro).
+- [ ] Todos los iconos SVG tienen `aria-label` o `aria-hidden="true"`.
+- [ ] Toggle de tema tiene `aria-label="Cambiar tema"`.
+- [ ] Imágenes tienen atributo `alt` descriptivo.
+- [ ] Encabezados en orden jerárquico (h1 → h2 → h3, sin saltos).
+- [ ] Sin contenido dependiente solo de color para comunicar información.
+- [ ] Foco visible en todos los elementos interactivos.
+
+---
+
+## 6. Pruebas de Carga (Simuladas)
+
+Dado que el sitio es estático, las pruebas de carga se orientan a medir
+la respuesta del CDN de GitHub Pages ante múltiples requests concurrentes.
+
+### 6.1 Herramientas
+
+| Herramienta | Tipo |
+|-------------|------|
+| k6 | Load testing scriptable |
+| Apache Bench (`ab`) | Test rápido de endpoints |
+| WebPageTest | Multi-location, multi-step |
+
+### 6.2 Escenario Básico con k6
+
+```javascript
+import http from 'k6/http';
+import { sleep } from 'k6';
+
+export let options = {
+  vus: 50,
+  duration: '30s',
+};
+
+export default function () {
+  http.get('https://[usuario].github.io/sec-architect/');
+  http.get('https://[usuario].github.io/sec-architect/blog.html');
+  sleep(1);
+}
+```
+
+**Métricas a observar**: `http_req_duration` (p95 < 2000ms), `http_req_failed` (< 1%).
+
+---
+
+## 7. Pruebas de Resiliencia del Sitio Estático
+
+### 7.1 Escenarios de Fallo
+
+| Escenario | Cómo probar | Resultado esperado |
+|-----------|-------------|-------------------|
+| marked.js CDN no disponible | Bloquear `cdn.jsdelivr.net` en DevTools Network | Mensaje de error en post; sin crash |
+| Google Fonts no disponible | Bloquear `fonts.googleapis.com` | Fuente del sistema como fallback |
+| Formspree no disponible | Bloquear `formspree.io` | Mensaje de error en formulario |
+| posts.json no encontrado | Renombrar temporalmente | Mensaje de lista vacía; sin crash |
+| JS deshabilitado | DevTools → Settings → Disable JavaScript | Footer estático visible; contenido principal legible |
+
+### 7.2 Verificación de Fallbacks
+
+- Footer: verificar que el HTML estático del footer aparece aunque `site.js` no cargue.
+- Toggle de tema: verificar que la página carga en modo oscuro aunque no haya JS.
+- Blog: verificar que `blog.html` muestra mensaje apropiado si `posts.json` falla.
+
+---
+
+## 8. Pruebas de Compatibilidad de Navegadores
+
+### 8.1 Navegadores a Validar
+
+| Navegador | Versión mínima | Plataforma |
+|-----------|----------------|------------|
+| Chrome | 110+ | Windows, macOS, Android |
+| Firefox | 110+ | Windows, macOS |
+| Safari | 16+ | macOS, iOS |
+| Edge | 110+ | Windows |
+| Samsung Internet | 20+ | Android |
+
+### 8.2 Checklist de Compatibilidad
+
+- [ ] Layout correcto en todos los navegadores objetivo.
+- [ ] Toggle de tema funciona (localStorage disponible).
+- [ ] Footer con iconos SVG visible.
+- [ ] Blog dinámico carga correctamente (fetch + JSON parsing).
+- [ ] Post individual renderiza Markdown correctamente.
+- [ ] Formulario funciona (fetch API disponible en todos).
+- [ ] Variables CSS (`var(--bg)`) soportadas.
+
+### 8.3 Herramientas
+
+- BrowserStack (si se dispone de cuenta).
+- LambdaTest — nivel gratuito disponible.
+- Can I Use — verificación de características específicas: https://caniuse.com/
+
+---
+
+## 9. Pruebas del Modo Oscuro y Claro
+
+### 9.1 Prueba de Persistencia
+
+1. Visitar `index.html` → confirmar modo oscuro por defecto.
+2. Pulsar el toggle → confirmar cambio a modo claro.
+3. Recargar la página → confirmar que el modo claro persiste (localStorage).
+4. Abrir `blog.html` → confirmar que hereda la preferencia.
+5. Abrir `post.html` → confirmar coherencia del tema.
+
+### 9.2 Prueba de Variables CSS
+
+1. DevTools → Elements → inspeccionar `<html>`.
+2. En modo oscuro: `--bg` debe ser `#0a0a0a`, `--fg` debe ser `#e8e8e8`.
+3. En modo claro: `--bg` debe ser `#f8f8f8`, `--fg` debe ser `#111`.
+
+### 9.3 Prueba de Contraste
+
+| Modo | Texto / Fondo | Ratio objetivo |
+|------|---------------|----------------|
+| Oscuro | `#e8e8e8` / `#0a0a0a` | ≥ 4.5:1 |
+| Claro | `#111` / `#f8f8f8` | ≥ 4.5:1 |
+| Acento oscuro | `#00aeef` / `#0a0a0a` | ≥ 3:1 (elementos grandes) |
+| Acento claro | `#0077b5` / `#f8f8f8` | ≥ 4.5:1 |
+
+Usar https://webaim.org/resources/contrastchecker/ para verificar.
+
+### 9.4 Prueba de prefers-color-scheme (futuro)
+
+Cuando se implemente detección automática de preferencia del sistema:
+- DevTools → Rendering → Emulate CSS media feature: `prefers-color-scheme: dark/light`.
+- Confirmar que el tema responde correctamente sin necesidad del toggle.
+
+---
+
+> El enfoque de pruebas sigue una lógica de aseguramiento continuo alineada con
+> marcos como SABSA: desde la validación del contexto operativo (compatibilidad,
+> resiliencia) hasta la verificación técnica de los controles de seguridad
+> implementados en cada capa del sistema.

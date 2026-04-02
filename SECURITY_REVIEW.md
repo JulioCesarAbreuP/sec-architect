@@ -1,73 +1,258 @@
-# SECURITY REVIEW - sec-architect
+# SECURITY_REVIEW — SEC_ARCHITECT
 
-## Alcance revisado
-- HTML: `index.html`, `blog.html`, `post.html`, `blog/index.html`, `blog/identidad-vs-cuenta/index.html`.
-- JS: `index.js`, `blog.js`, `markdown.js`, `assets/js/site.js`.
-- Activos nuevos: `assets/icons/*.svg`, `assets/css/site.css`.
-- Configuración CI/CD: no se detectaron workflows en `.github/workflows`.
+> Análisis técnico exhaustivo de seguridad del sitio estático SEC_ARCHITECT.
+> Última revisión: 2026-04-02. Revisado contra OWASP Top 10, CIS Controls v8 y NIST 800-53.
 
-## Riesgos detectados (estado actual)
+---
 
-### Mitigados
-1. XSS por scripts inline.
-   - Solucion aplicada: se eliminaron scripts inline en páginas auditadas y se centralizó en `assets/js/site.js`.
+## 1. Análisis Profundo de la CSP
 
-2. Riesgo de inyección al renderizar Markdown.
-   - Solucion aplicada: `markdown.js` ahora aplica una sanitización por allowlist de etiquetas/atributos y filtra URLs peligrosas antes de insertar HTML.
+### 1.1 Política Actual (pages principales)
 
-3. Dependencia CDN sin control de integridad.
-   - Solucion aplicada: `post.html` usa `integrity` + `crossorigin` para Marked y el script está fijado a versión exacta.
+```
+default-src 'self';
+script-src 'self';
+style-src 'self' https://fonts.googleapis.com;
+font-src 'self' https://fonts.gstatic.com;
+img-src 'self' data:;
+connect-src 'self' https://formspree.io;
+form-action 'self' https://formspree.io;
+object-src 'none';
+frame-ancestors 'none';
+base-uri 'none';
+upgrade-insecure-requests;
+block-all-mixed-content
+```
 
-4. Riesgo tabnabbing en enlaces externos.
-   - Solucion aplicada: enlaces externos generados y renderizados con `rel="noopener noreferrer"`.
+### 1.2 Análisis por Directiva
 
-5. Superficie de ataque por lógica de tema dispersa.
-   - Solucion aplicada: tema oscuro por defecto + control persistente con `localStorage` en un único módulo (`assets/js/site.js`).
+| Directiva | Valor | Evaluación | Notas |
+|-----------|-------|------------|-------|
+| `default-src` | `'self'` | ✅ Correcto | Fallback restrictivo para directivas no definidas |
+| `script-src` | `'self'` | ✅ Correcto | Sin `unsafe-inline` ni `unsafe-eval` |
+| `style-src` | `'self' fonts.googleapis.com` | ✅ Correcto | Se permite origen de fonts externo necesario |
+| `font-src` | `'self' fonts.gstatic.com` | ✅ Correcto | Acotado al CDN de fuentes de Google |
+| `img-src` | `'self' data:` | ⚠️ Aceptable | `data:` permite imágenes inline; monitorizar |
+| `connect-src` | `'self' formspree.io` | ✅ Correcto | Fetch acotado a origen propio y Formspree |
+| `form-action` | `'self' formspree.io` | ✅ Correcto | Previene redirección de formulario a orígenes maliciosos |
+| `object-src` | `'none'` | ✅ Óptimo | Bloquea Flash, Shockwave y plugins |
+| `frame-ancestors` | `'none'` | ✅ Óptimo | Previene clickjacking completo |
+| `base-uri` | `'none'` | ✅ Óptimo | Previene ataques de base tag injection |
+| `upgrade-insecure-requests` | presente | ✅ Correcto | Fuerza HTTPS en requests del navegador |
+| `block-all-mixed-content` | presente | ✅ Correcto | Bloquea contenido mixto HTTP/HTTPS |
 
-### Riesgo residual
-1. Uso de `innerHTML` en el pipeline Markdown (`template.innerHTML` para parseo y `postContentElement.innerHTML` para render final).
-   - Estado: aceptado y compensado con sanitizador estricto + CSP + validación de parámetros.
-   - Recomendacion futura: migrar a sanitizador dedicado (por ejemplo DOMPurify autoalojado) con perfil de política explícita.
+### 1.3 Diferencias por Página
 
-2. Uso de `style-src 'unsafe-inline'` en CSP por estilos embebidos existentes.
-   - Estado: requerido para no romper el diseño actual.
-   - Recomendacion futura: extraer CSS embebido a archivos externos para retirar `unsafe-inline`.
+| Página | Diferencia respecto a base |
+|--------|---------------------------|
+| `post.html` | Añade `https://cdn.jsdelivr.net` a `script-src` para marked.js |
+| `blog.html` | Política idéntica a base |
+| `index.html` | Política base completa |
+| `blog/index.html` | CSP equivalente con ajuste de rutas relativas |
 
-## Soluciones aplicadas
-1. Hardening de CSP por página con `object-src 'none'`, `base-uri 'none'`, `frame-ancestors 'none'`, `block-all-mixed-content` y `upgrade-insecure-requests`.
-2. Eliminación de scripts inline y consolidación de lógica global (tema + footer) en `assets/js/site.js`.
-3. Sanitización reforzada en `markdown.js`:
-   - allowlist de etiquetas,
-   - allowlist de atributos por etiqueta,
-   - bloqueo de URLs no seguras (`javascript:` y esquemas no permitidos),
-   - control de enlaces externos.
-4. Reducción de uso de `innerHTML` en renderizado de lista (`blog.js` usa limpieza con `textContent`).
-5. Footer global reutilizable con iconos inline SVG de LinkedIn y GitHub, sin imágenes externas.
+### 1.4 Limitación Estructural
 
-## Recomendaciones futuras
-1. Autoalojar `marked.min.js` para eliminar dependencia runtime de CDN.
-2. Completar extracción de CSS inline para adoptar `style-src 'self'` sin `unsafe-inline`.
-3. Agregar pipeline CI de seguridad (SAST + escaneo de dependencias + revisión de headers).
-4. Mantener `blog/posts.json` como inventario explícito de posts para evitar depender de listado de directorio en hosting estático.
+Las CSP se implementan como `<meta http-equiv="Content-Security-Policy">`.
+GitHub Pages **no permite configurar cabeceras HTTP personalizadas**.
+Esto implica que directivas como `frame-ancestors` y `report-uri`/`report-to`
+**no funcionan vía meta tag** (son ignoradas por el navegador).
 
-## Cabeceras recomendadas para reverse proxy (Front Door / App Gateway)
-GitHub Pages no permite configurar todas las cabeceras HTTP, pero el sitio queda preparado para migrar con esta plantilla:
+Mitigación futura: desplegar detrás de Azure Front Door o Cloudflare con
+cabeceras HTTP reales en la respuesta.
+
+---
+
+## 2. Evaluación de Cabeceras de Seguridad
+
+| Cabecera | Estado | Implementación | Limitación |
+|----------|--------|----------------|------------|
+| Content-Security-Policy | ✅ Implementada | `<meta>` | `frame-ancestors` ignorado vía meta |
+| X-Content-Type-Options | ✅ Implementada | `<meta http-equiv>` | Solo orientativa sin cabecera HTTP real |
+| X-Frame-Options | ✅ Implementada | `<meta http-equiv>` | No equivalente a cabecera HTTP en todos los navegadores |
+| Referrer-Policy | ✅ Implementada | `<meta>` | Efectiva en navegadores modernos |
+| Permissions-Policy | ✅ Implementada | `<meta>` | Soporte variable por navegador |
+| Strict-Transport-Security | ⚠️ No configurable | GitHub Pages gestiona TLS | Sin control sobre HSTS max-age |
+| Cross-Origin-Opener-Policy | ❌ No implementada | — | Requiere cabecera HTTP real |
+| Cross-Origin-Resource-Policy | ❌ No implementada | — | Requiere cabecera HTTP real |
+
+### 2.1 Recomendación para Reverse Proxy / Front Door
 
 ```http
+Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; ...
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Resource-Policy: same-origin
-Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+Cross-Origin-Embedder-Policy: require-corp
+Cache-Control: no-cache (para HTML); max-age=31536000, immutable (para assets versionados)
 ```
 
-## Checklist operativo
-- [x] Scripts inline eliminados en páginas auditadas.
-- [x] Modo oscuro por defecto y persistencia de preferencia del usuario.
-- [x] Footer global reutilizable con iconos oficiales inline.
-- [x] Validación + sanitización del flujo Markdown dinámico.
-- [x] Integridad agregada a recursos CDN activos (Marked y fuente CSS externa usada).
-- [ ] Migrar CSS inline a archivos para retirar `unsafe-inline` en `style-src`.
+---
+
+## 3. Riesgos del Blog Dinámico
+
+### 3.1 Vector de Riesgo: Inyección de Contenido Markdown
+
+**Descripción**: Un post `.md` con contenido HTML malicioso podría generar XSS
+al ser renderizado por marked.js e inyectado en el DOM con `innerHTML`.
+
+**Mitigación implementada**:
+- Sanitizador de allowlist en `markdown.js` que filtra etiquetas y atributos.
+- Solo se permiten etiquetas de contenido semántico (no `<script>`, `<style>`,
+  `<iframe>`, `<object>`, `<embed>`, `<form>`, `<input>`).
+- URLs en `href` y `src` validadas contra expresión regular que bloquea
+  `javascript:`, `data:`, `vbscript:`.
+
+**Riesgo residual**: Si el allowlist no cubre todos los vectores (p.ej., atributos
+de eventos como `onload`, `onerror` en `<img>`), podría existir un vector de XSS.
+
+**Recomendación**: Integrar DOMPurify como sanitizador de nivel de producción,
+que mantiene una allowlist probada y actualizada continuamente.
+
+### 3.2 Vector de Riesgo: Path Traversal en Parámetro ?post=
+
+**Descripción**: El parámetro `?post=nombre.md` se usa para construir la URL de fetch.
+Si no se valida correctamente, podría usarse para hacer fetch de rutas no previstas.
+
+**Mitigación implementada**:
+- Validación estricta: `/^[\w\-\.]+\.md$/` — solo caracteres alfanuméricos,
+  guiones, puntos y extensión `.md`.
+- No se permite `../` ni rutas absolutas.
+
+**Riesgo residual**: Bajo. El fetch fallará con 404 si el archivo no existe.
+No hay riesgo de SSRF porque el fetch es del mismo origen (GitHub Pages).
+
+---
+
+## 4. Revisión del Formulario
+
+| Aspecto | Estado | Detalle |
+|---------|--------|---------|
+| Backend | Formspree (tercero) | Sin servidor propio; datos enviados a Formspree |
+| Validación client-side | ✅ Implementada | Campos requeridos; email format |
+| Honeypot anti-bot | ✅ Implementado | Campo `_hp_filter` oculto |
+| CSP restricción | ✅ `form-action` limitado | Solo `'self'` y `formspree.io` |
+| Exposición de datos | ⚠️ Formspree almacena | Los datos se almacenan en Formspree; sin control propio |
+| Rate limiting | ❌ No implementado en cliente | Formspree aplica su propio rate limit en el plan gratuito |
+| CSRF | N/A para sitio estático | Sin sesiones ni cookies de autenticación propias |
+
+**Recomendación**: Activar notificaciones de Formspree y revisar periódicamente
+los envíos para detectar spam o intentos de abuso. Considerar CAPTCHA en el futuro.
+
+---
+
+## 5. Evaluación del Uso de SVG Inline
+
+### 5.1 Riesgos Potenciales de SVG
+
+SVG es un formato XML que puede contener:
+- Scripts (`<script>` dentro de SVG).
+- Handlers de eventos (`onload`, `onclick`).
+- Referencias externas (`<image href="...">`, `<use href="...">`).
+- CSS embebido que puede afectar al DOM padre.
+
+### 5.2 Mitigaciones Aplicadas
+
+- Los SVGs de LinkedIn y GitHub son SVGs **minimalistas y controlados**:
+  solo contienen paths geométricos y atributos de presentación (`fill`, `xmlns`).
+- No contienen `<script>`, eventos inline ni referencias externas.
+- Son generados inline por `site.js` desde strings literales en el propio código,
+  no cargados desde archivos externos en tiempo de ejecución.
+- El favicon SVG (`assets/favicon.svg`) contiene solo formas y colores definidos.
+
+### 5.3 Riesgo Residual
+
+Si en el futuro se permite a usuarios subir o referenciar SVGs en posts Markdown,
+el sanitizador debe tratar los SVGs como HTML peligroso y eliminarlos o filtrarlos
+a nivel de etiqueta.
+
+---
+
+## 6. Tabla de Riesgos
+
+| ID | Riesgo | Componente | Probabilidad | Impacto | Severidad | Estado |
+|----|--------|------------|--------------|---------|-----------|--------|
+| R01 | XSS via contenido Markdown | `markdown.js` | Media | Alto | Alto | Mitigado (allowlist) |
+| R02 | Path traversal en ?post= | `markdown.js` | Baja | Medio | Medio | Mitigado (regex) |
+| R03 | Supply chain CDN (marked.js) | `post.html` | Baja | Alto | Medio | Mitigado (SRI) |
+| R04 | Datos de formulario en tercero | Formspree | Media | Medio | Medio | Aceptado + monitoreado |
+| R05 | CSP frame-ancestors inefectiva | Todas las páginas | Media | Medio | Medio | Pendiente (Front Door) |
+| R06 | Scripts inline residuales | `blog/index.html` | Baja | Medio | Bajo | En revisión |
+| R07 | SVG malicioso en posts futuros | `markdown.js` | Baja | Alto | Medio | Pendiente (DOMPurify) |
+| R08 | Fuga de datos via Referrer | Todas las páginas | Baja | Bajo | Bajo | Mitigado (Referrer-Policy) |
+| R09 | MIME sniffing | Todas las páginas | Baja | Bajo | Bajo | Mitigado (nosniff meta) |
+| R10 | Abuse del formulario | `index.html` | Media | Bajo | Bajo | Mitigado (honeypot) |
+
+---
+
+## 7. Recomendaciones Futuras
+
+### Prioridad Alta
+
+1. **Integrar DOMPurify** en `markdown.js` como sustituto del sanitizador artesanal.
+   DOMPurify cuenta con mantenimiento activo y cobertura de vectores documentados.
+
+2. **Migrar a cabeceras HTTP reales** desplegando detrás de Azure Front Door,
+   Cloudflare o Netlify Headers para hacer efectivas `frame-ancestors`,
+   `HSTS`, `COOP` y `CORP`.
+
+### Prioridad Media
+
+3. **Mover scripts inline restantes** de `blog/index.html` y artículos pre-renderizados
+   a archivos JS externos para eliminar dependencia de `unsafe-inline` en esas páginas.
+
+4. **Implementar CSP `report-to`** con un endpoint de reporte (p.ej., Report URI)
+   para monitorización continua de violaciones CSP en producción.
+
+5. **Auditar Formspree periódicamente**: revisar envíos, activar doble opt-in
+   y evaluar alternativas autogestionadas si crece el volumen.
+
+### Prioridad Baja
+
+6. **Añadir Subresource Integrity** a las hojas de estilo de Google Fonts.
+
+7. **Implementar `require-trusted-types-for 'script'`** en CSP para forzar el uso
+   de Trusted Types y eliminar asignaciones directas a `innerHTML`.
+
+8. **Revisar y documentar** el inventario de dependencias externas semestralmente
+   (aligned con CIS Control 2).
+
+---
+
+## 8. Relación con OWASP, CIS y NIST
+
+### OWASP Top 10 (2021)
+
+| OWASP | Relevancia | Control |
+|-------|------------|---------|
+| A03 — Injection (XSS) | Alta | Sanitizador MD, CSP sin unsafe-inline |
+| A05 — Security Misconfiguration | Alta | CSP, cabeceras, SRI |
+| A06 — Vulnerable Components | Media | SRI en marked.js, versión fijada |
+| A08 — Software Integrity Failures | Media | SRI, versionado Git |
+| A09 — Logging & Monitoring Failures | Media | Sin logging propio; pendiente CSP report-to |
+
+### CIS Controls v8
+
+| Control | Implementación |
+|---------|----------------|
+| CIS 2.2 — Inventario de software | Dependencias declaradas en HTML |
+| CIS 4.1 — Configuración segura | CSP, cabeceras, modo HTTPS |
+| CIS 16.1 — Seguridad de aplicaciones web | Sanitización, validación, honeypot |
+
+### NIST 800-53
+
+| Familia | Control | Implementación |
+|---------|---------|----------------|
+| SI | SI-10 (Validación de input) | Regex en parámetro ?post=; allowlist en sanitizador |
+| SC | SC-28 (Protección en reposo) | Git como almacenamiento versionado |
+| SC | SC-8 (Confidencialidad en tránsito) | TLS + upgrade-insecure-requests |
+| CM | CM-7 (Funcionalidad mínima) | object-src none; Permissions-Policy mínima |
+
+---
+
+> Este análisis sigue un enfoque de trazabilidad de controles inspirado en marcos
+> como SABSA, donde cada control técnico implementado es trazable a un riesgo de
+> negocio identificado y a un objetivo de seguridad definido.
