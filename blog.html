@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content;" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <title>Blog | SEC_ARCHITECT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" integrity="sha384-Ajp9bTtH2p9VaFIQE6MYw/3m72Ao3PAZUpyzOgME70behHgtKASiRiV60oasXIro" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/blog.page.css">
+</head>
+<body data-theme="dark">
+  <main class="container">
+    <header class="topbar">
+      <a href="index.html" class="brand">SEC_<span>ARCHITECT</span></a>
+      <a class="back-link" href="index.html">Volver al inicio</a>
+    </header>
+
+    <h1 class="title">Blog</h1>
+    <p class="subtitle">Notas técnicas sobre arquitectura de seguridad, identidad, gobernanza y resiliencia cloud.</p>
+
+    <ul id="postsList" class="posts" aria-live="polite"></ul>
+  </main>
+
+  <footer data-site-footer="true"></footer>
+
+  <script src="blog.js" defer></script>
+  <script src="assets/js/site.js" defer></script>
+</body>
+</html>

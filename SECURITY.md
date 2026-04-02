@@ -1,30 +1,82 @@
-# 🛡️ Política de Seguridad (SECURITY.md)
+# Política de Seguridad (SECURITY.md)
 
-Este proyecto prioriza la **Integridad de los Datos** y la **Resiliencia Estructural**. Si usted es un investigador de seguridad o desarrollador e identifica una vulnerabilidad o una oportunidad de mejora en la arquitectura, agradecemos su contribución siguiendo este marco de trabajo:
+Este proyecto implementa una arquitectura de defensa estructural orientada a minimizar superficie de ataque, garantizar la integridad del contenido y reforzar la resiliencia operativa del sitio.
+El código está endurecido siguiendo principios de OWASP, CIS Controls v8 y NIST 800-53.
 
 ## 1. Controles Técnicos Implementados (Hardening)
-Como parte del endurecimiento de la infraestructura, se han desplegado las siguientes capas de defensa activa:
 
-* **Content Security Policy (CSP):** Control estricto de orígenes para scripts y conexiones (`connect-src`), mitigando vectores de **XSS** y exfiltración de datos.
-* **Sanitización de Entradas:** Procesamiento del DOM para neutralizar inyecciones de código en el transporte de datos vía AJAX/Fetch.
-* **Rate Limiting & Throttling:** Control de inundación en el cliente para prevenir ataques de **Denegación de Servicio (DoS)** y saturación de API.
-* **Upgrade Insecure Requests:** Forzado de túneles cifrados (SSL/TLS) para toda la comunicación de red.
+### 1.1 Content Security Policy (CSP) de Alta Restricción
+Basada en el código del proyecto:
+
+- default-src 'self'
+- script-src 'self'
+- style-src 'self' https://fonts.googleapis.com
+- font-src 'self' https://fonts.gstatic.com
+- img-src 'self' data:
+- connect-src 'self' https://formspree.io
+- form-action 'self' https://formspree.io
+- object-src 'none'
+- frame-ancestors 'none'
+- base-uri 'none'
+- upgrade-insecure-requests
+- block-all-mixed-content
+
+Impacto:
+Mitiga XSS, clickjacking, inyección de recursos externos y exfiltración de datos.
+
+### 1.2 Cabeceras de Seguridad Activas
+El proyecto incluye:
+
+- X-Content-Type-Options: nosniff
+- X-Frame-Options: DENY
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+Impacto:
+Prevención de MIME sniffing, bloqueo de iframes, reducción de fuga de metadatos y restricción de APIs sensibles.
+
+### 1.3 Sanitización y Control del DOM
+El contenido Markdown del blog se procesa mediante conversión segura.
+
+Se recomienda sanitización adicional en post.html para evitar XSS basado en contenido.
+
+### 1.4 Transporte Seguro
+upgrade-insecure-requests fuerza HTTPS.
+
+GitHub Pages sirve el sitio con TLS moderno.
+
+### 1.5 Protección de Formularios
+Formspree está limitado por CSP (connect-src y form-action).
+
+Se incluye honeypot _hp_filter para evitar bots.
+
+No se permite carga de scripts externos.
 
 ## 2. Reporte de Vulnerabilidades
-Si encuentra un fallo crítico (bypass de CSP, inyección no detectada o mala configuración de transporte), por favor proceda de la siguiente manera:
-* **Issues:** Abra un *Issue* en este repositorio utilizando la etiqueta `[SECURITY]`.
-* **Detalles:** Incluya el vector de ataque identificado y, si es posible, una propuesta de mitigación basada en estándares de **OWASP ZAP**.
+Si identifica un fallo crítico (bypass de CSP, XSS, CSRF, inyección DOM, fuga de datos o mala configuración):
+
+Abra un Issue con la etiqueta [SECURITY].
+
+Incluya:
+
+- Vector de ataque
+- Evidencia
+- Reproducción
+- Mitigación sugerida (OWASP, NIST o CIS)
 
 ## 3. Pull Requests y Contribuciones
-Las mejoras en el endurecimiento del código son bienvenidas. Valoramos especialmente propuestas que:
-* Incrementen la puntuación en auditorías de **Lighthouse Security**.
-* Añadan capas de validación en el esquema de datos antes del envío a Formspree.
-* Optimicen la resiliencia de la interfaz ante fallos de servicios externos.
+Se valoran especialmente PRs que:
 
----
+- Incrementen la puntuación en auditorías de Lighthouse Security
+- Mejoren la sanitización del contenido Markdown
+- Refuercen la CSP sin romper funcionalidad
+- Añadan validaciones adicionales al formulario
+- Reduzcan dependencias externas
+- Mejoren la resiliencia ante fallos de servicios externos
 
-### 🎓 Relación con Certificaciones Microsoft
-Este repositorio sirve como entorno de pruebas para la implementación de arquitecturas seguras bajo los dominios de:
-* **AZ-305:** Diseño de infraestructura resiliente y segura.
-* **SC-300:** Gestión de identidades y acceso condicional (Zero Trust).
-* **AZ-104:** Administración de seguridad y cumplimiento en el host.
+## 4. Relación con Certificaciones Microsoft
+Este repositorio sirve como entorno de práctica para arquitecturas seguras alineadas con:
+
+- AZ-305 - Diseño de infraestructura resiliente
+- SC-300 - Zero Trust e identidad
+- AZ-104 - Seguridad operativa en Azure

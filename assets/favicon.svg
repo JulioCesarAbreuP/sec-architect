@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#0A0A0A"/>
+  <!-- Compas estilizado -->
+  <path d="M32 10 L20 42" stroke="#00AEEF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M32 10 L44 42" stroke="#00AEEF" stroke-width="4" stroke-linecap="round"/>
+  <!-- Escuadra minimalista -->
+  <path d="M20 42 L44 42 L32 54 Z" fill="none" stroke="#00AEEF" stroke-width="4" stroke-linejoin="round"/>
+</svg>

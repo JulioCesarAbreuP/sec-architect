@@ -1,0 +1,129 @@
+:root {
+  --azure-blue: #0078d4;
+  --deep-navy: #0a192f;
+  --card-bg: #112240;
+  --text-main: #e6f1ff;
+  --text-sub: #9ba8c8;
+  --border-line: rgba(136, 146, 176, 0.2);
+}
+
+[data-theme="light"] {
+  --deep-navy: #fafafa;
+  --card-bg: #ffffff;
+  --text-main: #1a1a1a;
+  --text-sub: #666666;
+  --border-line: rgba(0, 0, 0, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--deep-navy);
+  color: var(--text-main);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+
+.link {
+  text-decoration: none;
+  color: var(--text-sub);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.link:hover { color: var(--azure-blue); }
+
+#postMeta {
+  color: var(--text-sub);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+#postTitle {
+  margin: 0 0 1.6rem;
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  line-height: 1.15;
+  color: var(--text-main);
+}
+
+article {
+  background: var(--card-bg);
+  border: 1px solid var(--border-line);
+  border-radius: 14px;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  line-height: 1.8;
+}
+
+article h1, article h2, article h3 {
+  line-height: 1.25;
+  margin-top: 1.7em;
+  margin-bottom: 0.7em;
+  color: var(--text-main);
+}
+
+article h1:first-child,
+article h2:first-child,
+article h3:first-child {
+  margin-top: 0;
+}
+
+article p { margin-bottom: 1.05rem; color: var(--text-main); }
+
+article a {
+  color: var(--azure-blue);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 120, 212, 0.3);
+}
+
+article a:hover { opacity: 0.85; }
+
+article ul, article ol { padding-left: 1.4rem; }
+
+article pre {
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid var(--border-line);
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+
+article code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.92em;
+}
+
+article img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 1.2rem 0;
+  border: 1px solid var(--border-line);
+}
+
+.state {
+  color: var(--text-sub);
+  background: var(--card-bg);
+  border: 1px dashed var(--border-line);
+  border-radius: 12px;
+  padding: 1rem;
+}
