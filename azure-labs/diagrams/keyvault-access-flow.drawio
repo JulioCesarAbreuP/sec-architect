@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram name="Key Vault Access Flow" id="kv-access-flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1"
+                  connect="1" arrows="1" fold="1" page="1" pageScale="1"
+                  pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Key Vault Access Flow — Private Endpoint + RBAC" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="337" y="20" width="900" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Actors -->
+        <mxCell id="workload" value="Workload&#xa;(Managed Identity)" style="shape=mxgraph.azure2.virtual_machine;sketch=0;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="80" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dns" value="Private DNS Zone&#xa;privatelink.vaultcore.azure.net" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="280" y="200" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="pe" value="Private Endpoint&#xa;(NIC in snet-pe, 10.0.2.x)" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="620" y="200" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="kv" value="Azure Key Vault&#xa;(public network: DISABLED)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="940" y="180" width="220" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="entra" value="Microsoft Entra ID&#xa;RBAC Check&#xa;(Key Vault Secrets User)" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="940" y="340" width="220" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="secret" value="Secret Value&#xa;(returned encrypted in TLS)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="280" y="360" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Blocked path label -->
+        <mxCell id="blocked" value="Public Internet&#xa;→ BLOCKED" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="940" y="80" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="e1" value="1. DNS resolve&#xa;vault URI" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="workload" target="dns" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="2. Returns private IP" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dns" target="pe" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" value="3. TLS connection" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pe" target="kv" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" value="4. Token validation" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="kv" target="entra" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" value="5. Secret returned" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="kv" target="secret" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" value="DENIED" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;" edge="1" source="blocked" target="kv" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
