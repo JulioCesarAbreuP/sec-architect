@@ -74,7 +74,7 @@ function sanitizeRenderedHtml(rawHtml) {
       return true;
     }
 
-    if (/^data:image\//i.test(input) && isImage) {
+    if (/^data:image\/(png|jpe?g|gif|webp|avif);/i.test(input) && isImage) {
       return true;
     }
 
@@ -106,7 +106,7 @@ function sanitizeRenderedHtml(rawHtml) {
       }
 
       const tagAllowedAttrs = allowedAttrs[tagName] || new Set();
-      if (!tagAllowedAttrs.has(lowerName) && lowerName !== "class") {
+      if (!tagAllowedAttrs.has(lowerName)) {
         element.removeAttribute(attrName);
         continue;
       }

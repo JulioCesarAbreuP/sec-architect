@@ -4,7 +4,7 @@
 
 ---
 
-[Volver al documento principal de Identidad y Cuenta](../identidad-vs-cuenta/index.html)
+[Volver al documento principal de Identidad y Cuenta](./identidad-vs-cuenta/index.html)
 
 ---
 
