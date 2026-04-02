@@ -6,26 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Identidad vs Cuenta vs Credencial</title>
 
-<!-- Seguridad y buenas prácticas -->
-<meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
-       script-src 'self'; 
-         style-src 'self'; 
-         img-src 'self' data:; 
-         font-src 'self'; 
-         connect-src 'self'; 
-       object-src 'none';
-       base-uri 'none';
-       frame-ancestors 'none';
-       upgrade-insecure-requests;
-       block-all-mixed-content;" />
-
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content;" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 <meta http-equiv="X-Frame-Options" content="DENY" />
-<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" />
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
 <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
-<meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta name="description" content="Diferencia arquitectónica entre identidad, cuenta y credencial. El modelo mental correcto para diseñar seguridad moderna." />
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />
 <link rel="stylesheet" href="../../assets/css/site.css" />
@@ -34,6 +19,11 @@
 </head>
 
 <body data-theme="dark">
+
+<header class="article-topbar">
+  <a class="article-link" href="../index.html">Volver al blog</a>
+  <a class="article-link" href="../../index.html">Inicio</a>
+</header>
 
 <h1>Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna</h1>
 

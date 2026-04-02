@@ -1,7 +1,7 @@
 # SECURITY_REVIEW — SEC_ARCHITECT
 
 > Análisis técnico exhaustivo de seguridad del sitio estático SEC_ARCHITECT.
-> Última revisión: 2026-04-02. Revisado contra OWASP Top 10, CIS Controls v8 y NIST 800-53.
+> Última revisión: 2026-04-02 (pasada final). Revisado contra OWASP Top 10, CIS Controls v8 y NIST 800-53.
 
 ---
 
@@ -180,11 +180,12 @@ a nivel de etiqueta.
 | R03 | Supply chain CDN (marked.js) | `post.html` | Baja | Alto | Medio | Mitigado (SRI) |
 | R04 | Datos de formulario en tercero | Formspree | Media | Medio | Medio | Aceptado + monitoreado |
 | R05 | CSP frame-ancestors inefectiva | Todas las páginas | Media | Medio | Medio | Pendiente (Front Door) |
-| R06 | Scripts inline residuales | `blog/index.html` | Baja | Medio | Bajo | En revisión |
+| R06 | Scripts inline residuales | `blog/index.html` | Baja | Medio | Bajo | Mitigado (migrado a JS externo) |
 | R07 | SVG malicioso en posts futuros | `markdown.js` | Baja | Alto | Medio | Pendiente (DOMPurify) |
 | R08 | Fuga de datos via Referrer | Todas las páginas | Baja | Bajo | Bajo | Mitigado (Referrer-Policy) |
 | R09 | MIME sniffing | Todas las páginas | Baja | Bajo | Bajo | Mitigado (nosniff meta) |
 | R10 | Abuse del formulario | `index.html` | Media | Bajo | Bajo | Mitigado (honeypot) |
+| R11 | Falla funcional del blog por rutas relativas | `blog.js` + `blog/index.html` | Media | Medio | Medio | Mitigado (detección de contexto y manifiesto) |
 
 ---
 
@@ -201,8 +202,8 @@ a nivel de etiqueta.
 
 ### Prioridad Media
 
-3. **Mover scripts inline restantes** de `blog/index.html` y artículos pre-renderizados
-   a archivos JS externos para eliminar dependencia de `unsafe-inline` en esas páginas.
+3. **Mantener la disciplina sin inline script/style** en nuevas páginas y PRs,
+   con revisión obligatoria de CSP en cada cambio de UI.
 
 4. **Implementar CSP `report-to`** con un endpoint de reporte (p.ej., Report URI)
    para monitorización continua de violaciones CSP en producción.
@@ -219,6 +220,41 @@ a nivel de etiqueta.
 
 8. **Revisar y documentar** el inventario de dependencias externas semestralmente
    (aligned con CIS Control 2).
+
+---
+
+## 9. Hallazgos y Correcciones Concretas (Pasada Final)
+
+### 9.1 Hallazgos confirmados
+
+1. **Estructura HTML inválida en home**: existían cierres duplicados de `</body>`/`</html>`.
+2. **Acoplamiento UX/CSP en formulario**: estados de envío dependían de estilos inline dinámicos.
+3. **Blog publicado con fallo funcional**: `blog/index.html` no mantenía una landing consistente y
+   `blog.js` resolvía rutas de forma frágil según ubicación.
+4. **Metadatos de seguridad engañosos en páginas heredadas**: presencia de cabeceras obsoletas
+   o no efectivas vía `<meta>` en contenido legado.
+5. **Accesibilidad mejorable en controles globales**: feedback parcial en toggle de tema y foco en iconos.
+
+### 9.2 Correcciones aplicadas
+
+1. **Home saneada y validada** (`index.html`): estructura final consistente, sin cierres duplicados.
+2. **Formulario desacoplado de inline styles** (`index.js`, `assets/css/index.page.css`):
+   estados de éxito/error migrados a clases CSS compatibles con CSP estricta.
+3. **Blog dinámico estabilizado** (`blog.js`, `blog/index.html`, `blog/posts.json`):
+   detección de contexto (`/` vs `/blog/`), prioridad a manifiesto estático y fallback controlado.
+4. **Contenido de post publicado y ruta consistente** (`blog/identidad-vs-cuenta.md`):
+   permite verificación funcional en producción de listado + renderizado Markdown.
+5. **Limpieza de páginas heredadas** (`blog/identidad-vs-cuenta/index.html`, `blog/assets/article.page.css`):
+   eliminación de cabeceras meta obsoletas y ajuste de rutas/carga segura de recursos.
+6. **UX/A11y global reforzada** (`assets/js/site.js`, `assets/css/site.css`):
+   toggle de tema con `aria-pressed` y foco visible en iconos del footer.
+
+### 9.3 Estado operativo tras corrección
+
+- Blog dinámico funcional en raíz y subruta.
+- Footer global e iconos SVG visibles con estilos consistentes.
+- Modo oscuro por defecto y toggle operativo sin romper CSP.
+- No se detectan residuos activos de `unsafe-inline` en páginas revisadas.
 
 ---
 

@@ -15,7 +15,7 @@
 
       submitButton.disabled = true;
       submitButton.textContent = "ENVIANDO...";
-      status.style.display = "block";
+      status.className = "form-status is-visible";
       status.textContent = "Procesando...";
 
       try {
@@ -36,13 +36,17 @@
           throw new Error("submit-failed");
         }
 
-        status.style.color = "var(--accent-cyan)";
+        status.className = "form-status is-visible is-success";
         status.textContent = "SOLICITUD ENVIADA.";
         contactForm.reset();
       } catch (_error) {
-        status.style.color = "#ff4b2b";
+        status.className = "form-status is-visible is-error";
         status.textContent = "ERROR. Reintente.";
         submitButton.disabled = false;
+      } finally {
+        if (!submitButton.disabled) {
+          submitButton.textContent = "Solicitar Consultoría Técnica";
+        }
       }
     });
   }

@@ -27,6 +27,10 @@
   outline-offset: 2px;
 }
 
+main {
+  width: 100%;
+}
+
 .site-footer {
   width: 100%;
   margin-top: 4rem;
@@ -36,6 +40,7 @@
   align-items: center;
   border-top: 1px solid var(--border-line, rgba(136, 146, 176, 0.18));
   background: transparent;
+  flex-shrink: 0;
 }
 
 .site-footer-links {
@@ -59,6 +64,12 @@
   color: var(--azure-blue, var(--accent, #0078d4));
   opacity: 1;
   transform: translateY(-1px);
+}
+
+.site-social-link:focus-visible {
+  outline: 2px solid var(--azure-blue, var(--accent, #0078d4));
+  outline-offset: 4px;
+  border-radius: 999px;
 }
 
 .site-icon {

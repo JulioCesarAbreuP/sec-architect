@@ -1,168 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Identidad vs Cuenta vs Credencial</title>
-
-    <!-- Seguridad y buenas prácticas -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content;" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" />
-    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta name="description" content="Diferencia arquitectónica entre identidad, cuenta y credencial. El modelo mental correcto para diseñar seguridad moderna." />
-    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
-    <link rel="stylesheet" href="../assets/css/site.css" />
-    <link rel="stylesheet" href="assets/article.page.css" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content;" />
+        <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+        <meta http-equiv="X-Frame-Options" content="DENY" />
+        <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+        <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+        <meta name="description" content="Blog técnico de SEC_ARCHITECT sobre resiliencia, Zero Trust, identidad y seguridad cloud." />
+        <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+        <title>Blog | SEC_ARCHITECT</title>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" integrity="sha384-Ajp9bTtH2p9VaFIQE6MYw/3m72Ao3PAZUpyzOgME70behHgtKASiRiV60oasXIro" crossorigin="anonymous">
+        <link rel="stylesheet" href="../assets/css/site.css">
+        <link rel="stylesheet" href="../assets/css/blog.page.css">
 </head>
-
 <body data-theme="dark">
-    <h1>Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna</h1>
+        <main class="container">
+                <header class="topbar">
+                        <a href="../index.html" class="brand">SEC_<span>ARCHITECT</span></a>
+                        <a class="back-link" href="../index.html">Volver al inicio</a>
+                </header>
 
-    <div class="hero-image">
-        <img src="img/1774429023296.jpeg" alt="Diagrama ilustrativo de identidad, cuenta y credencial">
-    </div>
+                <h1 class="title">Blog</h1>
+                <p class="subtitle">Notas técnicas sobre arquitectura de seguridad, identidad, gobernanza y resiliencia cloud.</p>
 
-    <p>
-        Este artículo explica, desde una perspectiva arquitectónica, la diferencia entre identidad, cuenta y credencial. 
-        Aunque suelen usarse como sinónimos, representan conceptos distintos que afectan directamente al diseño de seguridad, 
-        acceso, gobernanza y cumplimiento en cualquier arquitectura cloud.
-    </p>
+                <ul id="postsList" class="posts" aria-live="polite"></ul>
+        </main>
 
-    <p>
-        Comprender esta separación conceptual es clave para diseñar entornos seguros, escalables y gobernables, 
-        especialmente cuando se integran múltiples sistemas, proveedores y dominios.
-    </p>
+        <footer data-site-footer="true"></footer>
 
-    <p>
-        En seguridad, las palabras importan. Confundir identidad, cuenta y credencial lleva a errores de diseño que se traducen en 
-        accesos incorrectos, privilegios excesivos, auditorías incompletas y arquitecturas difíciles de gobernar.
-    </p>
-
-    <p>
-        Un arquitecto no piensa en “usuarios”, sino en entidades, representaciones y mecanismos de autenticación. 
-        Ese es el verdadero modelo mental.
-    </p>
-
-    <h2>1. Identidad: quién eres en el sistema</h2>
-
-    <p>
-        La identidad es el concepto más abstracto y más importante. Es la representación de una entidad dentro de un sistema: 
-        una persona, un servicio, un dispositivo o una aplicación.
-    </p>
-
-    <p><strong>Una identidad define quién eres, no cómo accedes.</strong></p>
-
-    <p>Características clave:</p>
-    <ul>
-        <li>Es única dentro del dominio.</li>
-        <li>No depende de una contraseña o token.</li>
-        <li>Puede existir sin credenciales activas.</li>
-        <li>Tiene atributos, roles, políticas y relaciones.</li>
-    </ul>
-
-    <p>
-        La identidad es el “sujeto” en un modelo de seguridad. Todo lo demás gira alrededor de ella.
-    </p>
-
-    <h2>2. Cuenta: la implementación de la identidad en un sistema</h2>
-
-    <p>
-        La cuenta es la materialización técnica de una identidad dentro de un sistema específico.
-        Mientras la identidad es conceptual, la cuenta es operativa.
-    </p>
-
-    <p>Ejemplos:</p>
-    <ul>
-        <li>Una identidad humana puede tener una cuenta en Azure AD.</li>
-        <li>Una identidad de servicio puede tener una cuenta administrada.</li>
-        <li>Una identidad externa puede tener una cuenta federada.</li>
-    </ul>
-
-    <p>La cuenta define:</p>
-    <ul>
-        <li>dónde existe la identidad,</li>
-        <li>cómo se gestiona,</li>
-        <li>qué políticas se le aplican,</li>
-        <li>y qué recursos puede ver o administrar.</li>
-    </ul>
-
-    <p>
-        Una identidad puede tener múltiples cuentas en distintos sistemas, pero todas representan al mismo sujeto.
-    </p>
-
-    <h2>3. Credencial: el mecanismo que prueba que eres quien dices ser</h2>
-
-    <p>
-        La credencial es el elemento más concreto y más frágil del modelo. Es el mecanismo que permite demostrar la identidad.
-    </p>
-
-    <p>Ejemplos:</p>
-    <ul>
-        <li>contraseña</li>
-        <li>certificado</li>
-        <li>token</li>
-        <li>clave privada</li>
-        <li>secreto de aplicación</li>
-        <li>autenticación biométrica</li>
-        <li>llave FIDO2</li>
-    </ul>
-
-    <p>
-        La credencial no es la identidad. La credencial no es la cuenta. 
-        La credencial es solo la prueba. Y como toda prueba, puede expirar, revocarse, rotarse o comprometerse.
-    </p>
-
-    <p>
-        Un diseño maduro minimiza el uso de credenciales estáticas y favorece mecanismos modernos como autenticación sin contraseña, 
-        tokens de corta duración y claves administradas.
-    </p>
-
-    <h2>Cómo se relacionan: el modelo arquitectónico correcto</h2>
-
-    <p>La forma más clara de entenderlo es esta:</p>
-
-    <ul>
-        <li><strong>Identidad → quién eres</strong></li>
-        <li><strong>Cuenta → dónde existes</strong></li>
-        <li><strong>Credencial → cómo demuestras que eres tú</strong></li>
-    </ul>
-
-    <p>Cuando estos tres conceptos se mezclan, aparecen problemas como:</p>
-
-    <ul>
-        <li>privilegios excesivos</li>
-        <li>accesos no auditables</li>
-        <li>credenciales huérfanas</li>
-        <li>identidades sin dueño</li>
-        <li>cuentas sin propósito</li>
-        <li>fallos de gobernanza</li>
-    </ul>
-
-    <p>
-        Cuando se separan correctamente, la arquitectura se vuelve más segura, más gobernable y más fácil de automatizar.
-    </p>
-
-    <h2>Conclusión</h2>
-
-    <p>
-        Identidad, cuenta y credencial no son sinónimos: son capas distintas de un mismo modelo. 
-        La identidad define al sujeto, la cuenta lo representa en un sistema y la credencial demuestra que es quien dice ser.
-    </p>
-
-    <p>
-        Cuando un arquitecto entiende esta separación, puede diseñar políticas coherentes, accesos mínimos, automatización segura 
-        y gobernanza real. La seguridad no empieza en las herramientas: empieza en el modelo mental.
-    </p>
-
-    <footer data-site-footer="true"></footer>
-
-    <script src="../assets/js/site.js" defer></script>
-
+        <script src="../blog.js" defer></script>
+        <script src="../assets/js/site.js" defer></script>
 </body>
 </html>
-
-

@@ -225,7 +225,25 @@ input, textarea {
 
 .visual-hidden { position: absolute; left: -9999px; opacity: 0; }
 
-#formStatus { text-align: center; margin-top: 1.5rem; font-weight: 600; display: none; }
+.form-status {
+  display: none;
+  margin-top: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.form-status.is-visible {
+  display: block;
+}
+
+.form-status.is-success {
+  color: var(--accent-cyan);
+}
+
+.form-status.is-error {
+  color: #ff6b57;
+}
 
 @media (max-width: 1200px) {
   .grid {

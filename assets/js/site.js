@@ -65,6 +65,7 @@
     sunIcon.appendChild(rays);
     button.appendChild(sunIcon);
     button.title = theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
+    button.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
   }
 
   function removeHeaderSocialLinks() {

@@ -1,4 +1,14 @@
 const postsList = document.getElementById("postsList");
+const isNestedBlogIndex = /\/blog\/(?:index\.html)?$/i.test(window.location.pathname);
+
+function resolveBlogPath(fileName) {
+  return isNestedBlogIndex ? fileName : `blog/${fileName}`;
+}
+
+function buildPostLink(fileName) {
+  const target = `post.html?post=${encodeURIComponent(fileName)}`;
+  return isNestedBlogIndex ? `../${target}` : target;
+}
 
 function sanitizeFileName(fileName) {
   const cleaned = fileName.replace(/^\/+/, "").replace(/\.\./g, "").trim();
@@ -72,9 +82,28 @@ function formatDate(rawDate) {
 async function discoverMarkdownFiles() {
   const candidates = new Set();
 
+  try {
+    const manifestResponse = await fetch(resolveBlogPath("posts.json"), { cache: "no-store" });
+    if (manifestResponse.ok) {
+      const manifest = await manifestResponse.json();
+      if (Array.isArray(manifest)) {
+        for (const entry of manifest) {
+          if (typeof entry === "string" && /\.md$/i.test(entry)) {
+            candidates.add(entry);
+          }
+          if (entry && typeof entry === "object" && typeof entry.file === "string" && /\.md$/i.test(entry.file)) {
+            candidates.add(entry.file);
+          }
+        }
+      }
+    }
+  } catch (_error) {
+    // Fallback to best-effort discovery below.
+  }
+
   // Prefer directory listing when running locally with a server that exposes it.
   try {
-    const response = await fetch("blog/");
+    const response = await fetch(isNestedBlogIndex ? "./" : "blog/");
     if (response.ok) {
       const html = await response.text();
       const doc = new DOMParser().parseFromString(html, "text/html");
@@ -95,31 +124,11 @@ async function discoverMarkdownFiles() {
     // Ignore and fallback to manifest below.
   }
 
-  // Fallback for hosts that do not provide directory listing.
-  try {
-    const manifestResponse = await fetch("blog/posts.json", { cache: "no-store" });
-    if (manifestResponse.ok) {
-      const manifest = await manifestResponse.json();
-      if (Array.isArray(manifest)) {
-        for (const entry of manifest) {
-          if (typeof entry === "string" && /\.md$/i.test(entry)) {
-            candidates.add(entry);
-          }
-          if (entry && typeof entry === "object" && typeof entry.file === "string" && /\.md$/i.test(entry.file)) {
-            candidates.add(entry.file);
-          }
-        }
-      }
-    }
-  } catch (_error) {
-    // The blog still works if there is no manifest and no directory listing.
-  }
-
   return Array.from(candidates).map(sanitizeFileName).filter(Boolean);
 }
 
 async function loadPostMetadata(fileName) {
-  const response = await fetch(`blog/${encodeURIComponent(fileName)}`, { cache: "no-store" });
+  const response = await fetch(resolveBlogPath(encodeURIComponent(fileName)), { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`No se pudo leer ${fileName}`);
   }
@@ -153,7 +162,7 @@ function renderPosts(posts) {
 
     const link = document.createElement("a");
     link.className = "post-link";
-    link.href = `post.html?post=${encodeURIComponent(post.file)}`;
+    link.href = buildPostLink(post.file);
 
     const title = document.createElement("span");
     title.className = "post-title";
