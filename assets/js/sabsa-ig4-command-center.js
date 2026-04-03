@@ -417,15 +417,31 @@ function buildAIArtifacts(params){
     const topic = `${scenario.name} en ${profile.label} (IG${params.igLevel})`;
     const baseInput = `Escenario=${scenario.name}; objetivo=${params.target}; perfil=${profile.label}; IG=${params.igLevel}`;
 
-    const riskPrompt = typeof ai.buildRiskAnalyzerPrompt === 'function'
-        ? ai.buildRiskAnalyzerPrompt(baseInput)
-        : '';
-    const controlPrompt = typeof ai.buildControlMapperPrompt === 'function'
-        ? ai.buildControlMapperPrompt(baseInput, 'Contexto SABSA IG4 Command Center')
-        : '';
-    const architecturePrompt = typeof ai.buildArchitectureExplainerPrompt === 'function'
-        ? ai.buildArchitectureExplainerPrompt(topic, 'high-level security architecture')
-        : '';
+    const availableModes = typeof ai.getModes === 'function'
+        ? ai.getModes()
+        : ['architect', 'grc', 'soc'];
+    const selectedMode = typeof ai.getMode === 'function'
+        ? ai.getMode()
+        : 'architect';
+
+    const promptsByMode = {};
+    availableModes.forEach(mode=>{
+        const riskPrompt = typeof ai.buildRiskAnalyzerPrompt === 'function'
+            ? ai.buildRiskAnalyzerPrompt(baseInput, { mode })
+            : '';
+        const controlPrompt = typeof ai.buildControlMapperPrompt === 'function'
+            ? ai.buildControlMapperPrompt(baseInput, 'Contexto SABSA IG4 Command Center', { mode })
+            : '';
+        const architecturePrompt = typeof ai.buildArchitectureExplainerPrompt === 'function'
+            ? ai.buildArchitectureExplainerPrompt(topic, 'high-level security architecture', { mode })
+            : '';
+
+        promptsByMode[mode] = {
+            riskAnalyzer: riskPrompt,
+            controlMapper: controlPrompt,
+            architectureExplainer: architecturePrompt
+        };
+    });
 
     return {
         createdAt: new Date().toISOString(),
@@ -435,11 +451,10 @@ function buildAIArtifacts(params){
             profileKey: params.profileKey,
             igLevel: params.igLevel
         },
-        prompts: {
-            riskAnalyzer: riskPrompt,
-            controlMapper: controlPrompt,
-            architectureExplainer: architecturePrompt
-        }
+        mode: selectedMode,
+        modes: availableModes,
+        promptsByMode,
+        prompts: promptsByMode[selectedMode] || promptsByMode.architect || {}
     };
 }
 

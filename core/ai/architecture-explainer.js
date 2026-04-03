@@ -1,12 +1,26 @@
 (function (w) {
   "use strict";
 
-  function buildArchitectureExplainerPrompt(topic, scope) {
+  var MODE_SCOPE_HINT = {
+    architect: "Prioriza componentes, responsabilidades y trade-offs de diseno.",
+    grc: "Prioriza trazabilidad, gobierno y cumplimiento en arquitectura.",
+    soc: "Prioriza operacion, deteccion y respuesta dentro de la arquitectura."
+  };
+
+  function resolveMode(mode) {
+    var candidate = (mode || "").toString().trim().toLowerCase();
+    return MODE_SCOPE_HINT[candidate] ? candidate : "architect";
+  }
+
+  function buildArchitectureExplainerPrompt(topic, scope, options) {
     var cleanTopic = (topic || "arquitectura de seguridad").toString().trim();
     var cleanScope = (scope || "high-level").toString().trim();
+    var mode = resolveMode(options && options.mode);
 
     var lines = [
       "Eres un Security Architect con enfoque Staff/Lead.",
+      "Modo activo: " + mode,
+      MODE_SCOPE_HINT[mode],
       "Explica el tema solicitado de forma clara, estructurada y orientada a toma de decisiones.",
       "",
       "Tema:",
@@ -28,15 +42,29 @@
     return lines.join("\n");
   }
 
-  function explainArchitecture(topic, scope) {
+  function explainArchitecture(topic, scope, options) {
+    var mode = resolveMode(options && options.mode);
     return {
       topic: (topic || "").toString(),
       scope: (scope || "high-level").toString(),
-      prompt: buildArchitectureExplainerPrompt(topic, scope)
+      mode: mode,
+      prompt: buildArchitectureExplainerPrompt(topic, scope, { mode: mode })
+    };
+  }
+
+  function buildArchitectureJsonPack(topic, scope, options) {
+    var mode = resolveMode(options && options.mode);
+    return {
+      mode: mode,
+      generatedAt: new Date().toISOString(),
+      topic: (topic || "").toString(),
+      scope: (scope || "high-level").toString(),
+      prompt: buildArchitectureExplainerPrompt(topic, scope, { mode: mode })
     };
   }
 
   w.SECArchitectAI = w.SECArchitectAI || {};
   w.SECArchitectAI.buildArchitectureExplainerPrompt = buildArchitectureExplainerPrompt;
+  w.SECArchitectAI.buildArchitectureJsonPack = buildArchitectureJsonPack;
   w.SECArchitectAI.explainArchitecture = explainArchitecture;
 })(window);
