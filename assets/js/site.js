@@ -151,9 +151,41 @@
     links.appendChild(buildSocialLink("https://github.com/JulioCesarAbreuP", "GitHub", "github"));
   }
 
+  function ensureHeaderMenu() {
+    var toggle = document.querySelector(".menu-toggle");
+    var nav = document.querySelector(".site-nav");
+
+    if (!toggle || !nav) {
+      return;
+    }
+
+    function closeMenu() {
+      nav.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+
+    toggle.addEventListener("click", function () {
+      var isOpen = nav.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    nav.addEventListener("click", function (event) {
+      if (event.target && event.target.tagName === "A") {
+        closeMenu();
+      }
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 1025) {
+        closeMenu();
+      }
+    });
+  }
+
   function init() {
     removeHeaderSocialLinks();
     ensureThemeToggle();
+    ensureHeaderMenu();
     ensureFooter();
   }
 
