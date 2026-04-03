@@ -110,6 +110,7 @@ const threatPanel = document.querySelector('.panel-threat');
 const consoleShell = document.querySelector('.console-shell');
 const chartShell = document.querySelector('.chart-shell');
 const matrixShell = document.querySelector('.matrix-shell');
+const btnExportAI = document.getElementById('btn-export-ai');
 
 function animatePanelTransition(element){
     element.classList.remove('panel-transition');
@@ -368,6 +369,80 @@ function clearConsole(){
     consoleEl.textContent = '';
 }
 
+function downloadJsonFile(filename, payload){
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+async function exportAIArtifacts(){
+    const artifacts = window.lastAIArtifacts;
+    if(!artifacts){
+        log('No hay AI Artifacts disponibles. Ejecuta primero una evaluación.','warn');
+        return;
+    }
+
+    const payload = JSON.stringify(artifacts, null, 2);
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `ai-artifacts-${stamp}.json`;
+
+    try{
+        if(navigator.clipboard && typeof navigator.clipboard.writeText === 'function'){
+            await navigator.clipboard.writeText(payload);
+            log('AI Artifacts copiados al portapapeles y exportados como JSON.','sys');
+        } else {
+            log('Portapapeles no disponible. Se descargará solo archivo JSON.','warn');
+        }
+    } catch {
+        log('No fue posible copiar al portapapeles. Se descargará archivo JSON.','warn');
+    }
+
+    downloadJsonFile(filename, payload);
+}
+
+function buildAIArtifacts(params){
+    const ai = window.SECArchitectAI;
+    if(!ai){
+        return null;
+    }
+
+    const scenario = SCENARIOS[params.scenarioKey];
+    const profile = PROFILES[params.profileKey];
+    const topic = `${scenario.name} en ${profile.label} (IG${params.igLevel})`;
+    const baseInput = `Escenario=${scenario.name}; objetivo=${params.target}; perfil=${profile.label}; IG=${params.igLevel}`;
+
+    const riskPrompt = typeof ai.buildRiskAnalyzerPrompt === 'function'
+        ? ai.buildRiskAnalyzerPrompt(baseInput)
+        : '';
+    const controlPrompt = typeof ai.buildControlMapperPrompt === 'function'
+        ? ai.buildControlMapperPrompt(baseInput, 'Contexto SABSA IG4 Command Center')
+        : '';
+    const architecturePrompt = typeof ai.buildArchitectureExplainerPrompt === 'function'
+        ? ai.buildArchitectureExplainerPrompt(topic, 'high-level security architecture')
+        : '';
+
+    return {
+        createdAt: new Date().toISOString(),
+        input: {
+            target: params.target,
+            scenarioKey: params.scenarioKey,
+            profileKey: params.profileKey,
+            igLevel: params.igLevel
+        },
+        prompts: {
+            riskAnalyzer: riskPrompt,
+            controlMapper: controlPrompt,
+            architectureExplainer: architecturePrompt
+        }
+    };
+}
+
 /* --- Radar --- */
 const baseValues = [100,100,100,100,100];
 
@@ -602,6 +677,12 @@ async function runStrategicAudit(){
     log(`Base MITRE activa: ${dynamicMitreCatalog.length || 'fallback local'} técnicas disponibles.`,'sys');
     log('Inicio de telemetría doctrinal en tiempo real...','sys');
 
+    const aiArtifacts = buildAIArtifacts({ target, scenarioKey, profileKey, igLevel });
+    if(aiArtifacts){
+        window.lastAIArtifacts = aiArtifacts;
+        log('Módulos AI integrados: prompts Risk Analyzer / Control Mapper / Architecture Explainer listos.','sys');
+    }
+
     await wait(260);
     log('Resolviendo controles asociados a la doctrina SABSA IG...','sys');
 
@@ -666,6 +747,16 @@ document.getElementById('btn-run').addEventListener('click',()=>{
         isAuditRunning = false;
     });
 });
+
+if(btnExportAI){
+    btnExportAI.addEventListener('click',()=>{
+        pulseElement(btnExportAI);
+        setActivePanel(operationsPanel);
+        exportAIArtifacts().catch(()=>{
+            log('No fue posible exportar AI Artifacts.','crit');
+        });
+    });
+}
 
 initializeRadarChart();
 void loadMitreCatalog();
