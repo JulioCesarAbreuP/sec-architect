@@ -76,3 +76,14 @@ SEC_ARCHITECT existe para demostrar que la seguridad puede ser rigurosa sin ser 
 - Knowledge-Base: [tools/knowledge-base.html](tools/knowledge-base.html)
 - Intelligence Dashboard: [intelligence-dashboard.html](intelligence-dashboard.html)
 - Azure-Labs: [azure-labs/README.md](azure-labs/README.md)
+
+## Staff/Lead Assessment Package
+
+- Índice del paquete: [docs/staff-lead-assessment.md](docs/staff-lead-assessment.md)
+- ADRs: [docs/adr](docs/adr)
+- RBAC Command Center: [docs/rbac-command-center.md](docs/rbac-command-center.md)
+- Arquitectura high-level: [docs/architecture-high-level.md](docs/architecture-high-level.md)
+- Zero Trust: [docs/zero-trust-integration.md](docs/zero-trust-integration.md)
+- MITRE mapping dashboard: [docs/mitre-mapping-dashboard.md](docs/mitre-mapping-dashboard.md)
+- Riesgos y endurecimiento: [docs/design-risks-hardening.md](docs/design-risks-hardening.md)
+- Evaluación recruiter: [docs/recruiter-evaluation.md](docs/recruiter-evaluation.md)
