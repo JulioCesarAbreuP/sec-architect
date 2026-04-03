@@ -872,6 +872,36 @@ const IG_LEVELS = {
     4: { label:'IG4 · Optimizado',   sensitivity:1.2 }
 };
 
+const MITRE_KNOWLEDGE_BASE = {
+    'SC-300': { tactic: 'Initial Access', technique: 'T1078.004', description: 'Cloud Accounts' },
+    'AZ-305': { tactic: 'Lateral Movement', technique: 'T1210', description: 'Exploitation of Remote Services' },
+    'AZ-104': { tactic: 'Privilege Escalation', technique: 'T1078', description: 'Valid Accounts' },
+    'NIST-RA': { tactic: 'Discovery', technique: 'T1595', description: 'Active Scanning' },
+    'NIST-AU': { tactic: 'Defense Evasion', technique: 'T1562', description: 'Impair Defenses' }
+};
+
+const SCENARIO_MITRE_FALLBACK = {
+    'cred-stuffing': { tactic: 'Initial Access', technique: 'T1078', description: 'Valid Accounts' },
+    'excess-priv': { tactic: 'Privilege Escalation', technique: 'T1078', description: 'Valid Accounts' },
+    'no-mfa': { tactic: 'Initial Access', technique: 'T1078.004', description: 'Cloud Accounts' },
+    'segmentation': { tactic: 'Lateral Movement', technique: 'T1210', description: 'Exploitation of Remote Services' },
+    'legacy-config': { tactic: 'Defense Evasion', technique: 'T1562', description: 'Impair Defenses' }
+};
+
+const MITRE_CATALOG_URL = 'assets/data/azure-mitre-top50.json';
+
+const SEVERITY_MULTIPLIER = { low: 0.88, med: 1.0, high: 1.12 };
+const MITRE_RECOMMENDATIONS = {
+    'T1078.004': 'Aplicar MFA resistente al phishing y Conditional Access por riesgo.',
+    'T1078': 'Reducir cuentas compartidas y aplicar JIT/JEA para privilegios.',
+    'T1210': 'Aislar segmentos con micro-segmentación y endurecer servicios remotos.',
+    'T1562': 'Proteger telemetría y bloquear manipulación de logs y defensas.',
+    'T1595': 'Limitar superficie expuesta y habilitar detección temprana de scanning.'
+};
+
+let dynamicMitreCatalog = [];
+let isMitreCatalogReady = false;
+
 /* --- DOM --- */
 const ruleList = document.getElementById('rule-list');
 const consoleEl = document.getElementById('console');
@@ -939,6 +969,98 @@ function pulseElement(element){
     },420);
 }
 
+function wait(ms){
+    return new Promise(resolve=> setTimeout(resolve, ms));
+}
+
+function clamp(value, min, max){
+    return Math.min(max, Math.max(min, value));
+}
+
+function hashString(input){
+    let hash = 2166136261;
+    for(let i=0;i<input.length;i++){
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+}
+
+function createDeterministicRng(seedString){
+    let seed = hashString(seedString) || 1;
+    return ()=>{
+        seed |= 0;
+        seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+function normalizeSeverity(value){
+    if(value === 'high' || value === 'med' || value === 'low'){
+        return value;
+    }
+    return 'med';
+}
+
+function normalizeList(value){
+    return Array.isArray(value)
+        ? value.filter(item=> typeof item === 'string' && item.trim()).map(item=> item.trim())
+        : [];
+}
+
+function normalizeTechniqueEntry(entry){
+    if(!entry || typeof entry !== 'object'){
+        return null;
+    }
+
+    const technique = typeof entry.technique === 'string' ? entry.technique.trim() : '';
+    const tactic = typeof entry.tactic === 'string' ? entry.tactic.trim() : '';
+    const description = typeof entry.description === 'string' ? entry.description.trim() : '';
+    if(!technique || !tactic || !description){
+        return null;
+    }
+
+    return {
+        technique,
+        tactic,
+        name: typeof entry.name === 'string' ? entry.name.trim() : 'Technique Mapping',
+        description,
+        severity: normalizeSeverity(entry.severity),
+        scenarios: normalizeList(entry.scenarios),
+        attributes: normalizeList(entry.attributes),
+        rulePrefixes: normalizeList(entry.rulePrefixes),
+        recommendation: typeof entry.recommendation === 'string' ? entry.recommendation.trim() : ''
+    };
+}
+
+async function loadMitreCatalog(){
+    if(isMitreCatalogReady){
+        return dynamicMitreCatalog;
+    }
+
+    try{
+        const response = await fetch(MITRE_CATALOG_URL, { cache: 'no-store' });
+        if(!response.ok){
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const normalized = Array.isArray(data)
+            ? data.map(normalizeTechniqueEntry).filter(Boolean)
+            : [];
+
+        dynamicMitreCatalog = normalized;
+        isMitreCatalogReady = dynamicMitreCatalog.length > 0;
+    } catch {
+        dynamicMitreCatalog = [];
+        isMitreCatalogReady = false;
+    }
+
+    return dynamicMitreCatalog;
+}
+
 /* --- Reglas --- */
 RULES.forEach(r=>{
     ruleList.innerHTML += `
@@ -952,14 +1074,109 @@ RULES.forEach(r=>{
 
 /* --- Consola --- */
 function log(msg, level='info'){
-    const ts = new Date().toISOString();
+    const ts = new Date().toISOString().slice(11,19);
     let color = '#a5ffb5';
     if(level==='warn') color = 'var(--neon-gold)';
     if(level==='crit') color = 'var(--neon-red)';
     if(level==='sys')  color = '#60a5fa';
 
-    consoleEl.innerHTML += `<div style="color:${color}">[${ts}] ${msg}</div>`;
+    const line = document.createElement('div');
+    line.style.color = color;
+    line.textContent = `[${ts}] ${msg}`;
+    consoleEl.appendChild(line);
     consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+function resolveMitre(ruleId, scenarioKey){
+    const mappedRuleKey = Object.keys(MITRE_KNOWLEDGE_BASE).find(prefix=> ruleId.startsWith(prefix));
+    if(mappedRuleKey){
+        return MITRE_KNOWLEDGE_BASE[mappedRuleKey];
+    }
+
+    return SCENARIO_MITRE_FALLBACK[scenarioKey] || null;
+}
+
+function getCatalogCandidates(rule, scenarioKey){
+    if(!dynamicMitreCatalog.length){
+        return [];
+    }
+
+    return dynamicMitreCatalog.filter(entry=>{
+        const byScenario = entry.scenarios.includes(scenarioKey);
+        const byAttribute = entry.attributes.includes(rule.attr);
+        const byRulePrefix = entry.rulePrefixes.some(prefix=> rule.id.startsWith(prefix));
+        return byScenario || byAttribute || byRulePrefix;
+    });
+}
+
+function pickMitreForFinding(rule, scenarioKey, rng){
+    const candidates = getCatalogCandidates(rule, scenarioKey);
+    if(candidates.length > 0){
+        const index = Math.floor(rng() * candidates.length);
+        return candidates[index];
+    }
+
+    return resolveMitre(rule.id, scenarioKey);
+}
+
+function buildRiskContext({ scenarioKey, profileKey, igLevel }){
+    const scenario = SCENARIOS[scenarioKey];
+    const profile = PROFILES[profileKey];
+    const igSensitivity = IG_LEVELS[igLevel].sensitivity;
+    const severityFactor = SEVERITY_MULTIPLIER[scenario.sev] || 1;
+    const weightedAverage = profile.weight.reduce((sum, weight)=> sum + weight, 0) / profile.weight.length;
+    const globalPressure = clamp((weightedAverage * igSensitivity * severityFactor) / 1.5, 0.4, 1.35);
+
+    return { scenario, profile, igSensitivity, severityFactor, globalPressure };
+}
+
+function evaluateControl(rule, scenarioKey, riskContext, rng){
+    const isPrimary = rule.attr === riskContext.scenario.attr;
+    const baseFailure = isPrimary ? 0.6 : 0.26;
+    const pressureFailure = riskContext.globalPressure * (isPrimary ? 0.24 : 0.18);
+    const failureChance = clamp(baseFailure + pressureFailure, 0.08, 0.94);
+    const sample = rng();
+    const hasFailure = sample <= failureChance;
+    const confidence = clamp(Math.round((1 - Math.abs(sample - failureChance)) * 100), 55, 99);
+    const mitre = hasFailure ? pickMitreForFinding(rule, scenarioKey, rng) : null;
+    const severityBoost = mitre?.severity === 'high' ? 9 : (mitre?.severity === 'med' ? 5 : 2);
+    const adjustedRisk = clamp(Math.round((failureChance * 100) + (hasFailure ? severityBoost : 0)), 5, 99);
+
+    return {
+        rule,
+        hasFailure,
+        isPrimary,
+        failureChance,
+        confidence,
+        mitre,
+        riskScore: adjustedRisk
+    };
+}
+
+function summarizeFindings(results){
+    const failed = results.filter(result=> result.hasFailure);
+    const riskIndex = Math.round((results.reduce((sum, result)=> sum + result.riskScore, 0) / Math.max(1, results.length)));
+    const topFinding = failed.sort((a, b)=> b.riskScore - a.riskScore)[0] || null;
+
+    return {
+        failedCount: failed.length,
+        total: results.length,
+        riskIndex,
+        topFinding
+    };
+}
+
+function formatMitreContext(ruleId, scenarioKey){
+    const mapped = resolveMitre(ruleId, scenarioKey);
+    if(!mapped){
+        return '';
+    }
+
+    return ` [MITRE ATT&CK] [Tactic: ${mapped.tactic} | Technique: ${mapped.technique} (${mapped.description})]`;
+}
+
+function clearConsole(){
+    consoleEl.textContent = '';
 }
 
 /* --- Radar --- */
@@ -1000,7 +1217,7 @@ const radarChart = new Chart(radarCtx,{
 });
 
 /* --- Threat Matrix --- */
-function renderMatrix(scenarioKey, igLevel){
+function renderMatrix(scenarioKey, igLevel, riskIndex = 60){
     matrixBody.innerHTML='';
     const scenario = SCENARIOS[scenarioKey];
     const sensitivity = IG_LEVELS[igLevel].sensitivity;
@@ -1017,7 +1234,7 @@ function renderMatrix(scenarioKey, igLevel){
             sev = scenario.sev;
             status = 'Degradado';
             action = igLevel >= 3 ? 'Aplicar directiva IG4' : 'Planificar remediación';
-        } else if(sensitivity > 1 && Math.random() < 0.25){
+        } else if(sensitivity > 1 && riskIndex > 58){
             sev = 'med';
             status = 'Sensibilizado';
             action = 'Revisión contextual';
@@ -1035,9 +1252,21 @@ function renderMatrix(scenarioKey, igLevel){
 }
 
 /* --- Remediación --- */
-function renderRemediation(scenarioKey, igLevel, profileKey){
+function renderRemediation(scenarioKey, igLevel, profileKey, summary = null){
     const s = SCENARIOS[scenarioKey];
     const profile = PROFILES[profileKey];
+    const recommendation = summary?.topFinding?.mitre
+        ? (summary.topFinding.mitre.recommendation || MITRE_RECOMMENDATIONS[summary.topFinding.mitre.technique] || 'Priorizar endurecimiento y monitoreo continuo del control afectado.')
+        : 'Mantener baseline de seguridad y revisiones periódicas de control.';
+
+    const mitreLine = summary?.topFinding?.mitre
+        ? `${summary.topFinding.mitre.tactic} · ${summary.topFinding.mitre.technique} · ${summary.topFinding.mitre.name} (${summary.topFinding.mitre.description})`
+        : 'Sin técnica dominante en esta corrida';
+
+    const riskLine = summary
+        ? `Riesgo compuesto: <strong>${summary.riskIndex}/100</strong> · Hallazgos: <strong>${summary.failedCount}/${summary.total}</strong>`
+        : 'Riesgo compuesto: <strong>N/A</strong> · Hallazgos: <strong>N/A</strong>';
+
     animatePanelTransition(remediationPanel);
 
     remediationPanel.innerHTML = `
@@ -1046,11 +1275,16 @@ function renderRemediation(scenarioKey, igLevel, profileKey){
             Escenario: <strong>${s.name}</strong><br>
             Atributo afectado: <strong>${s.attr}</strong><br>
             Perfil: <strong>${profile.label}</strong>
+            <br>${riskLine}
+            <br>MITRE dominante: <strong>${mitreLine}</strong>
 
             <code>
 # Comando conceptual (no ejecuta nada real)
 # Contexto: ${s.cliHint}
 az ad user list --query "[].{id:id,displayName:displayName}" --all
+
+# Recomendación prioritaria
+${recommendation}
             </code>
 
             <p style="font-size:0.75rem; color:var(--text-dim);">
@@ -1110,7 +1344,9 @@ function validateCli(command){
 }
 
 /* --- Ejecución --- */
-document.getElementById('btn-run').addEventListener('click',()=>{
+let isAuditRunning = false;
+
+async function runStrategicAudit(){
     pulseElement(btnRun);
     setActivePanel(operationsPanel);
     const target = document.getElementById('target-input').value.trim();
@@ -1119,12 +1355,20 @@ document.getElementById('btn-run').addEventListener('click',()=>{
     const igLevel = igSelect.value;
     const cliCmd = cliInput.value.trim();
 
-    consoleEl.innerHTML = '[SYSTEM] Iniciando evaluación arquitectónica...';
+    if(isAuditRunning){
+        log('Ejecución en curso. Espere finalización del análisis actual.','warn');
+        return;
+    }
+
+    clearConsole();
+    log('SYSTEM: Iniciando evaluación arquitectónica...','sys');
     setExecutionState(true);
+    isAuditRunning = true;
 
     if(!target){
         log('Objetivo no definido. Ingrese un Tenant ID o dominio conceptual.','warn');
         setExecutionState(false);
+        isAuditRunning = false;
         return;
     }
 
@@ -1135,42 +1379,96 @@ document.getElementById('btn-run').addEventListener('click',()=>{
         log(`CLI aceptado para simulación: "${cliCmd || 'az ad user list'}"`,'sys');
     }
 
+    if(!isMitreCatalogReady){
+        await loadMitreCatalog();
+    }
+
     btnRun.disabled = true;
 
     log(`Objetivo: ${target}`,'info');
     log(`Escenario: ${SCENARIOS[scenarioKey].name}`,'info');
     log(`Perfil: ${PROFILES[profileKey].label}`,'info');
     log(`Nivel IG: ${IG_LEVELS[igLevel].label}`,'info');
+    log(`Base MITRE activa: ${dynamicMitreCatalog.length || 'fallback local'} técnicas disponibles.`,'sys');
+    log('Inicio de telemetría doctrinal en tiempo real...','sys');
 
-    setTimeout(()=>{
-        log('Resolviendo controles asociados a la doctrina SABSA IG...','sys');
-        RULES.forEach(r=> log(`Evaluando control ${r.id} (${r.name})...`,'info'));
-    },400);
+    await wait(260);
+    log('Resolviendo controles asociados a la doctrina SABSA IG...','sys');
 
-    setTimeout(()=>{
-        log('Desviación detectada en atributo clave.','warn');
-        log('Generando Threat Matrix y directiva IG correspondiente...','crit');
+    const riskContext = buildRiskContext({ scenarioKey, profileKey, igLevel });
+    const rng = createDeterministicRng(`${target}|${scenarioKey}|${profileKey}|${igLevel}`);
+    const evaluationResults = [];
 
-        const deltas = SCENARIOS[scenarioKey].delta;
-        const weights = PROFILES[profileKey].weight;
-        const sensitivity = IG_LEVELS[igLevel].sensitivity;
+    for(let i=0;i<RULES.length;i++){
+        const rule = RULES[i];
+        const result = evaluateControl(rule, scenarioKey, riskContext, rng);
+        evaluationResults.push(result);
+        const progress = Math.round(((i + 1) / RULES.length) * 100);
 
-        const newValues = baseValues.map((v,i)=>{
-            const impact = deltas[i] * weights[i] * sensitivity;
-            return Math.max(10, v - impact);
-        });
+        await wait(220 + (i * 60));
 
-        radarChart.data.datasets[1].data = newValues;
-        radarChart.update();
+        if(result.hasFailure){
+            log(`Evaluando control ${rule.id} (${rule.name})... [FALLO DETECTADO]${formatMitreContext(rule.id, scenarioKey)} [RISK:${result.riskScore}] [CONF:${result.confidence}%] [Progress: ${progress}%]`,'warn');
+        } else {
+            log(`Evaluando control ${rule.id} (${rule.name})... [OK] [RISK:${result.riskScore}] [CONF:${result.confidence}%] [Progress: ${progress}%]`,'info');
+        }
+    }
 
-        renderMatrix(scenarioKey, igLevel);
-        renderRemediation(scenarioKey, igLevel, profileKey);
+    await wait(260);
 
-        log('Evaluación completada. Resultados disponibles en radar y Threat Matrix.','sys');
+    const summary = summarizeFindings(evaluationResults);
+
+    if(summary.failedCount > 0){
+        log(`Desviación detectada en atributo clave. Hallazgos: ${summary.failedCount}/${summary.total}. Riesgo compuesto: ${summary.riskIndex}/100.`,'warn');
+    } else {
+        log('No se detectaron fallos críticos en esta corrida. Mantener monitoreo continuo.','sys');
+    }
+
+    log('Generando Threat Matrix y directiva IG correspondiente...','crit');
+
+    const deltas = SCENARIOS[scenarioKey].delta;
+    const weights = PROFILES[profileKey].weight;
+    const sensitivity = IG_LEVELS[igLevel].sensitivity;
+
+    const newValues = baseValues.map((v,i)=>{
+        const impact = deltas[i] * weights[i] * sensitivity;
+        return Math.max(10, v - impact);
+    });
+
+    radarChart.data.datasets[1].data = newValues;
+    radarChart.update();
+
+    renderMatrix(scenarioKey, igLevel, summary.riskIndex);
+    renderRemediation(scenarioKey, igLevel, profileKey, summary);
+
+    log('Evaluación completada. Resultados disponibles en radar y Threat Matrix.','sys');
+    btnRun.disabled = false;
+    setExecutionState(false);
+    isAuditRunning = false;
+    setActivePanel(threatPanel);
+}
+
+document.getElementById('btn-run').addEventListener('click',()=>{
+    runStrategicAudit().catch(()=>{
+        log('Error interno de simulación. Reintente la ejecución.','crit');
         btnRun.disabled = false;
         setExecutionState(false);
-        setActivePanel(threatPanel);
-    },1400);
+        isAuditRunning = false;
+    });
+});
+
+void loadMitreCatalog();
+
+targetInput.addEventListener('keydown',(event)=>{
+    if(event.key === 'Enter'){
+        btnRun.click();
+    }
+});
+
+cliInput.addEventListener('keydown',(event)=>{
+    if(event.key === 'Enter'){
+        btnRun.click();
+    }
 });
 
     renderMatrix(scenarioSelect.value, igSelect.value);

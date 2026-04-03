@@ -1,0 +1,955 @@
+[
+  {
+    "technique": "T1078.004",
+    "tactic": "Initial Access",
+    "name": "Valid Accounts: Cloud Accounts",
+    "description": "Uso de cuentas cloud comprometidas para acceso inicial en Azure.",
+    "severity": "high",
+    "scenarios": [
+      "cred-stuffing",
+      "no-mfa"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "SC-300",
+      "AZ-104"
+    ],
+    "recommendation": "Aplicar MFA resistente al phishing y políticas de acceso condicional por riesgo."
+  },
+  {
+    "technique": "T1110",
+    "tactic": "Credential Access",
+    "name": "Brute Force",
+    "description": "Intentos masivos de autenticación contra identidades en Azure AD.",
+    "severity": "high",
+    "scenarios": [
+      "cred-stuffing"
+    ],
+    "attributes": [
+      "Confidencialidad"
+    ],
+    "rulePrefixes": [
+      "SC-300"
+    ],
+    "recommendation": "Habilitar smart lockout y detección de anomalías de inicio de sesión."
+  },
+  {
+    "technique": "T1556",
+    "tactic": "Credential Access",
+    "name": "Modify Authentication Process",
+    "description": "Manipulación de flujos de autenticación o federación para evasión.",
+    "severity": "high",
+    "scenarios": [
+      "no-mfa",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "SC-300",
+      "NIST-AU"
+    ],
+    "recommendation": "Endurecer métodos de autenticación y revisar cambios de políticas de identidad."
+  },
+  {
+    "technique": "T1199",
+    "tactic": "Initial Access",
+    "name": "Trusted Relationship",
+    "description": "Abuso de relaciones B2B o confianza entre tenants para entrada lateral.",
+    "severity": "high",
+    "scenarios": [
+      "cred-stuffing",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-RA"
+    ],
+    "recommendation": "Restringir invitados externos y auditar relaciones de confianza cross-tenant."
+  },
+  {
+    "technique": "T1078",
+    "tactic": "Defense Evasion",
+    "name": "Valid Accounts",
+    "description": "Persistencia y evasión usando cuentas válidas con bajo ruido.",
+    "severity": "high",
+    "scenarios": [
+      "excess-priv",
+      "no-mfa"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Reducir privilegios permanentes y reforzar monitoreo de cuentas privilegiadas."
+  },
+  {
+    "technique": "T1136",
+    "tactic": "Persistence",
+    "name": "Create Account",
+    "description": "Creación de cuentas o principals para mantener persistencia en Azure.",
+    "severity": "high",
+    "scenarios": [
+      "excess-priv"
+    ],
+    "attributes": [
+      "Integridad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Alertar creación de cuentas privilegiadas y exigir aprobaciones JIT."
+  },
+  {
+    "technique": "T1098",
+    "tactic": "Persistence",
+    "name": "Account Manipulation",
+    "description": "Cambio de roles, credenciales o membresías para mantener acceso.",
+    "severity": "high",
+    "scenarios": [
+      "excess-priv",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-RA"
+    ],
+    "recommendation": "Aplicar PIM, revisiones periódicas de acceso y detección de drift RBAC."
+  },
+  {
+    "technique": "T1484",
+    "tactic": "Privilege Escalation",
+    "name": "Domain or Tenant Policy Modification",
+    "description": "Cambios indebidos en políticas del tenant para elevar privilegios.",
+    "severity": "high",
+    "scenarios": [
+      "excess-priv",
+      "no-mfa"
+    ],
+    "attributes": [
+      "Integridad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Proteger cambios de políticas críticas con aprobación dual y alertas."
+  },
+  {
+    "technique": "T1548",
+    "tactic": "Privilege Escalation",
+    "name": "Abuse Elevation Control Mechanism",
+    "description": "Abuso de mecanismos de elevación en automatizaciones cloud.",
+    "severity": "high",
+    "scenarios": [
+      "excess-priv"
+    ],
+    "attributes": [
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "AZ-104"
+    ],
+    "recommendation": "Limitar elevaciones en pipelines y validar privilegios mínimos por tarea."
+  },
+  {
+    "technique": "T1068",
+    "tactic": "Privilege Escalation",
+    "name": "Exploitation for Privilege Escalation",
+    "description": "Explotación de servicios para elevar permisos en recursos Azure.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad",
+      "Disponibilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305",
+      "NIST-RA"
+    ],
+    "recommendation": "Parchar servicios expuestos y reducir superficie de ataque en redes."
+  },
+  {
+    "technique": "T1210",
+    "tactic": "Lateral Movement",
+    "name": "Exploitation of Remote Services",
+    "description": "Movimiento lateral entre workloads mediante servicios remotos vulnerables.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Disponibilidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Aplicar microsegmentación y aislar planos de administración."
+  },
+  {
+    "technique": "T1021",
+    "tactic": "Lateral Movement",
+    "name": "Remote Services",
+    "description": "Uso no autorizado de RDP/SSH/WinRM sobre activos cloud.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation"
+    ],
+    "attributes": [
+      "Disponibilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Restringir puertos de gestión y usar acceso bastionado."
+  },
+  {
+    "technique": "T1550",
+    "tactic": "Lateral Movement",
+    "name": "Use Alternate Authentication Material",
+    "description": "Uso de tokens o material alternativo para pivotar lateralmente.",
+    "severity": "high",
+    "scenarios": [
+      "cred-stuffing",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "SC-300",
+      "AZ-104"
+    ],
+    "recommendation": "Reducir vida útil de tokens y aplicar validación continua de sesión."
+  },
+  {
+    "technique": "T1570",
+    "tactic": "Lateral Movement",
+    "name": "Lateral Tool Transfer",
+    "description": "Transferencia de herramientas entre sistemas para expandir compromiso.",
+    "severity": "med",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Disponibilidad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305",
+      "NIST-AU"
+    ],
+    "recommendation": "Bloquear transferencias no autorizadas y monitorizar artefactos operativos."
+  },
+  {
+    "technique": "T1562",
+    "tactic": "Defense Evasion",
+    "name": "Impair Defenses",
+    "description": "Desactivación o degradación de controles de seguridad y telemetría.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Auditabilidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "NIST-AU"
+    ],
+    "recommendation": "Proteger logs inmutables y bloquear cambios en agentes de seguridad."
+  },
+  {
+    "technique": "T1070",
+    "tactic": "Defense Evasion",
+    "name": "Indicator Removal",
+    "description": "Borrado de rastros y artefactos para reducir evidencia forense.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config"
+    ],
+    "attributes": [
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU"
+    ],
+    "recommendation": "Centralizar telemetría en almacenamiento inmutable con retención obligatoria."
+  },
+  {
+    "technique": "T1036",
+    "tactic": "Defense Evasion",
+    "name": "Masquerading",
+    "description": "Disfraz de procesos o recursos para ocultar actividad maliciosa.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Auditabilidad",
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU",
+      "AZ-305"
+    ],
+    "recommendation": "Aplicar baseline de naming y detección de recursos anómalos."
+  },
+  {
+    "technique": "T1140",
+    "tactic": "Defense Evasion",
+    "name": "Deobfuscate/Decode Files or Information",
+    "description": "Decodificación y ofuscación dinámica para evadir controles.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA"
+    ],
+    "recommendation": "Inspeccionar scripts ofuscados y aplicar políticas de ejecución firmada."
+  },
+  {
+    "technique": "T1553",
+    "tactic": "Defense Evasion",
+    "name": "Subvert Trust Controls",
+    "description": "Abuso de certificados o controles de confianza en cadena de suministro.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Integridad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "NIST-AU"
+    ],
+    "recommendation": "Validar firmas, rotar certificados y endurecer pipelines de despliegue."
+  },
+  {
+    "technique": "T1552",
+    "tactic": "Credential Access",
+    "name": "Unsecured Credentials",
+    "description": "Exposición de secretos en repositorios o variables de entorno.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "cred-stuffing"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "SC-300"
+    ],
+    "recommendation": "Mover secretos a Key Vault y habilitar escaneo de secretos en CI/CD."
+  },
+  {
+    "technique": "T1003",
+    "tactic": "Credential Access",
+    "name": "OS Credential Dumping",
+    "description": "Extracción de credenciales desde sistemas comprometidos conectados a Azure.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "AZ-305",
+      "AZ-104"
+    ],
+    "recommendation": "Proteger credenciales en memoria y reforzar EDR en hosts críticos."
+  },
+  {
+    "technique": "T1114",
+    "tactic": "Collection",
+    "name": "Email Collection",
+    "description": "Recolección de correo corporativo para exfiltración o fraude.",
+    "severity": "med",
+    "scenarios": [
+      "cred-stuffing",
+      "no-mfa"
+    ],
+    "attributes": [
+      "Confidencialidad"
+    ],
+    "rulePrefixes": [
+      "SC-300"
+    ],
+    "recommendation": "Aplicar DLP y controles de acceso adaptativo para correo sensible."
+  },
+  {
+    "technique": "T1530",
+    "tactic": "Collection",
+    "name": "Data from Cloud Storage",
+    "description": "Extracción de datos desde blobs, files o data lakes.",
+    "severity": "high",
+    "scenarios": [
+      "cred-stuffing",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Restringir acceso por red privada y auditar descargas masivas."
+  },
+  {
+    "technique": "T1560",
+    "tactic": "Collection",
+    "name": "Archive Collected Data",
+    "description": "Compresión o empaquetado de datos antes de exfiltrar.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU"
+    ],
+    "recommendation": "Detectar patrones de archivado inusual en cargas de trabajo críticas."
+  },
+  {
+    "technique": "T1041",
+    "tactic": "Exfiltration",
+    "name": "Exfiltration Over C2 Channel",
+    "description": "Exfiltración de información usando canales de comando y control.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "AZ-305",
+      "NIST-RA"
+    ],
+    "recommendation": "Aplicar inspección de egress y políticas estrictas de salida."
+  },
+  {
+    "technique": "T1567",
+    "tactic": "Exfiltration",
+    "name": "Exfiltration Over Web Service",
+    "description": "Exfiltración mediante servicios web o APIs públicas.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "cred-stuffing"
+    ],
+    "attributes": [
+      "Confidencialidad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "SC-300"
+    ],
+    "recommendation": "Controlar dominios de salida y aplicar clasificación de datos sensibles."
+  },
+  {
+    "technique": "T1498",
+    "tactic": "Impact",
+    "name": "Network Denial of Service",
+    "description": "Interrupción de disponibilidad por saturación de red.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation"
+    ],
+    "attributes": [
+      "Disponibilidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Habilitar DDoS protection y rutas de mitigación automatizadas."
+  },
+  {
+    "technique": "T1499",
+    "tactic": "Impact",
+    "name": "Endpoint Denial of Service",
+    "description": "Saturación de servicios de aplicación o endpoints críticos.",
+    "severity": "high",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Disponibilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Aplicar rate limiting y autoescalado seguro por demanda."
+  },
+  {
+    "technique": "T1485",
+    "tactic": "Impact",
+    "name": "Data Destruction",
+    "description": "Borrado intencional de datos o snapshots.",
+    "severity": "high",
+    "scenarios": [
+      "excess-priv",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Disponibilidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-RA"
+    ],
+    "recommendation": "Bloquear borrado sin aprobación y habilitar backups inmutables."
+  },
+  {
+    "technique": "T1490",
+    "tactic": "Impact",
+    "name": "Inhibit System Recovery",
+    "description": "Acciones para impedir recuperación o restauración.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Resiliencia",
+      "Disponibilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "AZ-104"
+    ],
+    "recommendation": "Separar cuentas de backup y aplicar bloqueo temporal de borrado."
+  },
+  {
+    "technique": "T1529",
+    "tactic": "Impact",
+    "name": "System Shutdown/Reboot",
+    "description": "Paradas forzadas para afectar continuidad operacional.",
+    "severity": "med",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Disponibilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Restringir operaciones de apagado a runbooks autorizados."
+  },
+  {
+    "technique": "T1595",
+    "tactic": "Reconnaissance",
+    "name": "Active Scanning",
+    "description": "Escaneo activo de servicios, endpoints y exposición cloud.",
+    "severity": "med",
+    "scenarios": [
+      "segmentation",
+      "cred-stuffing"
+    ],
+    "attributes": [
+      "Resiliencia",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "AZ-305"
+    ],
+    "recommendation": "Activar detección de scanning y endurecer superficie pública."
+  },
+  {
+    "technique": "T1580",
+    "tactic": "Reconnaissance",
+    "name": "Cloud Infrastructure Discovery",
+    "description": "Descubrimiento de recursos cloud expuestos y configuraciones débiles.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA"
+    ],
+    "recommendation": "Minimizar metadatos públicos y monitorear consultas de inventario."
+  },
+  {
+    "technique": "T1619",
+    "tactic": "Discovery",
+    "name": "Cloud Service Discovery",
+    "description": "Enumeración de servicios habilitados para mapear el entorno Azure.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Auditabilidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "AZ-104"
+    ],
+    "recommendation": "Limitar permisos de lectura global y alertar enumeraciones atípicas."
+  },
+  {
+    "technique": "T1526",
+    "tactic": "Discovery",
+    "name": "Cloud Service Discovery via APIs",
+    "description": "Uso de APIs cloud para inventariar recursos y vectores de ataque.",
+    "severity": "med",
+    "scenarios": [
+      "excess-priv",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Aplicar límites de API y detección de consultas masivas."
+  },
+  {
+    "technique": "T1613",
+    "tactic": "Discovery",
+    "name": "Container and Resource Discovery",
+    "description": "Enumeración de contenedores y recursos de cómputo.",
+    "severity": "med",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Disponibilidad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Aislar planos de orquestación y auditar comandos de inventario."
+  },
+  {
+    "technique": "T1614",
+    "tactic": "Discovery",
+    "name": "System and Environment Discovery",
+    "description": "Recolección de contexto de entorno para planificación de ataque.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Auditabilidad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "NIST-RA"
+    ],
+    "recommendation": "Reducir exposición de metadatos y credenciales en entornos runtime."
+  },
+  {
+    "technique": "T1606",
+    "tactic": "Credential Access",
+    "name": "Forge Web Credentials",
+    "description": "Falsificación o robo de credenciales web para suplantación.",
+    "severity": "high",
+    "scenarios": [
+      "cred-stuffing",
+      "no-mfa"
+    ],
+    "attributes": [
+      "Confidencialidad"
+    ],
+    "rulePrefixes": [
+      "SC-300"
+    ],
+    "recommendation": "Forzar autenticación fuerte y protección de sesión en apps críticas."
+  },
+  {
+    "technique": "T1557",
+    "tactic": "Credential Access",
+    "name": "Adversary-in-the-Middle",
+    "description": "Intercepción de autenticación o tráfico sensible.",
+    "severity": "high",
+    "scenarios": [
+      "no-mfa",
+      "segmentation"
+    ],
+    "attributes": [
+      "Confidencialidad",
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "SC-300",
+      "AZ-305"
+    ],
+    "recommendation": "Aplicar TLS estricto, certificados válidos y protección de canal."
+  },
+  {
+    "technique": "T1651",
+    "tactic": "Command and Control",
+    "name": "Cloud Service Abuse",
+    "description": "Uso de servicios cloud legítimos para C2 y persistencia.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Resiliencia",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU",
+      "AZ-104"
+    ],
+    "recommendation": "Monitorear patrones de uso anómalos en servicios cloud permitidos."
+  },
+  {
+    "technique": "T1090",
+    "tactic": "Command and Control",
+    "name": "Proxy",
+    "description": "Encadenamiento de proxies para ocultar origen de comandos.",
+    "severity": "med",
+    "scenarios": [
+      "segmentation",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305",
+      "NIST-AU"
+    ],
+    "recommendation": "Correlacionar telemetría de red con identidad para detectar pivoting."
+  },
+  {
+    "technique": "T1573",
+    "tactic": "Command and Control",
+    "name": "Encrypted Channel",
+    "description": "Uso de canales cifrados para ocultar tráfico C2.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Auditabilidad",
+      "Confidencialidad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU"
+    ],
+    "recommendation": "Aplicar inspección TLS selectiva y análisis de comportamiento de flujo."
+  },
+  {
+    "technique": "T1583",
+    "tactic": "Resource Development",
+    "name": "Acquire Infrastructure",
+    "description": "Preparación de infraestructura para campañas de ataque.",
+    "severity": "med",
+    "scenarios": [
+      "cred-stuffing",
+      "segmentation"
+    ],
+    "attributes": [
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "NIST-RA"
+    ],
+    "recommendation": "Consumir inteligencia externa y bloquear infraestructuras maliciosas conocidas."
+  },
+  {
+    "technique": "T1584",
+    "tactic": "Resource Development",
+    "name": "Compromise Infrastructure",
+    "description": "Uso de infraestructura comprometida para ocultar actividad hostil.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Resiliencia",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-RA",
+      "NIST-AU"
+    ],
+    "recommendation": "Aplicar listas de reputación y detección de patrón C2 distribuido."
+  },
+  {
+    "technique": "T1608",
+    "tactic": "Resource Development",
+    "name": "Stage Capabilities",
+    "description": "Preparación de payloads y herramientas para ejecución posterior.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU"
+    ],
+    "recommendation": "Restringir almacenamiento temporal y escanear artefactos de despliegue."
+  },
+  {
+    "technique": "T1059",
+    "tactic": "Execution",
+    "name": "Command and Scripting Interpreter",
+    "description": "Ejecución de comandos maliciosos mediante shells o scripts.",
+    "severity": "high",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Integridad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Aplicar allow-list de scripts y registrar ejecución de comandos sensibles."
+  },
+  {
+    "technique": "T1203",
+    "tactic": "Execution",
+    "name": "Exploitation for Client Execution",
+    "description": "Ejecución vía explotación de software cliente vulnerable.",
+    "severity": "med",
+    "scenarios": [
+      "cred-stuffing",
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad",
+      "Resiliencia"
+    ],
+    "rulePrefixes": [
+      "NIST-RA"
+    ],
+    "recommendation": "Parchar componentes cliente y reforzar controles de endpoint."
+  },
+  {
+    "technique": "T1106",
+    "tactic": "Execution",
+    "name": "Native API",
+    "description": "Uso de APIs nativas para ejecutar acciones con bajo perfil.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "excess-priv"
+    ],
+    "attributes": [
+      "Integridad"
+    ],
+    "rulePrefixes": [
+      "AZ-104",
+      "NIST-AU"
+    ],
+    "recommendation": "Correlacionar llamadas API privilegiadas con contexto de identidad."
+  },
+  {
+    "technique": "T1547",
+    "tactic": "Persistence",
+    "name": "Boot or Logon Autostart Execution",
+    "description": "Persistencia automática en máquinas virtuales o workloads.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config",
+      "segmentation"
+    ],
+    "attributes": [
+      "Integridad",
+      "Disponibilidad"
+    ],
+    "rulePrefixes": [
+      "AZ-305"
+    ],
+    "recommendation": "Monitorear mecanismos de inicio automático y cambios de startup."
+  },
+  {
+    "technique": "T1543",
+    "tactic": "Persistence",
+    "name": "Create or Modify System Process",
+    "description": "Creación/modificación de procesos de sistema para persistencia.",
+    "severity": "med",
+    "scenarios": [
+      "legacy-config"
+    ],
+    "attributes": [
+      "Integridad",
+      "Auditabilidad"
+    ],
+    "rulePrefixes": [
+      "NIST-AU"
+    ],
+    "recommendation": "Restringir cambios de servicios críticos y generar alertas automáticas."
+  }
+]
