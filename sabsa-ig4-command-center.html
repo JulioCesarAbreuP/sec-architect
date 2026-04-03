@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABSA IG4 | Strategic Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --hex-bg: #050505;
+            --hex-card: #0d0d0d;
+            --sabsa-blue: #00f2ff;
+            --sabsa-red: #ff003c;
+            --sabsa-gold: #ffbd00;
+            --text-dim: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--hex-bg);
+            color: #fff;
+            font-family: 'Segoe UI', 'Consolas', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- UI: DASHBOARD Nivel Casa Blanca --- */
+        header {
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #001a1d 0%, #050505 100%);
+            border-bottom: 1px solid var(--sabsa-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--sabsa-blue);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: 1px solid var(--sabsa-blue);
+            letter-spacing: 2px;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: var(--hex-card);
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- MOTOR: Policy Loader UI --- */
+        .policy-engine {
+            border-left: 3px solid var(--sabsa-blue);
+        }
+
+        .terminal {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+            font-size: 0.8rem;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            margin-top: 10px;
+        }
+
+        .risk-chart-container {
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        /* --- REGLAS: Base de Conocimiento Visual --- */
+        .rule-card {
+            background: #151515;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border-left: 3px solid var(--sabsa-gold);
+        }
+
+        .btn-audit {
+            background: var(--sabsa-blue);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn-audit:hover { filter: brightness(1.2); }
+    </style>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', 'Consolas', sans-serif;
+        }
+
+        @media (max-width: 1200px) {
+            main {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow: auto;
+            }
+
+            header {
+                padding: 12px 16px;
+                gap: 10px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            main {
+                grid-template-columns: 1fr;
+                padding: 12px;
+                gap: 12px;
+                overflow: visible;
+            }
+
+            .panel {
+                padding: 14px;
+            }
+
+            .risk-chart-container {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <span style="color: var(--sabsa-blue); font-weight: bold; font-size: 1.2rem;">SEC_ARCHITECT</span>
+        <span style="color: var(--text-dim); font-size: 0.8rem; margin-left: 15px;">STRATEGIC DEFENSE PLATFORM</span>
+    </div>
+    <div class="status-badge">SABSA LEVEL: IG4 (OPTIMIZED)</div>
+</header>
+
+<main>
+    <div class="panel">
+        <h3>DOCTRINA DE SEGURIDAD</h3>
+        <p style="font-size: 0.8rem; color: var(--text-dim);">Reglas activas basadas en NIST & SABSA</p>
+        <div id="ruleList">
+            </div>
+    </div>
+
+    <div class="panel policy-engine">
+        <h3>OPERATIONS CENTER</h3>
+        <input type="text" id="targetUrl" placeholder="TARGET URL O TENANT ID..." 
+               style="background:#000; color:white; border:1px solid #444; padding:12px; margin-bottom:10px;">
+        <button class="btn-audit" onclick="startAdvancedAudit()">INICIAR ANÁLISIS ESTRATÉGICO</button>
+        
+        <div class="terminal" id="terminalLog">
+            > SISTEMA INICIALIZADO... ESPERANDO OBJETIVO...
+        </div>
+
+        <div style="margin-top: 20px;">
+            <h4>MATRIZ DE RIESGO DE ATRIBUTOS</h4>
+            <div class="risk-chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>REMEDIACIÓN (IG4)</h3>
+        <div id="remediationPanel" style="font-size: 0.85rem; color: var(--text-dim);">
+            Esperando telemetría para generar directivas de respuesta...
+        </div>
+    </div>
+</main>
+
+<script>
+    // 1. EL MOTOR (Policy Loader) & LAS REGLAS (Base de Conocimiento)
+    const SABSA_DOCTRINE = {
+        rules: [
+            { id: 'SC-300-01', name: 'MFA Phishing-Resistant', attr: 'Confidencialidad', impact: 90, desc: 'Verifica FIDO2/Certificados' },
+            { id: 'AZ-305-05', name: 'Micro-Segmentación', attr: 'Integridad', impact: 70, desc: 'Verifica aislamiento de recursos' },
+            { id: 'WEB-SEC-01', name: 'HSTS & CSP Enforcement', attr: 'Disponibilidad', impact: 50, desc: 'Políticas de cabecera avanzada' }
+        ],
+        attributes: ['Confidencialidad', 'Integridad', 'Disponibilidad', 'Accesibilidad', 'Resiliencia']
+    };
+
+    // Renderizar reglas iniciales
+    const ruleList = document.getElementById('ruleList');
+    SABSA_DOCTRINE.rules.forEach(r => {
+        ruleList.innerHTML += `<div class="rule-card"><strong>${r.id}</strong>: ${r.name}<br><small>${r.desc}</small></div>`;
+    });
+
+    // Gráfico de Radar SABSA
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    let radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: SABSA_DOCTRINE.attributes,
+            datasets: [{
+                label: 'Postura de Seguridad',
+                data: [100, 100, 100, 100, 100],
+                backgroundColor: 'rgba(0, 242, 255, 0.2)',
+                borderColor: '#00f2ff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: { r: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { color: '#333' } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 2. LA EJECUCIÓN (Lógica de Análisis)
+    async function startAdvancedAudit() {
+        const log = document.getElementById('terminalLog');
+        const rem = document.getElementById('remediationPanel');
+        const target = document.getElementById('targetUrl').value;
+
+        if(!target) return alert("Ingrese objetivo");
+
+        log.innerHTML = `> CONECTANDO A POLICIES.WHITEHOUSE.GOV...<br>> CARGANDO DOCTRINA IG4...`;
+        
+        // Simulación de escaneo por capas
+        for(let rule of SABSA_DOCTRINE.rules) {
+            await new Promise(r => setTimeout(r, 800));
+            log.innerHTML += `<br>> EJECUTANDO CONTROL ${rule.id}: [BUSCANDO VULNERABILIDADES...]`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Resultado Final: Fallo Crítico simulado para mostrar IG4
+        log.innerHTML += `<br>> <span style="color:red">ALERTA: BRECHA DETECTADA EN ATRIBUTO 'INTEGRIDAD'</span>`;
+        
+        // Actualizar Gráfico
+        radarChart.data.datasets[0].data = [80, 30, 90, 75, 60];
+        radarChart.update();
+
+        // Generar Remediación (Nivel Sabsa Senior)
+        rem.innerHTML = `
+            <div style="color:var(--sabsa-red); border:1px solid var(--sabsa-red); padding:10px; border-radius:4px;">
+                <strong>DIRECTIVA DE EMERGENCIA</strong><br>
+                Falla detectada en AZ-305-05.<br><br>
+                <strong>Comando de Autorreparación:</strong><br>
+                <code style="background:#000; display:block; padding:5px; margin-top:5px; color:#fff;">
+                az resource update --ids /subscriptions/... --set properties.networkAcl.defaultAction=Deny
+                </code>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>
