@@ -72,6 +72,18 @@ body {
   max-width: 56ch;
 }
 
+.tagline-inline {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
 .posts {
   list-style: none;
   margin: 0;
