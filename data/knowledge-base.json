@@ -12,10 +12,20 @@
       "Bloquear MFA basado solo en SMS para administracion",
       "Aislar administracion en estaciones endurecidas"
     ],
-    "mitre_attack": ["T1078", "T1556"],
-    "mapeo_nist_csf": ["PR.AA-02", "PR.AA-03"],
-    "mapeo_iso_27001": ["A.5.15", "A.8.5"],
-    "recomendacion_defensiva": "Combinar MFA fuerte con acceso condicional y cuentas separadas para administracion."
+    "mitre_attack": [
+      "T1078",
+      "T1556"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-02",
+      "PR.AA-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.15",
+      "A.8.5"
+    ],
+    "recomendacion_defensiva": "Combinar MFA fuerte con acceso condicional y cuentas separadas para administracion.",
+    "severidad": "critica"
   },
   {
     "id": "NSA-002",
@@ -30,10 +40,20 @@
       "Restringir inicio de sesion de cuentas admin a hosts aprobados",
       "Aplicar politicas de acceso por contexto"
     ],
-    "mitre_attack": ["T1078", "T1530"],
-    "mapeo_nist_csf": ["PR.AA-01", "PR.AA-06"],
-    "mapeo_iso_27001": ["A.5.15", "A.6.2"],
-    "recomendacion_defensiva": "Adoptar un modelo de administracion por niveles y prohibir el uso cotidiano de cuentas privilegiadas."
+    "mitre_attack": [
+      "T1078",
+      "T1530"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-01",
+      "PR.AA-06"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.15",
+      "A.6.2"
+    ],
+    "recomendacion_defensiva": "Adoptar un modelo de administracion por niveles y prohibir el uso cotidiano de cuentas privilegiadas.",
+    "severidad": "alta"
   },
   {
     "id": "NSA-003",
@@ -48,10 +68,20 @@
       "Aprobacion para elevacion sensible",
       "Revision automatizada de asignaciones permanentes"
     ],
-    "mitre_attack": ["T1078", "T1484"],
-    "mapeo_nist_csf": ["PR.AA-04", "DE.AE-03"],
-    "mapeo_iso_27001": ["A.5.18", "A.8.2"],
-    "recomendacion_defensiva": "Reducir al minimo la ventana de exposicion de privilegios con elevacion temporal auditada."
+    "mitre_attack": [
+      "T1078",
+      "T1484"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-04",
+      "DE.AE-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.18",
+      "A.8.2"
+    ],
+    "recomendacion_defensiva": "Reducir al minimo la ventana de exposicion de privilegios con elevacion temporal auditada.",
+    "severidad": "alta"
   },
   {
     "id": "NSA-004",
@@ -66,10 +96,20 @@
       "Eliminar privilegios locales innecesarios",
       "Aplicar allowlisting y EDR reforzado"
     ],
-    "mitre_attack": ["T1059", "T1204"],
-    "mapeo_nist_csf": ["PR.PS-01", "PR.PT-03"],
-    "mapeo_iso_27001": ["A.8.7", "A.8.9"],
-    "recomendacion_defensiva": "Separar la administracion critica del puesto de trabajo general y endurecer el endpoint de administracion."
+    "mitre_attack": [
+      "T1059",
+      "T1204"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-01",
+      "PR.PT-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.7",
+      "A.8.9"
+    ],
+    "recomendacion_defensiva": "Separar la administracion critica del puesto de trabajo general y endurecer el endpoint de administracion.",
+    "severidad": "alta"
   },
   {
     "id": "NSA-005",
@@ -84,10 +124,20 @@
       "Aplicar reglas deny-by-default",
       "Inspeccionar trafico entre segmentos criticos"
     ],
-    "mitre_attack": ["T1021", "T1570"],
-    "mapeo_nist_csf": ["PR.IR-01", "PR.PT-04"],
-    "mapeo_iso_27001": ["A.8.20", "A.8.22"],
-    "recomendacion_defensiva": "Diseñar microsegmentacion apoyada en identidad, puertos estrictos y rutas controladas."
+    "mitre_attack": [
+      "T1021",
+      "T1570"
+    ],
+    "mapeo_nist_csf": [
+      "PR.IR-01",
+      "PR.PT-04"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.20",
+      "A.8.22"
+    ],
+    "recomendacion_defensiva": "Diseñar microsegmentacion apoyada en identidad, puertos estrictos y rutas controladas.",
+    "severidad": "alta"
   },
   {
     "id": "NSA-006",
@@ -102,10 +152,20 @@
       "Alertar sobre asignaciones privilegiadas y accesos anómalos",
       "Retener evidencias para investigacion"
     ],
-    "mitre_attack": ["T1078", "T1098"],
-    "mapeo_nist_csf": ["DE.CM-01", "DE.CM-03"],
-    "mapeo_iso_27001": ["A.8.15", "A.8.16"],
-    "recomendacion_defensiva": "Unificar identidad, actividad privilegiada y cambios de configuracion en analitica central."
+    "mitre_attack": [
+      "T1078",
+      "T1098"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-01",
+      "DE.CM-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.15",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Unificar identidad, actividad privilegiada y cambios de configuracion en analitica central.",
+    "severidad": "alta"
   },
   {
     "id": "NSA-007",
@@ -120,10 +180,20 @@
       "Monitorear cambios de DNS sensible",
       "Bloquear resolucion externa no controlada"
     ],
-    "mitre_attack": ["T1565", "T1071"],
-    "mapeo_nist_csf": ["PR.PT-04", "DE.CM-09"],
-    "mapeo_iso_27001": ["A.8.20", "A.8.21"],
-    "recomendacion_defensiva": "Alinear DNS privado con segmentacion y validacion de origen para servicios internos."
+    "mitre_attack": [
+      "T1565",
+      "T1071"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PT-04",
+      "DE.CM-09"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.20",
+      "A.8.21"
+    ],
+    "recomendacion_defensiva": "Alinear DNS privado con segmentacion y validacion de origen para servicios internos.",
+    "severidad": "media"
   },
   {
     "id": "NSA-008",
@@ -138,10 +208,20 @@
       "Habilitar cifrado en reposo con claves gestionadas o del cliente",
       "Revisar excepciones criptograficas"
     ],
-    "mitre_attack": ["T1040", "T1557"],
-    "mapeo_nist_csf": ["PR.DS-01", "PR.DS-02"],
-    "mapeo_iso_27001": ["A.8.24", "A.8.25"],
-    "recomendacion_defensiva": "Definir baselines de cifrado y bloquear protocolos o suites obsoletas."
+    "mitre_attack": [
+      "T1040",
+      "T1557"
+    ],
+    "mapeo_nist_csf": [
+      "PR.DS-01",
+      "PR.DS-02"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.24",
+      "A.8.25"
+    ],
+    "recomendacion_defensiva": "Definir baselines de cifrado y bloquear protocolos o suites obsoletas.",
+    "severidad": "alta"
   },
   {
     "id": "NSA-009",
@@ -156,10 +236,20 @@
       "Etiquetar criticidad y propietario",
       "Descubrir dependencias de red e identidad"
     ],
-    "mitre_attack": ["T1580", "T1087"],
-    "mapeo_nist_csf": ["ID.AM-01", "ID.AM-05"],
-    "mapeo_iso_27001": ["A.5.9", "A.5.12"],
-    "recomendacion_defensiva": "Automatizar inventario y enriquecerlo con contexto de negocio, identidad y exposicion."
+    "mitre_attack": [
+      "T1580",
+      "T1087"
+    ],
+    "mapeo_nist_csf": [
+      "ID.AM-01",
+      "ID.AM-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.9",
+      "A.5.12"
+    ],
+    "recomendacion_defensiva": "Automatizar inventario y enriquecerlo con contexto de negocio, identidad y exposicion.",
+    "severidad": "media"
   },
   {
     "id": "NSA-010",
@@ -174,10 +264,20 @@
       "Escanear vulnerabilidades y secretos en CI",
       "Restringir registros y feeds confiables"
     ],
-    "mitre_attack": ["T1195", "T1553"],
-    "mapeo_nist_csf": ["ID.SC-04", "PR.PS-02"],
-    "mapeo_iso_27001": ["A.5.21", "A.8.8"],
-    "recomendacion_defensiva": "Aplicar controles de procedencia, firma y escaneo continuo a la cadena de suministro."
+    "mitre_attack": [
+      "T1195",
+      "T1553"
+    ],
+    "mapeo_nist_csf": [
+      "ID.SC-04",
+      "PR.PS-02"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.21",
+      "A.8.8"
+    ],
+    "recomendacion_defensiva": "Aplicar controles de procedencia, firma y escaneo continuo a la cadena de suministro.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-001",
@@ -192,10 +292,20 @@
       "Mover administracion a redes privadas o bastiones",
       "Aplicar allowlists y acceso contextual"
     ],
-    "mitre_attack": ["T1133", "T1190"],
-    "mapeo_nist_csf": ["PR.AC-03", "PR.IR-01"],
-    "mapeo_iso_27001": ["A.8.20", "A.8.21"],
-    "recomendacion_defensiva": "Privatizar servicios sensibles y revisar exposicion publica como excepcion formal."
+    "mitre_attack": [
+      "T1133",
+      "T1190"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AC-03",
+      "PR.IR-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.20",
+      "A.8.21"
+    ],
+    "recomendacion_defensiva": "Privatizar servicios sensibles y revisar exposicion publica como excepcion formal.",
+    "severidad": "critica"
   },
   {
     "id": "CISA-002",
@@ -210,10 +320,20 @@
       "Establecer SLA agresivos para sistemas expuestos",
       "Verificar despliegue efectivo de parches"
     ],
-    "mitre_attack": ["T1190", "T1068"],
-    "mapeo_nist_csf": ["PR.PS-03", "RS.MA-01"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.9"],
-    "recomendacion_defensiva": "Vincular gestion de vulnerabilidades con inteligencia de explotacion y exposicion real."
+    "mitre_attack": [
+      "T1190",
+      "T1068"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "RS.MA-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.9"
+    ],
+    "recomendacion_defensiva": "Vincular gestion de vulnerabilidades con inteligencia de explotacion y exposicion real.",
+    "severidad": "critica"
   },
   {
     "id": "CISA-003",
@@ -228,10 +348,20 @@
       "Encapsular acceso remoto con bastion y MFA",
       "Monitorear uso residual para plan de retiro"
     ],
-    "mitre_attack": ["T1021", "T1046"],
-    "mapeo_nist_csf": ["PR.PT-03", "DE.CM-01"],
-    "mapeo_iso_27001": ["A.8.20", "A.8.27"],
-    "recomendacion_defensiva": "Eliminar dependencia operativa de protocolos debiles y bloquear su uso por politica."
+    "mitre_attack": [
+      "T1021",
+      "T1046"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PT-03",
+      "DE.CM-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.20",
+      "A.8.27"
+    ],
+    "recomendacion_defensiva": "Eliminar dependencia operativa de protocolos debiles y bloquear su uso por politica.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-004",
@@ -246,10 +376,20 @@
       "Probar restauraciones por servicio critico",
       "Separar credenciales de backup del dominio operativo"
     ],
-    "mitre_attack": ["T1486", "T1490"],
-    "mapeo_nist_csf": ["RC.RP-01", "PR.DS-04"],
-    "mapeo_iso_27001": ["A.8.13", "A.5.30"],
-    "recomendacion_defensiva": "Medir capacidad real de restauracion, no solo existencia de copias."
+    "mitre_attack": [
+      "T1486",
+      "T1490"
+    ],
+    "mapeo_nist_csf": [
+      "RC.RP-01",
+      "PR.DS-04"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.13",
+      "A.5.30"
+    ],
+    "recomendacion_defensiva": "Medir capacidad real de restauracion, no solo existencia de copias.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-005",
@@ -264,10 +404,20 @@
       "Restringir instalacion local",
       "Registrar intentos de ejecucion bloqueados"
     ],
-    "mitre_attack": ["T1059", "T1204"],
-    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-05"],
-    "mapeo_iso_27001": ["A.8.7", "A.8.9"],
-    "recomendacion_defensiva": "Reducir la capacidad de introducir herramientas ajenas al baseline corporativo."
+    "mitre_attack": [
+      "T1059",
+      "T1204"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-01",
+      "DE.CM-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.7",
+      "A.8.9"
+    ],
+    "recomendacion_defensiva": "Reducir la capacidad de introducir herramientas ajenas al baseline corporativo.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-006",
@@ -282,10 +432,20 @@
       "Habilitar analisis de adjuntos y enlaces",
       "Exigir MFA resistente al phishing"
     ],
-    "mitre_attack": ["T1566", "T1059"],
-    "mapeo_nist_csf": ["PR.AA-03", "DE.CM-08"],
-    "mapeo_iso_27001": ["A.5.15", "A.8.23"],
-    "recomendacion_defensiva": "Tratar identidad y correo como una misma superficie de riesgo prioritaria."
+    "mitre_attack": [
+      "T1566",
+      "T1059"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-03",
+      "DE.CM-08"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.15",
+      "A.8.23"
+    ],
+    "recomendacion_defensiva": "Tratar identidad y correo como una misma superficie de riesgo prioritaria.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-007",
@@ -300,10 +460,20 @@
       "Requerir aprobacion para cambios de privilegios",
       "Correlacionar con origen y dispositivo"
     ],
-    "mitre_attack": ["T1098", "T1078"],
-    "mapeo_nist_csf": ["DE.CM-03", "PR.AA-04"],
-    "mapeo_iso_27001": ["A.8.2", "A.8.15"],
-    "recomendacion_defensiva": "Tratar toda modificacion de privilegios como evento de seguridad y no solo administrativo."
+    "mitre_attack": [
+      "T1098",
+      "T1078"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-03",
+      "PR.AA-04"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.2",
+      "A.8.15"
+    ],
+    "recomendacion_defensiva": "Tratar toda modificacion de privilegios como evento de seguridad y no solo administrativo.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-008",
@@ -318,10 +488,20 @@
       "Aislar apertura de documentos",
       "Registrar intentos de activacion"
     ],
-    "mitre_attack": ["T1204", "T1566.001"],
-    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-05"],
-    "mapeo_iso_27001": ["A.8.7", "A.8.23"],
-    "recomendacion_defensiva": "Eliminar la ejecucion implicita de contenido activo recibido externamente."
+    "mitre_attack": [
+      "T1204",
+      "T1566.001"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-01",
+      "DE.CM-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.7",
+      "A.8.23"
+    ],
+    "recomendacion_defensiva": "Eliminar la ejecucion implicita de contenido activo recibido externamente.",
+    "severidad": "media"
   },
   {
     "id": "CISA-009",
@@ -336,10 +516,20 @@
       "Restringir origenes y horarios",
       "Registrar sesiones y comandos sensibles"
     ],
-    "mitre_attack": ["T1133", "T1021"],
-    "mapeo_nist_csf": ["PR.AA-03", "PR.AC-03"],
-    "mapeo_iso_27001": ["A.5.15", "A.8.21"],
-    "recomendacion_defensiva": "Sustituir acceso remoto amplio por corredores controlados y auditados."
+    "mitre_attack": [
+      "T1133",
+      "T1021"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-03",
+      "PR.AC-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.15",
+      "A.8.21"
+    ],
+    "recomendacion_defensiva": "Sustituir acceso remoto amplio por corredores controlados y auditados.",
+    "severidad": "alta"
   },
   {
     "id": "CISA-010",
@@ -354,10 +544,20 @@
       "Usar cuentas separadas y MFA fuerte",
       "Alertar sobre cambios masivos o inesperados"
     ],
-    "mitre_attack": ["T1072", "T1195"],
-    "mapeo_nist_csf": ["ID.AM-05", "PR.AA-06"],
-    "mapeo_iso_27001": ["A.5.22", "A.8.20"],
-    "recomendacion_defensiva": "Tratar el plano de gestion como activo tier-0 o equivalente por su impacto transversal."
+    "mitre_attack": [
+      "T1072",
+      "T1195"
+    ],
+    "mapeo_nist_csf": [
+      "ID.AM-05",
+      "PR.AA-06"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.22",
+      "A.8.20"
+    ],
+    "recomendacion_defensiva": "Tratar el plano de gestion como activo tier-0 o equivalente por su impacto transversal.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-001",
@@ -372,10 +572,19 @@
       "Aplicar acceso condicional basado en riesgo",
       "Separar cuentas de alto privilegio"
     ],
-    "mitre_attack": ["T1078"],
-    "mapeo_nist_csf": ["DE.CM-03", "PR.AA-03"],
-    "mapeo_iso_27001": ["A.5.15", "A.8.16"],
-    "recomendacion_defensiva": "Correlacionar autenticacion, geografia, dispositivo y rol para detectar uso ilegitimo de cuentas validas."
+    "mitre_attack": [
+      "T1078"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-03",
+      "PR.AA-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.15",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Correlacionar autenticacion, geografia, dispositivo y rol para detectar uso ilegitimo de cuentas validas.",
+    "severidad": "critica"
   },
   {
     "id": "MITRE-002",
@@ -390,10 +599,19 @@
       "Bloquear listas de contraseñas debiles",
       "Alertar patrones distribuidos de fallo"
     ],
-    "mitre_attack": ["T1110.003"],
-    "mapeo_nist_csf": ["PR.AA-03", "DE.CM-03"],
-    "mapeo_iso_27001": ["A.5.17", "A.8.16"],
-    "recomendacion_defensiva": "Combinar proteccion de credenciales con analitica de fallos agregados por servicio y origen."
+    "mitre_attack": [
+      "T1110.003"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-03",
+      "DE.CM-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.17",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Combinar proteccion de credenciales con analitica de fallos agregados por servicio y origen.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-003",
@@ -408,10 +626,20 @@
       "Aprobar cambios de identidad sensibles",
       "Reconciliar cuentas contra inventario autorizado"
     ],
-    "mitre_attack": ["T1136", "T1098"],
-    "mapeo_nist_csf": ["DE.CM-03", "PR.AA-04"],
-    "mapeo_iso_27001": ["A.5.16", "A.8.2"],
-    "recomendacion_defensiva": "Hacer que cada alta o modificacion privilegiada sea verificable, reversible y trazable."
+    "mitre_attack": [
+      "T1136",
+      "T1098"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-03",
+      "PR.AA-04"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.16",
+      "A.8.2"
+    ],
+    "recomendacion_defensiva": "Hacer que cada alta o modificacion privilegiada sea verificable, reversible y trazable.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-004",
@@ -426,10 +654,19 @@
       "Habilitar logging de comandos y transcripcion",
       "Firmar scripts operativos"
     ],
-    "mitre_attack": ["T1059"],
-    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-09"],
-    "mapeo_iso_27001": ["A.8.7", "A.8.15"],
-    "recomendacion_defensiva": "Tratar los interpretes como capacidad privilegiada y no como herramienta de uso irrestricto."
+    "mitre_attack": [
+      "T1059"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-01",
+      "DE.CM-09"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.7",
+      "A.8.15"
+    ],
+    "recomendacion_defensiva": "Tratar los interpretes como capacidad privilegiada y no como herramienta de uso irrestricto.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-005",
@@ -444,10 +681,20 @@
       "Aplicar allowlists por destino y servicio",
       "Correlacionar volumen y patrón de transferencia"
     ],
-    "mitre_attack": ["T1041", "T1567"],
-    "mapeo_nist_csf": ["DE.CM-01", "PR.IR-01"],
-    "mapeo_iso_27001": ["A.8.20", "A.8.23"],
-    "recomendacion_defensiva": "Diseñar control de salida con contexto de aplicacion y no solo filtrado basico de puertos."
+    "mitre_attack": [
+      "T1041",
+      "T1567"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-01",
+      "PR.IR-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.20",
+      "A.8.23"
+    ],
+    "recomendacion_defensiva": "Diseñar control de salida con contexto de aplicacion y no solo filtrado basico de puertos.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-006",
@@ -462,10 +709,19 @@
       "MFA y jump hosts para administracion",
       "Analizar patrones de acceso lateral"
     ],
-    "mitre_attack": ["T1021"],
-    "mapeo_nist_csf": ["PR.AC-03", "DE.CM-01"],
-    "mapeo_iso_27001": ["A.8.21", "A.8.16"],
-    "recomendacion_defensiva": "Minimizar rutas laterales y exigir corredores de acceso administrado."
+    "mitre_attack": [
+      "T1021"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AC-03",
+      "DE.CM-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.21",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Minimizar rutas laterales y exigir corredores de acceso administrado.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-007",
@@ -480,10 +736,20 @@
       "Reducir permisos de lectura innecesarios",
       "Relacionar descubrimiento con actividad posterior"
     ],
-    "mitre_attack": ["T1087", "T1069"],
-    "mapeo_nist_csf": ["DE.CM-09", "PR.AA-06"],
-    "mapeo_iso_27001": ["A.5.18", "A.8.16"],
-    "recomendacion_defensiva": "Limitar la visibilidad del directorio y detectar enumeracion contextualizada."
+    "mitre_attack": [
+      "T1087",
+      "T1069"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-09",
+      "PR.AA-06"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.18",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Limitar la visibilidad del directorio y detectar enumeracion contextualizada.",
+    "severidad": "media"
   },
   {
     "id": "MITRE-008",
@@ -498,10 +764,20 @@
       "Verificar firmas y procedencia",
       "Registrar cambios en pipelines sensibles"
     ],
-    "mitre_attack": ["T1565", "T1195"],
-    "mapeo_nist_csf": ["ID.SC-04", "PR.PS-02"],
-    "mapeo_iso_27001": ["A.5.21", "A.8.8"],
-    "recomendacion_defensiva": "Proteger repositorios y automatizaciones como activos de alto impacto operacional."
+    "mitre_attack": [
+      "T1565",
+      "T1195"
+    ],
+    "mapeo_nist_csf": [
+      "ID.SC-04",
+      "PR.PS-02"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.21",
+      "A.8.8"
+    ],
+    "recomendacion_defensiva": "Proteger repositorios y automatizaciones como activos de alto impacto operacional.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-009",
@@ -516,10 +792,20 @@
       "Alertar llamadas sensibles inusuales",
       "Rotar y limitar tokens de automatizacion"
     ],
-    "mitre_attack": ["T1526", "T1078.004"],
-    "mapeo_nist_csf": ["PR.AA-04", "DE.CM-03"],
-    "mapeo_iso_27001": ["A.5.18", "A.8.16"],
-    "recomendacion_defensiva": "Modelar las APIs cloud como superficie primaria de ataque y deteccion."
+    "mitre_attack": [
+      "T1526",
+      "T1078.004"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-04",
+      "DE.CM-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.18",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Modelar las APIs cloud como superficie primaria de ataque y deteccion.",
+    "severidad": "alta"
   },
   {
     "id": "MITRE-010",
@@ -534,10 +820,20 @@
       "Correlacionar descarga y ejecucion inmediata",
       "Aplicar reputacion y allowlisting"
     ],
-    "mitre_attack": ["T1204", "T1059"],
-    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-05"],
-    "mapeo_iso_27001": ["A.8.7", "A.8.23"],
-    "recomendacion_defensiva": "Reducir rutas de ejecucion oportunista y detectar cadenas descarga-ejecucion."
+    "mitre_attack": [
+      "T1204",
+      "T1059"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-01",
+      "DE.CM-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.7",
+      "A.8.23"
+    ],
+    "recomendacion_defensiva": "Reducir rutas de ejecucion oportunista y detectar cadenas descarga-ejecucion.",
+    "severidad": "media"
   },
   {
     "id": "NISTISO-001",
@@ -552,10 +848,19 @@
       "Inventario con propietario y entorno",
       "Revisiones periodicas de activos huérfanos"
     ],
-    "mitre_attack": ["T1580"],
-    "mapeo_nist_csf": ["ID.AM-01", "ID.GV-01"],
-    "mapeo_iso_27001": ["A.5.9", "A.5.12"],
-    "recomendacion_defensiva": "Vincular el inventario tecnico con responsabilidad operativa y de negocio."
+    "mitre_attack": [
+      "T1580"
+    ],
+    "mapeo_nist_csf": [
+      "ID.AM-01",
+      "ID.GV-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.9",
+      "A.5.12"
+    ],
+    "recomendacion_defensiva": "Vincular el inventario tecnico con responsabilidad operativa y de negocio.",
+    "severidad": "media"
   },
   {
     "id": "NISTISO-002",
@@ -570,10 +875,20 @@
       "Separacion de funciones",
       "Bajas y revocaciones automatizadas"
     ],
-    "mitre_attack": ["T1078", "T1098"],
-    "mapeo_nist_csf": ["PR.AA-01", "PR.AA-05"],
-    "mapeo_iso_27001": ["A.5.15", "A.5.18"],
-    "recomendacion_defensiva": "Institucionalizar revisiones de acceso como control recurrente y no puntual."
+    "mitre_attack": [
+      "T1078",
+      "T1098"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AA-01",
+      "PR.AA-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.15",
+      "A.5.18"
+    ],
+    "recomendacion_defensiva": "Institucionalizar revisiones de acceso como control recurrente y no puntual.",
+    "severidad": "alta"
   },
   {
     "id": "NISTISO-003",
@@ -588,10 +903,20 @@
       "Control de deriva de configuracion",
       "Excepciones temporales aprobadas"
     ],
-    "mitre_attack": ["T1562", "T1190"],
-    "mapeo_nist_csf": ["PR.PS-02", "PR.PS-03"],
-    "mapeo_iso_27001": ["A.8.9", "A.8.32"],
-    "recomendacion_defensiva": "Hacer de IaC y policy-as-code el mecanismo primario de configuracion segura."
+    "mitre_attack": [
+      "T1562",
+      "T1190"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-02",
+      "PR.PS-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.9",
+      "A.8.32"
+    ],
+    "recomendacion_defensiva": "Hacer de IaC y policy-as-code el mecanismo primario de configuracion segura.",
+    "severidad": "alta"
   },
   {
     "id": "NISTISO-004",
@@ -606,10 +931,20 @@
       "Cifrado y retencion acordes al nivel",
       "Segregacion logica o fisica"
     ],
-    "mitre_attack": ["T1537", "T1041"],
-    "mapeo_nist_csf": ["PR.DS-01", "PR.DS-05"],
-    "mapeo_iso_27001": ["A.5.12", "A.8.12"],
-    "recomendacion_defensiva": "Alinear almacenamiento, acceso y ciclo de vida con la sensibilidad real del dato."
+    "mitre_attack": [
+      "T1537",
+      "T1041"
+    ],
+    "mapeo_nist_csf": [
+      "PR.DS-01",
+      "PR.DS-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.12",
+      "A.8.12"
+    ],
+    "recomendacion_defensiva": "Alinear almacenamiento, acceso y ciclo de vida con la sensibilidad real del dato.",
+    "severidad": "alta"
   },
   {
     "id": "NISTISO-005",
@@ -624,10 +959,20 @@
       "Sincronizar tiempo y contexto",
       "Proteger integridad y retencion"
     ],
-    "mitre_attack": ["T1070", "T1562"],
-    "mapeo_nist_csf": ["DE.CM-01", "RS.AN-03"],
-    "mapeo_iso_27001": ["A.8.15", "A.8.16"],
-    "recomendacion_defensiva": "Diseñar telemetria pensando en respuesta a incidentes y no solo en troubleshooting."
+    "mitre_attack": [
+      "T1070",
+      "T1562"
+    ],
+    "mapeo_nist_csf": [
+      "DE.CM-01",
+      "RS.AN-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.15",
+      "A.8.16"
+    ],
+    "recomendacion_defensiva": "Diseñar telemetria pensando en respuesta a incidentes y no solo en troubleshooting.",
+    "severidad": "alta"
   },
   {
     "id": "NISTISO-006",
@@ -642,10 +987,20 @@
       "Prioridad basada en criticidad y exposicion",
       "Validacion posterior al parche"
     ],
-    "mitre_attack": ["T1190", "T1068"],
-    "mapeo_nist_csf": ["ID.RA-01", "PR.PS-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.9"],
-    "recomendacion_defensiva": "Cerrar el ciclo entre hallazgo, remediacion y evidencia de solucion efectiva."
+    "mitre_attack": [
+      "T1190",
+      "T1068"
+    ],
+    "mapeo_nist_csf": [
+      "ID.RA-01",
+      "PR.PS-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.9"
+    ],
+    "recomendacion_defensiva": "Cerrar el ciclo entre hallazgo, remediacion y evidencia de solucion efectiva.",
+    "severidad": "alta"
   },
   {
     "id": "NISTISO-007",
@@ -660,10 +1015,20 @@
       "Ejercicios tabletop y tecnicos",
       "Lecciones aprendidas integradas"
     ],
-    "mitre_attack": ["T1486", "T1531"],
-    "mapeo_nist_csf": ["RS.RP-01", "RC.IM-01"],
-    "mapeo_iso_27001": ["A.5.24", "A.5.27"],
-    "recomendacion_defensiva": "Medir respuesta por tiempos y decisiones efectivas, no solo por existencia documental."
+    "mitre_attack": [
+      "T1486",
+      "T1531"
+    ],
+    "mapeo_nist_csf": [
+      "RS.RP-01",
+      "RC.IM-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.24",
+      "A.5.27"
+    ],
+    "recomendacion_defensiva": "Medir respuesta por tiempos y decisiones efectivas, no solo por existencia documental.",
+    "severidad": "media"
   },
   {
     "id": "NISTISO-008",
@@ -678,10 +1043,20 @@
       "Clausulas de seguridad y notificacion",
       "Acceso segregado y monitoreado"
     ],
-    "mitre_attack": ["T1195", "T1133"],
-    "mapeo_nist_csf": ["ID.SC-01", "ID.SC-05"],
-    "mapeo_iso_27001": ["A.5.19", "A.5.20"],
-    "recomendacion_defensiva": "Gestionar terceros como extensiones de la superficie de riesgo propia."
+    "mitre_attack": [
+      "T1195",
+      "T1133"
+    ],
+    "mapeo_nist_csf": [
+      "ID.SC-01",
+      "ID.SC-05"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.19",
+      "A.5.20"
+    ],
+    "recomendacion_defensiva": "Gestionar terceros como extensiones de la superficie de riesgo propia.",
+    "severidad": "alta"
   },
   {
     "id": "NISTISO-009",
@@ -696,10 +1071,20 @@
       "Registro de cambios y justificacion",
       "Rollback documentado"
     ],
-    "mitre_attack": ["T1565", "T1195"],
-    "mapeo_nist_csf": ["GV.OV-01", "PR.PS-02"],
-    "mapeo_iso_27001": ["A.8.32", "A.5.37"],
-    "recomendacion_defensiva": "Reducir cambios fuera de proceso y conservar evidencia clara de quien cambió qué y por qué."
+    "mitre_attack": [
+      "T1565",
+      "T1195"
+    ],
+    "mapeo_nist_csf": [
+      "GV.OV-01",
+      "PR.PS-02"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.32",
+      "A.5.37"
+    ],
+    "recomendacion_defensiva": "Reducir cambios fuera de proceso y conservar evidencia clara de quien cambió qué y por qué.",
+    "severidad": "media"
   },
   {
     "id": "NISTISO-010",
@@ -714,10 +1099,20 @@
       "Diseñar redundancia por capa",
       "Probar failover y recuperacion"
     ],
-    "mitre_attack": ["T1499", "T1489"],
-    "mapeo_nist_csf": ["RC.RP-01", "RC.CO-03"],
-    "mapeo_iso_27001": ["A.5.29", "A.5.30"],
-    "recomendacion_defensiva": "Alinear arquitectura resiliente con impacto real del servicio y dependencia cruzada."
+    "mitre_attack": [
+      "T1499",
+      "T1489"
+    ],
+    "mapeo_nist_csf": [
+      "RC.RP-01",
+      "RC.CO-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.29",
+      "A.5.30"
+    ],
+    "recomendacion_defensiva": "Alinear arquitectura resiliente con impacto real del servicio y dependencia cruzada.",
+    "severidad": "media"
   },
   {
     "id": "CVE-001",
@@ -734,9 +1129,18 @@
       "Aplicar mitigaciones de JNDI donde proceda",
       "Inventariar librerias transitivas"
     ],
-    "mitre_attack": ["T1190", "T1059"],
-    "mapeo_nist_csf": ["ID.RA-01", "PR.PS-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.9"],
+    "mitre_attack": [
+      "T1190",
+      "T1059"
+    ],
+    "mapeo_nist_csf": [
+      "ID.RA-01",
+      "PR.PS-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.9"
+    ],
     "recomendacion_defensiva": "Mantener SBOM y respuesta acelerada para dependencias criticas explotadas masivamente."
   },
   {
@@ -754,9 +1158,18 @@
       "Bloquear NTLM saliente cuando sea viable",
       "Buscar indicadores en correo y logs"
     ],
-    "mitre_attack": ["T1557", "T1114"],
-    "mapeo_nist_csf": ["PR.PS-03", "DE.CM-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "mitre_attack": [
+      "T1557",
+      "T1114"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "DE.CM-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.16"
+    ],
     "recomendacion_defensiva": "Reducir protocolos heredados y endurecer clientes de correo ante abuso de autenticacion."
   },
   {
@@ -774,9 +1187,18 @@
       "Buscar webshells e IOC posteriores",
       "Restringir administracion y revisar persistencia"
     ],
-    "mitre_attack": ["T1190", "T1505.003"],
-    "mapeo_nist_csf": ["PR.PS-03", "RS.AN-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "mitre_attack": [
+      "T1190",
+      "T1505.003"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "RS.AN-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.16"
+    ],
     "recomendacion_defensiva": "Tratar appliances perimetrales como prioridad maxima de parcheo y caza post-compromiso."
   },
   {
@@ -794,9 +1216,18 @@
       "Revisar telemetria de explotacion",
       "Aislar servicios comprometidos"
     ],
-    "mitre_attack": ["T1190", "T1059"],
-    "mapeo_nist_csf": ["PR.PS-03", "DE.CM-01"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "mitre_attack": [
+      "T1190",
+      "T1059"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "DE.CM-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.16"
+    ],
     "recomendacion_defensiva": "Integrar appliances de borde en el ciclo de vulnerabilidades con SLA mas agresivo."
   },
   {
@@ -814,9 +1245,18 @@
       "Invalidar sesiones y tokens",
       "Buscar reutilizacion posterior de credenciales"
     ],
-    "mitre_attack": ["T1040", "T1528"],
-    "mapeo_nist_csf": ["PR.PS-03", "RS.MI-01"],
-    "mapeo_iso_27001": ["A.8.8", "A.5.17"],
+    "mitre_attack": [
+      "T1040",
+      "T1528"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "RS.MI-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.5.17"
+    ],
     "recomendacion_defensiva": "Tras una fuga de memoria en acceso remoto, asumir compromiso de sesiones activas y rotarlas."
   },
   {
@@ -834,9 +1274,18 @@
       "Aplicar version corregida",
       "Buscar cuentas no autorizadas creadas"
     ],
-    "mitre_attack": ["T1136", "T1078"],
-    "mapeo_nist_csf": ["PR.AC-03", "PR.PS-03"],
-    "mapeo_iso_27001": ["A.5.16", "A.8.8"],
+    "mitre_attack": [
+      "T1136",
+      "T1078"
+    ],
+    "mapeo_nist_csf": [
+      "PR.AC-03",
+      "PR.PS-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.5.16",
+      "A.8.8"
+    ],
     "recomendacion_defensiva": "Eliminar superficies administrativas expuestas y verificar persistencia tras el parcheo."
   },
   {
@@ -854,9 +1303,18 @@
       "Aislar instancias expuestas",
       "Revisar cuentas y cambios posteriores"
     ],
-    "mitre_attack": ["T1190", "T1078"],
-    "mapeo_nist_csf": ["PR.PS-03", "RS.AN-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "mitre_attack": [
+      "T1190",
+      "T1078"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "RS.AN-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.16"
+    ],
     "recomendacion_defensiva": "La colaboracion expuesta debe entrar en la misma prioridad que un servicio perimetral critico."
   },
   {
@@ -874,9 +1332,18 @@
       "Buscar webshells e indicadores",
       "Notificar y revisar posibles datos exfiltrados"
     ],
-    "mitre_attack": ["T1190", "T1505.003"],
-    "mapeo_nist_csf": ["PR.PS-03", "RS.AN-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "mitre_attack": [
+      "T1190",
+      "T1505.003"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "RS.AN-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.16"
+    ],
     "recomendacion_defensiva": "Los sistemas de transferencia gestionada deben tener monitoreo intensivo y segmentacion fuerte."
   },
   {
@@ -894,9 +1361,18 @@
       "Restringir exposicion externa",
       "Inspeccionar cambios y cuentas creadas"
     ],
-    "mitre_attack": ["T1190", "T1059"],
-    "mapeo_nist_csf": ["PR.PS-03", "PR.AC-03"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.21"],
+    "mitre_attack": [
+      "T1190",
+      "T1059"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "PR.AC-03"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.21"
+    ],
     "recomendacion_defensiva": "Aislar plataformas de gestion centralizada y mantenerlas fuera del perimetro publico siempre que sea posible."
   },
   {
@@ -914,9 +1390,18 @@
       "Restringir acceso administrativo",
       "Revisar integridad y configuracion post-incidente"
     ],
-    "mitre_attack": ["T1190", "T1078"],
-    "mapeo_nist_csf": ["PR.PS-03", "RS.MI-01"],
-    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "mitre_attack": [
+      "T1190",
+      "T1078"
+    ],
+    "mapeo_nist_csf": [
+      "PR.PS-03",
+      "RS.MI-01"
+    ],
+    "mapeo_iso_27001": [
+      "A.8.8",
+      "A.8.16"
+    ],
     "recomendacion_defensiva": "Dar prioridad de remediacion alta a plataformas que administran endpoints o politicas moviles."
   }
 ]

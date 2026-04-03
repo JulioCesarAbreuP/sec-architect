@@ -1,146 +1,181 @@
-# SEC_ARCHITECT | Enterprise Resilience Architecture
+# SEC_ARCHITECT | Framework Defensivo de Arquitectura
 
-Este repositorio implementa una plataforma editorial y de concienciacion tecnica orientada a arquitectura de seguridad, identidad y resiliencia operacional en entornos cloud.
+![HTML](https://img.shields.io/badge/HTML-Framework-orange)
+![Architecture](https://img.shields.io/badge/Architecture-SABSA%20Aligned-0a0a0a)
+![NIST](https://img.shields.io/badge/NIST%20CSF-Mapped-005ea2)
+![MITRE](https://img.shields.io/badge/MITRE%20ATT%26CK-Contextualized-a100ff)
+![CIS](https://img.shields.io/badge/CIS%20v8-Controls%20Driven-00b7c3)
 
-No se trata de una pagina estatica convencional: el proyecto modela controles de hardening, sanitizacion y gobernanza de acceso bajo un enfoque de defensa en profundidad.
+SEC_ARCHITECT es un framework editorial y técnico para diseñar, explicar y operar defensa estructural en entornos cloud.
+Combina narrativa arquitectónica, visualización operativa y trazabilidad de controles para convertir principios de seguridad en decisiones verificables.
 
-La estructura de este proyecto sigue una progresion contextual -> conceptual -> logica inspirada en marcos de arquitectura como SABSA.
+## Qué es este framework
 
-## Objetivo Arquitectonico
+- Un marco de arquitectura defensiva orientado a identidad, resiliencia y gobernanza técnica.
+- Un entorno de trabajo modular para estudiar, ejecutar y documentar decisiones de seguridad.
+- Una plataforma de referencia para alinear diseño estratégico con controles operacionales.
 
-1. Traducir principios de identidad moderna (identidad, cuenta, credencial) en controles tecnicos verificables.
-2. Exponer un dashboard educativo de riesgo de credenciales sin comprometer privacidad del usuario.
-3. Mantener trazabilidad de mitigaciones alineadas con Zero Trust, RBAC y operaciones seguras.
+## Para quién está diseñado
 
-## Controles de Seguridad Implementados
+- Arquitectos de seguridad y arquitectos cloud.
+- Equipos Blue Team y líderes de ciberdefensa.
+- Responsables de modernización técnica en PYMEs y entornos empresariales.
+- Profesionales en preparación de rutas AZ-305, SC-300, SC-100 y AZ-500.
 
-El repositorio incluye además una Base de Conocimiento estructurada en [data/knowledge-base.json](data/knowledge-base.json), con 50 reglas técnicas defensivas agrupadas en NSA, CISA, MITRE, NIST/ISO y CVE.
+## Cómo se usa
 
-### 1. Mitigacion Avanzada de XSS e Injection
+1. Navega los módulos visuales desde [index.html](index.html).
+2. Explora escenarios y mapeos en `Command Center`, `Knowledge-Base` e `Intelligence Dashboard`.
+3. Profundiza con laboratorios en [azure-labs/README.md](azure-labs/README.md).
+4. Reutiliza el dataset defensivo de [data/knowledge-base.json](data/knowledge-base.json).
 
-- Content Security Policy (CSP) v3 para restringir origenes de scripts, estilos, fuentes y conexiones.
-- Sanitizacion defensiva de contenido dinamico en el renderizado de blog y post para reducir riesgo de inyeccion en el DOM.
+## Estructura del proyecto
 
-### 2. Integridad y Transporte Seguro
+- `index.html`: entrada principal y narrativa de valor.
+- `sabsa-ig4-command-center.html`: consola estratégica y simulación defensiva.
+- `tools/knowledge-base.html`: explorador de reglas con filtros avanzados.
+- `intelligence-dashboard.html`: panel analítico sobre inteligencia defensiva.
+- `azure-labs/`: laboratorio técnico con Bicep, Terraform y guías.
+- `GLOSARIO.md`: base conceptual y definiciones de referencia.
 
-- Uso de cabeceras de endurecimiento: X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy.
-- Enforzamiento de HTTPS con upgrade-insecure-requests y bloqueo de mixed content.
+## Módulos incluidos
 
-### 3. Resiliencia Operativa
+### 1) Command Center
+- Orquesta contexto estratégico, decisiones y visualizaciones de riesgo.
+- Enlace: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
 
-- Flujo de contacto robusto con validaciones de estado y degradacion controlada.
-- Motor de blog dinamico compatible con posts.json y resolucion segura de rutas relativas.
+### 2) Knowledge-Base
+- Repositorio navegable de reglas defensivas con mapeo MITRE/NIST/ISO.
+- Enlace: [tools/knowledge-base.html](tools/knowledge-base.html)
 
-## k-Anonymity en la API de contrasenas
+### 3) Intelligence Dashboard
+- Vista de inteligencia operativa para búsqueda, filtrado y priorización de reglas.
+- Enlace: [intelligence-dashboard.html](intelligence-dashboard.html)
 
-El dashboard integra una evaluacion de brechas usando el modelo k-Anonymity sobre hashes SHA-1.
+### 4) Laboratorios
+- Implementación guiada de patrones Zero Trust en Azure.
+- Enlace: [azure-labs/README.md](azure-labs/README.md)
 
-### Como funciona
+### 5) Glosario técnico
+- Léxico de arquitectura, defensa y gobierno de seguridad.
+- Enlace: [GLOSARIO.md](GLOSARIO.md)
 
-1. La contrasena se transforma localmente en un hash SHA-1 dentro del navegador.
-2. Se separa el hash en:
-- Prefijo: primeros 5 caracteres.
-- Sufijo: resto del hash.
-3. Solo el prefijo se envia al endpoint de rango.
-4. El servicio responde con multiples sufijos candidatos y conteos de exposicion.
-5. La comparacion final se hace localmente: el hash completo nunca sale del cliente.
+### 6) Simulador certificador
+- Módulo de entrenamiento y evaluación estructurada por dominio técnico.
+- Estado: en evolución dentro del roadmap del framework.
 
-### Por que protege la privacidad del hash
+## Integración entre módulos
 
-- El servidor no recibe la huella completa, por lo tanto no puede reconstruir de forma directa la contrasena evaluada.
-- Cada prefijo corresponde a un conjunto amplio de hashes posibles (anonimato por conjunto), lo que reduce capacidad de correlacion individual.
-- La validacion final en cliente elimina necesidad de transmitir material sensible completo durante el transito.
+- `Command Center` consume escenarios y postura táctica.
+- `Knowledge-Base` centraliza reglas técnicas y mapeos.
+- `Intelligence Dashboard` consume `data/knowledge-base.json` vía `fetch()` para analítica y priorización.
+- `Laboratorios` materializan los controles en infraestructura reproducible.
+- `Glosario técnico` mantiene consistencia terminológica para diseño y operación.
 
-### Diagrama textual de flujo (k-Anonymity)
+## Extensión del framework
 
-```text
-[Usuario ingresa contrasena]
-		  |
-		  v
-[Navegador calcula SHA-1 local]
-		  |
-		  v
-[Divide hash: PREFIJO(5) + SUFIJO(35)]
-		  |
-		  v
-[Envia solo PREFIJO a API /range]
-		  |
-		  v
-[API devuelve lista de SUFIJOS candidatos + conteos]
-		  |
-		  v
-[Cliente compara SUFIJO local contra respuesta]
-		  |
-		  v
-[Dashboard determina nivel de riesgo]
-```
+1. Añade nuevas reglas en [data/knowledge-base.json](data/knowledge-base.json).
+2. Amplía visualizaciones en `tools/` o paneles raíz.
+3. Incorpora nuevos labs en `azure-labs/docs/` y su IaC asociado.
+4. Mantén mapeos MITRE, NIST CSF e ISO 27001 para trazabilidad integral.
 
-## Dashboard de Riesgo de Credenciales
+## Roadmap del proyecto
 
-El dashboard incorpora tres componentes educativos:
+- `v1`: Command Center + Knowledge-Base + laboratorios base.
+- `v2`: Intelligence Dashboard con filtros avanzados y enlaces compartibles.
+- `v3`: Simulador certificador por dominio (identidad, red, datos, monitoreo).
+- `v4`: Exportadores de evidencia y reportes para gobierno técnico.
 
-1. Exposicion en brechas mediante k-Anonymity.
-2. Entropia estimada en bits.
-3. Simulacion matematica de tiempo de crackeo (sin ejecutar ataques reales).
+## Contacto
 
-El color #ff4d4d se reserva exclusivamente para riesgo critico.
+- [LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)# SEC_ARCHITECT | Framework Defensivo de Arquitectura
 
-## Mitigacion Paso a Paso
+![HTML](https://img.shields.io/badge/HTML-Framework-orange)
+![Architecture](https://img.shields.io/badge/Architecture-SABSA%20Aligned-0a0a0a)
+![NIST](https://img.shields.io/badge/NIST%20CSF-Mapped-005ea2)
+![MITRE](https://img.shields.io/badge/MITRE%20ATT%26CK-Contextualized-a100ff)
+![CIS](https://img.shields.io/badge/CIS%20v8-Controls%20Driven-00b7c3)
 
-Esta seccion se muestra en el dashboard unicamente cuando el riesgo evaluado es ROJO (critico). El objetivo es orientar contencion segura y no destructiva.
+SEC_ARCHITECT es un framework editorial y técnico para diseñar, explicar y operar defensa estructural en entornos cloud.
+Combina narrativa arquitectónica, visualización operativa y trazabilidad de controles para convertir principios de seguridad en decisiones verificables.
 
-1. Deshabilitar cuenta comprometida.
-2. Requerir MFA.
-3. Revisar roles RBAC.
-4. Rotar credenciales.
+## Qué es este framework
 
-Comando PowerShell seguro de contencion:
+- Un marco de arquitectura defensiva orientado a identidad, resiliencia y gobernanza técnica.
+- Un entorno de trabajo modular para estudiar, ejecutar y documentar decisiones de seguridad.
+- Una plataforma de referencia para alinear diseño estratégico con controles operacionales.
 
-```powershell
-Update-AzureADUser -ObjectId <ID> -AccountEnabled $false
-```
+## Para quién está diseñado
 
-## Amenaza vs Mitigacion
+- Arquitectos de seguridad y arquitectos cloud.
+- Equipos Blue Team y líderes de ciberdefensa.
+- Responsables de modernización técnica en PYMEs y entornos empresariales.
+- Profesionales en preparación de rutas AZ-305, SC-300, SC-100 y AZ-500.
 
-| Amenaza | Herramienta | Mitigacion |
-|--------|-------------|------------|
-| Credential Stuffing | Auditor HIBP (k-Anonymity) | MFA resistente a phishing (SC-300) |
-| Password Reuse | Auditor de brechas | Rotacion + Passwordless |
-| Exposicion de cuentas privilegiadas | Dashboard de riesgo | Revision RBAC + PIM |
+## Cómo se usa
 
-## Managed Identities (AZ-104 / SC-300)
+1. Navega los módulos visuales desde [index.html](index.html).
+2. Explora escenarios y mapeos en `Command Center`, `Knowledge-Base` e `Intelligence Dashboard`.
+3. Profundiza con laboratorios en [azure-labs/README.md](azure-labs/README.md).
+4. Reutiliza el dataset defensivo de [data/knowledge-base.json](data/knowledge-base.json).
 
-En arquitectura moderna, la mejor cuenta para aplicaciones en Azure es una Managed Identity.
+## Estructura del proyecto
 
-### Motivo arquitectonico
+- `index.html`: entrada principal y narrativa de valor.
+- `sabsa-ig4-command-center.html`: consola estratégica y simulación defensiva.
+- `tools/knowledge-base.html`: explorador de reglas con filtros avanzados.
+- `intelligence-dashboard.html`: panel analítico sobre inteligencia defensiva.
+- `azure-labs/`: laboratorio técnico con Bicep, Terraform y guías.
+- `GLOSARIO.md`: base conceptual y definiciones de referencia.
 
-- Representa la identidad de la carga de trabajo sin secretos embebidos en codigo.
-- Elimina dependencia de credenciales estaticas de larga vida.
-- Habilita trazabilidad completa de accesos con contexto de identidad real.
+## Módulos incluidos
 
-### Secretless Architecture
+### 1) Command Center
+- Orquesta contexto estratégico, decisiones y visualizaciones de riesgo.
+- Enlace: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
 
-Un enfoque secretless evita almacenar contrasenas, client secrets o llaves privadas en archivos de configuracion, variables de entorno permanentes o repositorios.
+### 2) Knowledge-Base
+- Repositorio navegable de reglas defensivas con mapeo MITRE/NIST/ISO.
+- Enlace: [tools/knowledge-base.html](tools/knowledge-base.html)
 
-Patron recomendado:
+### 3) Intelligence Dashboard
+- Vista de inteligencia operativa para búsqueda, filtrado y priorización de reglas.
+- Enlace: [intelligence-dashboard.html](intelligence-dashboard.html)
 
-1. Aplicacion autenticada con Managed Identity.
-2. Autorizacion por RBAC de minimo privilegio.
-3. Acceso a recursos (Key Vault, Storage, SQL, APIs) sin secretos persistentes en codigo.
+### 4) Laboratorios
+- Implementación guiada de patrones Zero Trust en Azure.
+- Enlace: [azure-labs/README.md](azure-labs/README.md)
 
-### Relacion con Zero Trust
+### 5) Glosario técnico
+- Léxico de arquitectura, defensa y gobierno de seguridad.
+- Enlace: [GLOSARIO.md](GLOSARIO.md)
 
-- Verificacion explicita: cada solicitud se valida por identidad y contexto.
-- Minimo privilegio: permisos granulares y revisables.
-- Asumir breach: reduccion del impacto al no exponer secretos reutilizables.
+### 6) Simulador certificador
+- Módulo de entrenamiento y evaluación estructurada por dominio técnico.
+- Estado: en evolución dentro del roadmap del framework.
 
-## Alineacion con Certificaciones y Marcos
+## Integración entre módulos
 
-- Microsoft Azure AZ-104: identidad de cargas de trabajo, RBAC y operacion segura.
-- Microsoft SC-300: gobierno de acceso, MFA y proteccion de identidades.
-- AZ-305: decisiones de arquitectura de seguridad a escala.
-- CIS Controls v8 y NIST: disciplina de proteccion, deteccion y respuesta.
+- `Command Center` consume escenarios y postura táctica.
+- `Knowledge-Base` centraliza reglas técnicas y mapeos.
+- `Intelligence Dashboard` consume `data/knowledge-base.json` vía `fetch()` para analítica y priorización.
+- `Laboratorios` materializan los controles en infraestructura reproducible.
+- `Glosario técnico` mantiene consistencia terminológica para diseño y operación.
 
-## Contacto Profesional
+## Extensión del framework
 
-[LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)
+1. Añade nuevas reglas en [data/knowledge-base.json](data/knowledge-base.json).
+2. Amplía visualizaciones en `tools/` o paneles raíz.
+3. Incorpora nuevos labs en `azure-labs/docs/` y su IaC asociado.
+4. Mantén mapeos MITRE, NIST CSF e ISO 27001 para trazabilidad integral.
+
+## Roadmap del proyecto
+
+- `v1`: Command Center + Knowledge-Base + laboratorios base.
+- `v2`: Intelligence Dashboard con filtros avanzados y enlaces compartibles.
+- `v3`: Simulador certificador por dominio (identidad, red, datos, monitoreo).
+- `v4`: Exportadores de evidencia y reportes para gobierno técnico.
+
+## Contacto
+
+- [LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)

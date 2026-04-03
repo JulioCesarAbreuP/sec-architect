@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+  <title>Intelligence Dashboard | SEC_ARCHITECT</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/intelligence-dashboard.page.css">
+</head>
+<body data-theme="dark">
+  <header>
+    <a href="index.html" class="logo">SEC_<span>ARCHITECT</span></a>
+    <div class="header-right">
+      <a href="tools.html" class="header-link">Herramientas</a>
+      <a href="tools/knowledge-base.html" class="header-link">Knowledge-Base</a>
+      <a href="sabsa-ig4-command-center.html" class="header-link">Command Center</a>
+    </div>
+  </header>
+
+  <main class="intel-main">
+    <section class="hero">
+      <p class="eyebrow">Módulo analítico</p>
+      <h1>Intelligence Dashboard</h1>
+      <p class="subtitle">Panel premium para priorizar reglas defensivas desde `data/knowledge-base.json` con búsqueda global, filtros contextuales y lectura rápida por riesgo.</p>
+    </section>
+
+    <section class="controls-shell">
+      <form class="filters" id="intelFilters" aria-label="Filtros del panel de inteligencia">
+        <label>
+          <span>Búsqueda global</span>
+          <input type="search" id="search" placeholder="ID, técnica MITRE, control NIST/ISO, recomendación..." autocomplete="off">
+        </label>
+
+        <label>
+          <span>Categoría</span>
+          <select id="category">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Riesgo</span>
+          <select id="risk">
+            <option value="all">Todos</option>
+            <option value="critico">Crítico</option>
+            <option value="alto">Alto</option>
+            <option value="medio">Medio</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Severidad</span>
+          <select id="severity">
+            <option value="all">Todas</option>
+            <option value="critica">Crítica</option>
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Técnica MITRE</span>
+          <select id="mitre">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Control NIST/ISO</span>
+          <select id="control">
+            <option value="all">Todos</option>
+          </select>
+        </label>
+
+        <button type="button" id="reset" class="filter-btn">Limpiar filtros</button>
+      </form>
+
+      <div class="meta">
+        <h2 id="count">0 reglas</h2>
+      </div>
+
+      <section class="state" id="loading">Cargando inteligencia defensiva...</section>
+      <section class="state hidden" id="error">No fue posible cargar `data/knowledge-base.json`.</section>
+      <section class="state hidden" id="empty">No hay coincidencias para los filtros aplicados.</section>
+
+      <section class="results hidden" id="results" aria-label="Resultados del Intelligence Dashboard"></section>
+    </section>
+  </main>
+
+  <footer data-site-footer="true"></footer>
+  <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/intelligence-dashboard.js" defer></script>
+</body>
+</html>
