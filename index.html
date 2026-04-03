@@ -24,11 +24,6 @@
         </div>
     </header>
 
-    <section class="hero">
-        <h1>Arquitectura de <span>Defensa</span> Estructural para PYMEs.</h1>
-        <p>Garantizamos la resiliencia operativa mediante el despliegue de capas de seguridad avanzadas y gobernanza técnica en la nube.</p>
-    </section>
-
     <section class="pillars-section" aria-labelledby="pillarsTitle">
         <h2 class="pillars-title" id="pillarsTitle">Los 4 Pilares de SEC_ARCHITECT</h2>
         <p class="pillars-subtitle">
@@ -73,6 +68,11 @@
                 <a href="sections/herramientas.html" class="pillar-btn">Acceder</a>
             </article>
         </div>
+    </section>
+
+    <section class="hero">
+        <h1>Arquitectura de <span>Defensa</span> Estructural para PYMEs.</h1>
+        <p>Garantizamos la resiliencia operativa mediante el despliegue de capas de seguridad avanzadas y gobernanza técnica en la nube.</p>
     </section>
 
     <section class="solutions-container">
@@ -160,58 +160,6 @@
                 Solicitar evaluación de arquitectura 
                 <svg class="cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
-        </div>
-    </section>
-
-    <section class="risk-dashboard" aria-labelledby="riskDashboardTitle">
-        <div class="section-header">
-            <span class="section-tag">Identidad y Riesgo</span>
-            <h2 class="section-title-large" id="riskDashboardTitle">Dashboard de Exposición de Credenciales</h2>
-            <p class="risk-dashboard-intro">
-                Evaluación educativa basada en k-Anonymity, entropía y buenas prácticas de gobierno de identidades.
-            </p>
-        </div>
-
-        <div class="risk-card" role="region" aria-label="Panel de análisis de riesgo de credenciales">
-            <label for="riskPassword" class="risk-label">Contraseña a evaluar</label>
-            <div class="risk-input-group">
-                <input id="riskPassword" class="risk-input" type="password" autocomplete="off" spellcheck="false" placeholder="Ingrese una contraseña para evaluación local y privada" maxlength="128">
-                <button id="analyzeRiskBtn" type="button" class="risk-btn">Evaluar riesgo</button>
-            </div>
-            <p class="risk-hint">
-                El análisis usa un modelo k-Anonymity: solo se envía el prefijo del hash SHA-1 (5 caracteres), nunca el hash completo.
-            </p>
-
-            <div class="risk-metrics" aria-live="polite">
-                <article class="metric">
-                    <h3>Nivel de Riesgo</h3>
-                    <p id="riskLevelBadge" class="risk-badge risk-neutral">Pendiente</p>
-                </article>
-                <article class="metric">
-                    <h3>Coincidencias en Brechas</h3>
-                    <p id="breachCount">N/D</p>
-                </article>
-                <article class="metric">
-                    <h3>Entropía Estimada</h3>
-                    <p id="entropyValue">N/D</p>
-                </article>
-                <article class="metric">
-                    <h3>Tiempo de Crackeo (simulación)</h3>
-                    <p id="crackTimeValue">N/D</p>
-                </article>
-            </div>
-
-            <div id="mitigationPanel" class="mitigation-panel" hidden>
-                <h3>Mitigación Paso a Paso</h3>
-                <ol>
-                    <li>Deshabilitar cuenta comprometida.</li>
-                    <li>Requerir MFA.</li>
-                    <li>Revisar roles RBAC.</li>
-                    <li>Rotar credenciales.</li>
-                </ol>
-                <p class="ps-command-title">Comando PowerShell seguro de contención:</p>
-                <pre><code>Update-AzureADUser -ObjectId &lt;ID&gt; -AccountEnabled $false</code></pre>
-            </div>
         </div>
     </section>
 
