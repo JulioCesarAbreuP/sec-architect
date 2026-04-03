@@ -2,273 +2,1098 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <title>SEC_ARCHITECT | SABSA Strategic Command Center</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SABSA IG4 | Strategic Command Center</title>
+    <meta name="description" content="SEC_ARCHITECT Strategic Command Center: panel SABSA IG4 para modelar riesgo, controles y remediación de forma conceptual.">
+    <meta name="theme-color" content="#050505">
+    <link rel="icon" href="/sec-architect/assets/favicon.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --hex-bg: #050505;
-            --hex-card: #0d0d0d;
-            --sabsa-blue: #00f2ff;
-            --sabsa-red: #ff003c;
-            --sabsa-gold: #ffbd00;
-            --text-dim: #a0a0a0;
+            --bg-dark: #020308;
+            --bg-panel: #070910;
+            --bg-panel-alt: #05060b;
+            --border-soft: #1b1f2a;
+            --neon-blue: #00f2ff;
+            --neon-blue-soft: rgba(0, 242, 255, 0.12);
+            --neon-gold: #ffbd00;
+            --neon-red: #ff003c;
+            --neon-amber: #ffb347;
+            --text-main: #f5f5f5;
+            --text-dim: #9ca3b5;
+            --text-soft: #6b7280;
+            --accent-green: #00ff9c;
         }
+
+        * { box-sizing: border-box; }
 
         body {
-            background-color: var(--hex-bg);
-            color: #fff;
-            font-family: 'Segoe UI', 'Consolas', sans-serif;
             margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #050816 0, #020308 45%, #000 100%);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
         }
 
-        /* --- UI: DASHBOARD Nivel Casa Blanca --- */
+        /* HEADER NORAD / CASA BLANCA */
         header {
-            padding: 15px 40px;
-            background: linear-gradient(90deg, #001a1d 0%, #050505 100%);
-            border-bottom: 1px solid var(--sabsa-blue);
+            padding: 14px 32px;
+            border-bottom: 1px solid var(--border-soft);
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #020308 0%, #050816 40%, #020308 100%);
+            position: relative;
         }
 
-        .status-badge {
-            background: rgba(0, 242, 255, 0.1);
-            color: var(--sabsa-blue);
-            padding: 5px 12px;
-            border-radius: 20px;
+        .brand-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .brand-title {
+            font-size: 1.2rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
             font-size: 0.7rem;
-            border: 1px solid var(--sabsa-blue);
-            letter-spacing: 2px;
+            color: var(--text-dim);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
         }
 
-        main {
+        .status-strip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-ig4 {
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            background: rgba(0, 242, 255, 0.06);
+            box-shadow: 0 0 16px rgba(0, 242, 255, 0.18);
+        }
+
+        .heartbeat {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--accent-green);
+            box-shadow: 0 0 12px rgba(0, 255, 156, 0.7);
+            animation: pulse 2.4s infinite;
+        }
+
+        .heartbeat-label {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.4; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .layout {
             display: grid;
-            grid-template-columns: 350px 1fr 300px;
-            gap: 20px;
-            padding: 20px;
-            flex-grow: 1;
-            overflow: hidden;
+            grid-template-columns: 340px minmax(0, 1.6fr) 360px;
+            gap: 18px;
+            padding: 18px 22px 22px;
+            flex: 1;
         }
 
         .panel {
-            background: var(--hex-card);
-            border: 1px solid #222;
-            padding: 20px;
-            border-radius: 8px;
+            background: radial-gradient(circle at top left, #101322 0, #05060b 55%, #020308 100%);
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            padding: 16px 16px 14px;
+            position: relative;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .panel-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--neon-blue);
+        }
+
+        .panel-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+        }
+
+        /* PANEL SUPERIOR: MAPA / VISTA GLOBAL */
+        .global-panel {
+            grid-column: 1 / 4;
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 16px;
+            margin-bottom: 4px;
+        }
+
+        .map-container {
+            position: relative;
+            height: 180px;
+            background: radial-gradient(circle at center, #101322 0, #05060b 55%, #020308 100%);
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+        }
+
+        .map-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.4;
+        }
+
+        .map-orbit {
+            position: absolute;
+            border-radius: 999px;
+            border: 1px dashed rgba(0, 242, 255, 0.35);
+            inset: 18px 26%;
+        }
+
+        .map-orbit:nth-child(3) { inset: 32px 18%; border-color: rgba(255, 189, 0, 0.35); }
+        .map-orbit:nth-child(4) { inset: 52px 30%; border-color: rgba(255, 0, 60, 0.35); }
+
+        .map-node {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 16px rgba(0, 242, 255, 0.9);
+        }
+
+        .map-node.gov { top: 32%; left: 22%; }
+        .map-node.cloud { top: 58%; left: 52%; background: var(--neon-gold); box-shadow: 0 0 16px rgba(255, 189, 0, 0.9); }
+        .map-node.id { top: 40%; left: 76%; background: var(--neon-red); box-shadow: 0 0 16px rgba(255, 0, 60, 0.9); }
+
+        .map-label {
+            position: absolute;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.7);
+            padding: 3px 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .map-label.gov { top: 22%; left: 18%; }
+        .map-label.cloud { top: 66%; left: 48%; }
+        .map-label.id { top: 30%; left: 70%; }
+
+        .global-status {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
+            gap: 8px;
         }
 
-        /* --- MOTOR: Policy Loader UI --- */
-        .policy-engine {
-            border-left: 3px solid var(--sabsa-blue);
+        .global-status-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--neon-blue);
         }
 
-        .terminal {
-            background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            padding: 10px;
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .status-pill.ok { background: rgba(0, 255, 156, 0.08); color: var(--accent-green); border: 1px solid rgba(0, 255, 156, 0.4); }
+        .status-pill.warn { background: rgba(255, 189, 0, 0.08); color: var(--neon-amber); border: 1px solid rgba(255, 189, 0, 0.4); }
+        .status-pill.crit { background: rgba(255, 0, 60, 0.08); color: var(--neon-red); border: 1px solid rgba(255, 0, 60, 0.4); }
+
+        /* PANEL IZQUIERDO: DOCTRINA / ESCENARIOS / PERFILES */
+        .rule-list {
+            margin-top: 8px;
+            border-top: 1px solid var(--border-soft);
+            padding-top: 8px;
+        }
+
+        .rule-item {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .rule-id {
+            font-size: 0.7rem;
+            color: var(--neon-gold);
+        }
+
+        .rule-name {
             font-size: 0.8rem;
-            height: 200px;
-            overflow-y: auto;
-            border: 1px solid #333;
+        }
+
+        .rule-attr {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+        }
+
+        .select-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
             margin-top: 10px;
         }
 
-        .risk-chart-container {
-            height: 250px;
-            margin-bottom: 20px;
+        label {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
         }
 
-        /* --- REGLAS: Base de Conocimiento Visual --- */
-        .rule-card {
-            background: #151515;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+        select {
+            width: 100%;
+            background: #05060b;
+            border: 1px solid var(--border-soft);
+            color: var(--text-main);
+            padding: 6px 8px;
             font-size: 0.8rem;
-            border-left: 3px solid var(--sabsa-gold);
+            border-radius: 4px;
         }
 
-        .btn-audit {
-            background: var(--sabsa-blue);
+        /* PANEL CENTRAL: OPERATIONS / CONSOLE / RADAR */
+        .terminal-input {
+            width: 100%;
+            background: #020308;
+            border: 1px solid var(--border-soft);
+            color: var(--neon-blue);
+            padding: 10px 10px;
+            margin-bottom: 8px;
+            font-family: "Consolas", monospace;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--neon-blue);
             color: #000;
             border: none;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.12em;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 0 18px rgba(0, 242, 255, 0.4);
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #ffffff;
+            box-shadow: 0 0 26px rgba(0, 242, 255, 0.7);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: rgba(0, 242, 255, 0.08);
+            color: var(--neon-blue);
+            border: 1px solid rgba(0, 242, 255, 0.4);
+            padding: 8px 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .console {
             margin-top: 10px;
+            background: #020308;
+            border-radius: 6px;
+            border: 1px solid var(--border-soft);
+            padding: 8px;
+            font-family: "Consolas", monospace;
+            font-size: 0.75rem;
+            color: #a5ffb5;
+            height: 150px;
+            overflow-y: auto;
         }
 
-        .btn-audit:hover { filter: brightness(1.2); }
-    </style>
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', 'Segoe UI', 'Consolas', sans-serif;
+        .console-line-info { color: #a5ffb5; }
+        .console-line-warn { color: var(--neon-amber); }
+        .console-line-crit { color: var(--neon-red); }
+
+        .chart-wrapper {
+            margin-top: 10px;
+            height: 260px;
         }
 
-        @media (max-width: 1200px) {
-            main {
-                grid-template-columns: 1fr 1fr;
-            }
+        /* PANEL DERECHO: THREAT MATRIX / REMEDIACIÓN */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            font-size: 0.7rem;
         }
 
-        @media (max-width: 900px) {
-            body {
-                height: auto;
-                min-height: 100vh;
-                overflow: auto;
-            }
+        .matrix-table th,
+        .matrix-table td {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 4px 4px;
+            text-align: left;
+        }
 
-            header {
-                padding: 12px 16px;
-                gap: 10px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .matrix-table th {
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 0.65rem;
+        }
 
-            main {
-                grid-template-columns: 1fr;
-                padding: 12px;
-                gap: 12px;
-                overflow: visible;
-            }
+        .sev-pill {
+            padding: 1px 6px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+        }
 
-            .panel {
-                padding: 14px;
-            }
+        .sev-low { background: rgba(0, 255, 156, 0.08); color: var(--accent-green); }
+        .sev-med { background: rgba(255, 189, 0, 0.08); color: var(--neon-amber); }
+        .sev-high { background: rgba(255, 0, 60, 0.08); color: var(--neon-red); }
 
-            .risk-chart-container {
-                height: 220px;
-            }
+        .remediation-card {
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 0, 60, 0.4);
+            background: radial-gradient(circle at top left, rgba(255, 0, 60, 0.18), rgba(0,0,0,0.9));
+            padding: 10px 10px 8px;
+            font-size: 0.78rem;
+        }
+
+        .rem-title {
+            color: var(--neon-red);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        .rem-meta {
+            font-size: 0.7rem;
+            color: var(--text-soft);
+            margin-top: 4px;
+        }
+
+        .rem-section-title {
+            margin-top: 6px;
+            font-size: 0.72rem;
+            color: var(--neon-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        code {
+            display: block;
+            margin-top: 6px;
+            background: #020308;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 0.7rem;
+            color: var(--neon-gold);
+        }
+
+        /* CRISIS MODE */
+        body.crisis {
+            background: radial-gradient(circle at top, #1a0206 0, #050308 45%, #000 100%);
+        }
+
+        body.crisis header {
+            border-bottom-color: var(--neon-red);
+        }
+
+        .crisis-banner {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 46px;
+            background: rgba(255, 0, 60, 0.12);
+            border: 1px solid rgba(255, 0, 60, 0.6);
+            color: var(--neon-red);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            backdrop-filter: blur(8px);
+            display: none;
+            z-index: 20;
+        }
+
+        body.crisis .crisis-banner { display: inline-flex; }
+
+        /* MODAL ARQUITECTURA */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+        }
+
+        .modal {
+            background: #05060b;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            max-width: 720px;
+            width: 94%;
+            padding: 16px 18px 14px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--neon-blue);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-soft);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .modal-body {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .modal-diagram {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed rgba(255,255,255,0.12);
+            font-family: "Consolas", monospace;
+            font-size: 0.75rem;
+            background: #020308;
+        }
+
+        .footer {
+            padding: 8px 22px 12px;
+            font-size: 0.7rem;
+            color: var(--text-soft);
+            border-top: 1px solid var(--border-soft);
+            text-align: right;
+        }
+
+        .footer span { color: var(--neon-blue); }
+
+        @media (max-width: 1180px) {
+            .layout { grid-template-columns: 1fr; }
+            .global-panel { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <div class="crisis-banner">IG4 CRISIS MODE ACTIVATED — AWAITING STRATEGIC DIRECTIVE</div>
 
-<header>
-    <div>
-        <span style="color: var(--sabsa-blue); font-weight: bold; font-size: 1.2rem;">SEC_ARCHITECT</span>
-        <span style="color: var(--text-dim); font-size: 0.8rem; margin-left: 15px;">STRATEGIC DEFENSE PLATFORM</span>
-    </div>
-    <div class="status-badge">SABSA LEVEL: IG4 (OPTIMIZED)</div>
-</header>
+    <header>
+        <div class="brand-block">
+            <div class="brand-title">SEC_ARCHITECT</div>
+            <div class="brand-subtitle">SABSA STRATEGIC DEFENSE PLATFORM</div>
+        </div>
+        <div class="status-strip">
+            <div class="heartbeat"></div>
+            <div class="heartbeat-label">SABSA Engine: Online</div>
+            <div class="badge-ig4">IG4 | Strategic Optimized</div>
+        </div>
+    </header>
 
-<main>
-    <div class="panel">
-        <h3>DOCTRINA DE SEGURIDAD</h3>
-        <p style="font-size: 0.8rem; color: var(--text-dim);">Reglas activas basadas en NIST & SABSA</p>
-        <div id="ruleList">
-            </div>
-    </div>
+    <!-- VISTA GLOBAL / NORAD -->
+    <section class="global-panel">
+        <div class="map-container" aria-label="Vista conceptual de superficie de riesgo">
+            <div class="map-grid"></div>
+            <div class="map-orbit"></div>
+            <div class="map-orbit"></div>
+            <div class="map-orbit"></div>
 
-    <div class="panel policy-engine">
-        <h3>OPERATIONS CENTER</h3>
-        <input type="text" id="targetUrl" placeholder="TARGET URL O TENANT ID..." 
-               style="background:#000; color:white; border:1px solid #444; padding:12px; margin-bottom:10px;">
-        <button class="btn-audit" onclick="startAdvancedAudit()">INICIAR ANÁLISIS ESTRATÉGICO</button>
-        
-        <div class="terminal" id="terminalLog">
-            > SISTEMA INICIALIZADO... ESPERANDO OBJETIVO...
+            <div class="map-node gov"></div>
+            <div class="map-node cloud"></div>
+            <div class="map-node id"></div>
+
+            <div class="map-label gov">GOV / White House</div>
+            <div class="map-label cloud">Global Cloud Fabric</div>
+            <div class="map-label id">Identity Mesh</div>
         </div>
 
-        <div style="margin-top: 20px;">
-            <h4>MATRIZ DE RIESGO DE ATRIBUTOS</h4>
-            <div class="risk-chart-container">
+        <div class="global-status" aria-label="Estado estratégico de atributos">
+            <div class="global-status-title">Strategic Posture Overview</div>
+            <div class="status-row">
+                <span>Identity Trust</span>
+                <span class="status-pill ok" id="status-identity">Elevated</span>
+            </div>
+            <div class="status-row">
+                <span>Integrity Channel</span>
+                <span class="status-pill warn" id="status-integrity">Degraded</span>
+            </div>
+            <div class="status-row">
+                <span>Zero Trust Mesh</span>
+                <span class="status-pill ok" id="status-zt">Stable</span>
+            </div>
+            <div class="status-row">
+                <span>Resilience Envelope</span>
+                <span class="status-pill ok" id="status-resilience">Nominal</span>
+            </div>
+            <div class="status-row">
+                <span>Auditability</span>
+                <span class="status-pill warn" id="status-audit">Under Review</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- LAYOUT PRINCIPAL -->
+    <main class="layout">
+        <!-- PANEL IZQUIERDO -->
+        <section class="panel" aria-label="Doctrina y escenarios">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Doctrina de Control</div>
+                    <div class="panel-subtitle">NIST SP 800-53 · SABSA · SC-300 · AZ-305</div>
+                </div>
+            </div>
+
+            <div class="select-row">
+                <label for="scenario-select">Escenario estratégico</label>
+                <select id="scenario-select">
+                    <option value="cred-stuffing">Credential Stuffing (Identidad)</option>
+                    <option value="excess-priv">Privilegios excesivos (Integridad)</option>
+                    <option value="no-mfa">Identidad sin MFA (Confidencialidad)</option>
+                    <option value="segmentation">Segmentación inconsistente (Disponibilidad)</option>
+                    <option value="legacy-config">Configuración legacy (Auditabilidad)</option>
+                </select>
+            </div>
+
+            <div class="select-row">
+                <label for="profile-select">Perfil de entorno</label>
+                <select id="profile-select">
+                    <option value="gov">Gobierno / Casa Blanca</option>
+                    <option value="enterprise">Enterprise Global</option>
+                    <option value="critical">Infraestructura Crítica</option>
+                    <option value="finance">Finanzas</option>
+                    <option value="startup">Startup Zero Trust</option>
+                </select>
+            </div>
+
+            <div class="rule-list" id="rule-list">
+                <!-- Reglas se rellenan por JS -->
+            </div>
+        </section>
+
+        <!-- PANEL CENTRAL -->
+        <section class="panel" aria-label="Centro de operaciones">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Operations Command Center</div>
+                    <div class="panel-subtitle">Evaluación SABSA IG1 → IG4 · Zero Trust</div>
+                </div>
+            </div>
+
+            <input id="target-input" class="terminal-input" placeholder="TENANT ID, dominio conceptual o alias de entorno..." aria-label="Objetivo lógico de evaluación">
+
+            <button class="btn-primary" id="btn-run">Ejecutar Evaluación Estratégica</button>
+
+            <div class="btn-row">
+                <button class="btn-secondary" id="btn-test">Test Mode</button>
+                <button class="btn-secondary" id="btn-arch">Ver arquitectura interna</button>
+            </div>
+
+            <div class="console" id="console" role="status" aria-live="polite">
+                [SYSTEM] SABSA Engine listo. Seleccione escenario y perfil, luego ejecute evaluación.
+            </div>
+
+            <div class="chart-wrapper">
                 <canvas id="radarChart"></canvas>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <div class="panel">
-        <h3>REMEDIACIÓN (IG4)</h3>
-        <div id="remediationPanel" style="font-size: 0.85rem; color: var(--text-dim);">
-            Esperando telemetría para generar directivas de respuesta...
-        </div>
-    </div>
-</main>
-
-<script>
-    // 1. EL MOTOR (Policy Loader) & LAS REGLAS (Base de Conocimiento)
-    const SABSA_DOCTRINE = {
-        rules: [
-            { id: 'SC-300-01', name: 'MFA Phishing-Resistant', attr: 'Confidencialidad', impact: 90, desc: 'Verifica FIDO2/Certificados' },
-            { id: 'AZ-305-05', name: 'Micro-Segmentación', attr: 'Integridad', impact: 70, desc: 'Verifica aislamiento de recursos' },
-            { id: 'WEB-SEC-01', name: 'HSTS & CSP Enforcement', attr: 'Disponibilidad', impact: 50, desc: 'Políticas de cabecera avanzada' }
-        ],
-        attributes: ['Confidencialidad', 'Integridad', 'Disponibilidad', 'Accesibilidad', 'Resiliencia']
-    };
-
-    // Renderizar reglas iniciales
-    const ruleList = document.getElementById('ruleList');
-    SABSA_DOCTRINE.rules.forEach(r => {
-        ruleList.innerHTML += `<div class="rule-card"><strong>${r.id}</strong>: ${r.name}<br><small>${r.desc}</small></div>`;
-    });
-
-    // Gráfico de Radar SABSA
-    const ctx = document.getElementById('radarChart').getContext('2d');
-    let radarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: SABSA_DOCTRINE.attributes,
-            datasets: [{
-                label: 'Postura de Seguridad',
-                data: [100, 100, 100, 100, 100],
-                backgroundColor: 'rgba(0, 242, 255, 0.2)',
-                borderColor: '#00f2ff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            scales: { r: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { color: '#333' } } },
-            plugins: { legend: { display: false } }
-        }
-    });
-
-    // 2. LA EJECUCIÓN (Lógica de Análisis)
-    async function startAdvancedAudit() {
-        const log = document.getElementById('terminalLog');
-        const rem = document.getElementById('remediationPanel');
-        const target = document.getElementById('targetUrl').value;
-
-        if(!target) return alert("Ingrese objetivo");
-
-        log.innerHTML = `> CONECTANDO A POLICIES.WHITEHOUSE.GOV...<br>> CARGANDO DOCTRINA IG4...`;
-        
-        // Simulación de escaneo por capas
-        for(let rule of SABSA_DOCTRINE.rules) {
-            await new Promise(r => setTimeout(r, 800));
-            log.innerHTML += `<br>> EJECUTANDO CONTROL ${rule.id}: [BUSCANDO VULNERABILIDADES...]`;
-            log.scrollTop = log.scrollHeight;
-        }
-
-        // Resultado Final: Fallo Crítico simulado para mostrar IG4
-        log.innerHTML += `<br>> <span style="color:red">ALERTA: BRECHA DETECTADA EN ATRIBUTO 'INTEGRIDAD'</span>`;
-        
-        // Actualizar Gráfico
-        radarChart.data.datasets[0].data = [80, 30, 90, 75, 60];
-        radarChart.update();
-
-        // Generar Remediación (Nivel Sabsa Senior)
-        rem.innerHTML = `
-            <div style="color:var(--sabsa-red); border:1px solid var(--sabsa-red); padding:10px; border-radius:4px;">
-                <strong>DIRECTIVA DE EMERGENCIA</strong><br>
-                Falla detectada en AZ-305-05.<br><br>
-                <strong>Comando de Autorreparación:</strong><br>
-                <code style="background:#000; display:block; padding:5px; margin-top:5px; color:#fff;">
-                az resource update --ids /subscriptions/... --set properties.networkAcl.defaultAction=Deny
-                </code>
+        <!-- PANEL DERECHO -->
+        <section class="panel" aria-label="Threat Matrix y remediación">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Threat Matrix · IG4 Response</div>
+                    <div class="panel-subtitle">Atributos SABSA · Severidad · Directivas</div>
+                </div>
             </div>
-        `;
-    }
-</script>
+
+            <table class="matrix-table" id="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Atributo</th>
+                        <th>Estado</th>
+                        <th>Severidad</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rellenado por JS -->
+                </tbody>
+            </table>
+
+            <div id="remediation-panel">
+                <div class="remediation-card">
+                    <div class="rem-title">Sin incidente crítico activo</div>
+                    <div class="rem-meta">La plataforma se encuentra en estado nominal. Ejecute un escenario para generar una directiva IG4.</div>
+                    <div class="rem-section-title">Nota arquitectónica</div>
+                    <p class="rem-meta">
+                        Este panel representa una vista lógica de controles y remediación conceptual. No ejecuta acciones reales ni interactúa con recursos de producción.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        Parte del ecosistema <span>SEC_ARCHITECT</span> — Arquitectura, identidad y seguridad cloud.
+    </footer>
+
+    <!-- MODAL ARQUITECTURA -->
+    <div class="modal-backdrop" id="modal-arch">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Arquitectura interna del Command Center</div>
+                <button class="modal-close" id="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Este Command Center representa una vista lógica de un marco SABSA aplicado a identidad, arquitectura y riesgo.
+                    La progresión sigue el patrón contextual → conceptual → lógico, alineado con marcos como SABSA y Zero Trust.
+                </p>
+                <div class="modal-diagram">
+Contextual Layer
+    └─ Entorno: Gobierno / Enterprise / Infraestructura Crítica
+       └─ Escenario: Credential Stuffing / Privilegios excesivos / Configuración legacy
+
+Conceptual Layer
+    └─ Atributos SABSA: Confidencialidad · Integridad · Disponibilidad · Resiliencia · Auditabilidad
+       └─ Controles: SC-300 · AZ-305 · NIST SP 800-53
+
+Logical Layer
+    └─ Motor de evaluación (simulado)
+       ├─ Telemetría conceptual
+       ├─ Threat Matrix
+       ├─ Radar de postura
+       └─ Directivas IG4
+
+Nota:
+Este módulo es pedagógico y conceptual. No ejecuta auditorías reales ni interactúa con recursos de producción.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // -----------------------------
+        // MODELO CONCEPTUAL / DATOS
+        // -----------------------------
+        const SABSA_ATTRIBUTES = ['Confidencialidad', 'Integridad', 'Disponibilidad', 'Resiliencia', 'Auditabilidad'];
+
+        const RULES = [
+            { id: 'SC-300-01', name: 'MFA Phishing-Resistant', attr: 'Confidencialidad' },
+            { id: 'SC-300-07', name: 'Identity Governance', attr: 'Auditabilidad' },
+            { id: 'AZ-305-05', name: 'Network Micro-Segmentation', attr: 'Disponibilidad' },
+            { id: 'AZ-104-12', name: 'RBAC Governance', attr: 'Integridad' },
+            { id: 'NIST-RA-05', name: 'Risk Assessment', attr: 'Resiliencia' }
+        ];
+
+        const SCENARIOS = {
+            'cred-stuffing': {
+                name: 'Credential Stuffing',
+                primaryAttr: 'Confidencialidad',
+                description: 'Intentos masivos de autenticación con credenciales expuestas.',
+                radarDelta: [30, 10, 0, 5, 15],
+                severity: 'high'
+            },
+            'excess-priv': {
+                name: 'Privilegios excesivos',
+                primaryAttr: 'Integridad',
+                description: 'Cuentas con privilegios por encima de su función.',
+                radarDelta: [10, 40, 5, 10, 20],
+                severity: 'high'
+            },
+            'no-mfa': {
+                name: 'Identidad sin MFA',
+                primaryAttr: 'Confidencialidad',
+                description: 'Acceso sin autenticación fuerte.',
+                radarDelta: [35, 15, 0, 5, 10],
+                severity: 'med'
+            },
+            'segmentation': {
+                name: 'Segmentación inconsistente',
+                primaryAttr: 'Disponibilidad',
+                description: 'Fronteras de red poco definidas.',
+                radarDelta: [5, 15, 35, 10, 10],
+                severity: 'med'
+            },
+            'legacy-config': {
+                name: 'Configuración legacy',
+                primaryAttr: 'Auditabilidad',
+                description: 'Controles heredados sin trazabilidad completa.',
+                radarDelta: [10, 10, 5, 15, 35],
+                severity: 'med'
+            }
+        };
+
+        const PROFILES = {
+            'gov': { name: 'Gobierno / Casa Blanca', weight: [1.2, 1.3, 1.1, 1.2, 1.3] },
+            'enterprise': { name: 'Enterprise Global', weight: [1.1, 1.1, 1.1, 1.1, 1.1] },
+            'critical': { name: 'Infraestructura Crítica', weight: [1.1, 1.3, 1.3, 1.2, 1.2] },
+            'finance': { name: 'Finanzas', weight: [1.3, 1.2, 1.0, 1.1, 1.3] },
+            'startup': { name: 'Startup Zero Trust', weight: [1.2, 1.0, 1.0, 1.2, 1.1] }
+        };
+
+        // -----------------------------
+        // UTILIDADES
+        // -----------------------------
+        const consoleEl = document.getElementById('console');
+        const ruleListEl = document.getElementById('rule-list');
+        const matrixTableBody = document.querySelector('#matrix-table tbody');
+        const remediationPanel = document.getElementById('remediation-panel');
+        const scenarioSelect = document.getElementById('scenario-select');
+        const profileSelect = document.getElementById('profile-select');
+        const targetInput = document.getElementById('target-input');
+
+        function logLine(message, level = 'info') {
+            const ts = new Date().toISOString();
+            const div = document.createElement('div');
+            div.classList.add(`console-line-${level}`);
+            div.textContent = `[${ts}] ${message}`;
+            consoleEl.appendChild(div);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function resetConsole() {
+            consoleEl.innerHTML = '[SYSTEM] Reiniciando telemetría conceptual...';
+        }
+
+        function sevClass(sev) {
+            if (sev === 'high') return 'sev-high';
+            if (sev === 'med') return 'sev-med';
+            return 'sev-low';
+        }
+
+        function sevLabel(sev) {
+            if (sev === 'high') return 'Crítico';
+            if (sev === 'med') return 'Alto';
+            return 'Moderado';
+        }
+
+        // -----------------------------
+        // RENDER INICIAL
+        // -----------------------------
+        function renderRules() {
+            ruleListEl.innerHTML = '';
+            RULES.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'rule-item';
+                div.innerHTML = `
+                    <div class="rule-id">[${r.id}]</div>
+                    <div class="rule-name">${r.name}</div>
+                    <div class="rule-attr">${r.attr}</div>
+                `;
+                ruleListEl.appendChild(div);
+            });
+        }
+
+        function renderMatrix(baseState) {
+            matrixTableBody.innerHTML = '';
+            SABSA_ATTRIBUTES.forEach(attr => {
+                const state = baseState[attr] || { status: 'Estable', sev: 'low', action: 'Monitorizar' };
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${attr}</td>
+                    <td>${state.status}</td>
+                    <td><span class="sev-pill ${sevClass(state.sev)}">${sevLabel(state.sev)}</span></td>
+                    <td>${state.action}</td>
+                `;
+                matrixTableBody.appendChild(tr);
+            });
+        }
+
+        // -----------------------------
+        // RADAR CHART
+        // -----------------------------
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        const baseValues = [100, 100, 100, 100, 100];
+
+        const radarChart = new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: SABSA_ATTRIBUTES,
+                datasets: [
+                    {
+                        label: 'Postura Esperada',
+                        data: baseValues,
+                        backgroundColor: 'rgba(148, 163, 184, 0.15)',
+                        borderColor: '#6b7280',
+                        borderWidth: 1,
+                        pointRadius: 2
+                    },
+                    {
+                        label: 'Postura Detectada',
+                        data: baseValues,
+                        backgroundColor: 'rgba(0, 242, 255, 0.18)',
+                        borderColor: '#00f2ff',
+                        borderWidth: 2,
+                        pointRadius: 3
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: '#1f2933' },
+                        grid: { color: '#1f2933' },
+                        pointLabels: { color: '#e5e7eb', font: { size: 10 } },
+                        ticks: { display: false },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#9ca3af', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        function applyScenarioToRadar(scenarioKey, profileKey) {
+            const scenario = SCENARIOS[scenarioKey];
+            const profile = PROFILES[profileKey];
+            if (!scenario || !profile) return;
+
+            const deltas = scenario.radarDelta;
+            const weights = profile.weight;
+
+            const newValues = baseValues.map((v, i) => {
+                const reduced = v - deltas[i] * weights[i];
+                return Math.max(10, Math.min(100, Math.round(reduced)));
+            });
+
+            radarChart.data.datasets[1].data = newValues;
+            radarChart.update();
+        }
+
+        // -----------------------------
+        // REMEDIACIÓN / CRISIS MODE
+        // -----------------------------
+        function updateCrisisMode(active) {
+            if (active) {
+                document.body.classList.add('crisis');
+            } else {
+                document.body.classList.remove('crisis');
+            }
+        }
+
+        function renderRemediation(scenarioKey, profileKey) {
+            const scenario = SCENARIOS[scenarioKey];
+            const profile = PROFILES[profileKey];
+            if (!scenario || !profile) {
+                remediationPanel.innerHTML = `
+                    <div class="remediation-card">
+                        <div class="rem-title">Sin incidente crítico activo</div>
+                        <div class="rem-meta">La plataforma se encuentra en estado nominal. Ejecute un escenario para generar una directiva IG4.</div>
+                        <div class="rem-section-title">Nota arquitectónica</div>
+                        <p class="rem-meta">
+                            Este panel representa una vista lógica de controles y remediación conceptual. No ejecuta acciones reales ni interactúa con recursos de producción.
+                        </p>
+                    </div>
+                `;
+                updateCrisisMode(false);
+                return;
+            }
+
+            const isCritical = scenario.severity === 'high' && profileKey === 'gov';
+            updateCrisisMode(isCritical);
+
+            const primaryAttr = scenario.primaryAttr;
+            const directiveTitle = isCritical ? 'Directiva Estratégica IG4 — Crisis Mode' : 'Directiva Estratégica IG4';
+            const sevText = isCritical ? 'Crítica' : 'Alta';
+
+            remediationPanel.innerHTML = `
+                <div class="remediation-card">
+                    <div class="rem-title">${directiveTitle}</div>
+                    <div class="rem-meta">
+                        Vector detectado: <strong>${scenario.name}</strong><br>
+                        Entorno: <strong>${profile.name}</strong><br>
+                        Atributo SABSA afectado: <strong>${primaryAttr}</strong><br>
+                        Severidad: <strong>${sevText}</strong>
+                    </div>
+
+                    <div class="rem-section-title">Acciones inmediatas</div>
+                    <ul class="rem-meta">
+                        <li>Reducir privilegios efectivos en el ámbito afectado.</li>
+                        <li>Reforzar autenticación resistente a phishing donde aplique.</li>
+                        <li>Revisar segmentación lógica y fronteras de acceso.</li>
+                        <li>Activar revisión de cambios recientes en el dominio afectado.</li>
+                    </ul>
+
+                    <div class="rem-section-title">Alineación normativa</div>
+                    <ul class="rem-meta">
+                        <li>NIST SP 800-53 (familias AC, IA, AU).</li>
+                        <li>SC-300 — Identity and Access Administrator.</li>
+                        <li>AZ-305 — Design Identity, Governance, and Monitoring.</li>
+                    </ul>
+
+                    <div class="rem-section-title">Comando conceptual</div>
+                    <code>
+# Ejemplo conceptual (no ejecuta nada real)
+# Refuerza gobernanza de privilegios en el entorno afectado
+az ad user list --filter "accountEnabled eq true" --query "[].{id:id, displayName:displayName}"
+                    </code>
+
+                    <p class="rem-meta" style="margin-top:6px;">
+                        Nota: Este comando es ilustrativo y no se ejecuta desde este panel. El objetivo es mostrar la
+                        relación entre arquitectura, controles y acciones posibles en un entorno real.
+                    </p>
+                </div>
+            `;
+        }
+
+        function buildMatrixState(scenarioKey) {
+            const scenario = SCENARIOS[scenarioKey];
+            if (!scenario) {
+                return {};
+            }
+
+            const base = {};
+            SABSA_ATTRIBUTES.forEach(attr => {
+                base[attr] = { status: 'Estable', sev: 'low', action: 'Monitorizar' };
+            });
+
+            const primary = scenario.primaryAttr;
+            if (base[primary]) {
+                base[primary] = {
+                    status: 'Degradado',
+                    sev: scenario.severity,
+                    action: 'Aplicar directiva IG4 y revisar controles asociados.'
+                };
+            }
+
+            return base;
+        }
+
+        // -----------------------------
+        // EVENTOS PRINCIPALES
+        // -----------------------------
+        document.getElementById('btn-run').addEventListener('click', () => {
+            const target = targetInput.value.trim() || 'ENTORNO-CONCEPTUAL';
+            const scenarioKey = scenarioSelect.value;
+            const profileKey = profileSelect.value;
+
+            resetConsole();
+            logLine(`[INFO] Iniciando evaluación estratégica sobre: ${target}`, 'info');
+            logLine(`[INFO] Escenario seleccionado: ${SCENARIOS[scenarioKey].name}`, 'info');
+            logLine(`[INFO] Perfil de entorno: ${PROFILES[profileKey].name}`, 'info');
+
+            setTimeout(() => {
+                logLine('[INFO] Cargando doctrina SABSA IG4...', 'info');
+            }, 400);
+
+            setTimeout(() => {
+                RULES.forEach((r, idx) => {
+                    setTimeout(() => {
+                        logLine(`[INFO] Evaluando control ${r.id} (${r.name})...`, 'info');
+                    }, idx * 220);
+                });
+            }, 800);
+
+            setTimeout(() => {
+                logLine('[WARN] Desviación detectada en atributo clave.', 'warn');
+                logLine('[CRITICAL] Vector de riesgo identificado. Generando Threat Matrix y directiva IG4...', 'crit');
+
+                applyScenarioToRadar(scenarioKey, profileKey);
+                const matrixState = buildMatrixState(scenarioKey);
+                renderMatrix(matrixState);
+                renderRemediation(scenarioKey, profileKey);
+            }, 2200);
+        });
+
+        document.getElementById('btn-test').addEventListener('click', () => {
+            resetConsole();
+            logLine('[INFO] Test Mode: simulando evaluación rápida IG2 → IG3...', 'info');
+            radarChart.data.datasets[1].data = [85, 80, 88, 82, 79];
+            radarChart.update();
+            renderMatrix({});
+            renderRemediation(null, null);
+        });
+
+        // Modal arquitectura
+        const modalArch = document.getElementById('modal-arch');
+        document.getElementById('btn-arch').addEventListener('click', () => {
+            modalArch.style.display = 'flex';
+        });
+        document.getElementById('modal-close').addEventListener('click', () => {
+            modalArch.style.display = 'none';
+        });
+        modalArch.addEventListener('click', (e) => {
+            if (e.target === modalArch) modalArch.style.display = 'none';
+        });
+
+        // INIT
+        renderRules();
+        renderMatrix({});
+    </script>
 </body>
 </html>
