@@ -1,5 +1,8 @@
 const postsList = document.getElementById("postsList");
 const isNestedBlogIndex = /\/blog\/(?:index\.html)?$/i.test(window.location.pathname);
+const FETCH_TIMEOUT_MS = 8000;
+const MAX_MARKDOWN_FILES = 200;
+const MAX_POST_BYTES = 500000;
 
 function resolveBlogPath(fileName) {
   return isNestedBlogIndex ? fileName : `blog/${fileName}`;
@@ -13,6 +16,23 @@ function buildPostLink(fileName) {
 function sanitizeFileName(fileName) {
   const cleaned = fileName.replace(/^\/+/, "").replace(/\.\./g, "").trim();
   return /^[a-zA-Z0-9._-]+\.md$/i.test(cleaned) ? cleaned : "";
+}
+
+function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  let timer = null;
+  const config = options || {};
+
+  if (controller) {
+    config.signal = controller.signal;
+    timer = window.setTimeout(() => controller.abort(), timeoutMs || FETCH_TIMEOUT_MS);
+  }
+
+  return fetch(url, config).finally(() => {
+    if (timer) {
+      window.clearTimeout(timer);
+    }
+  });
 }
 
 function parseFrontMatter(markdownText) {
@@ -83,7 +103,7 @@ async function discoverMarkdownFiles() {
   const candidates = new Set();
 
   try {
-    const manifestResponse = await fetch(resolveBlogPath("posts.json"), { cache: "no-store" });
+    const manifestResponse = await fetchWithTimeout(resolveBlogPath("posts.json"), { cache: "no-store" }, FETCH_TIMEOUT_MS);
     if (manifestResponse.ok) {
       const manifest = await manifestResponse.json();
       if (Array.isArray(manifest)) {
@@ -103,7 +123,7 @@ async function discoverMarkdownFiles() {
 
   // Validando listado de directorio como fuente secundaria para preservar compatibilidad con posts.json y servidores locales.
   try {
-    const response = await fetch(isNestedBlogIndex ? "./" : "blog/");
+    const response = await fetchWithTimeout(isNestedBlogIndex ? "./" : "blog/", { cache: "no-store" }, FETCH_TIMEOUT_MS);
     if (response.ok) {
       const html = await response.text();
       const doc = new DOMParser().parseFromString(html, "text/html");
@@ -124,16 +144,19 @@ async function discoverMarkdownFiles() {
     // Preservando continuidad operativa del blog cuando el servidor no expone index de directorio.
   }
 
-  return Array.from(candidates).map(sanitizeFileName).filter(Boolean);
+  return Array.from(candidates).map(sanitizeFileName).filter(Boolean).slice(0, MAX_MARKDOWN_FILES);
 }
 
 async function loadPostMetadata(fileName) {
-  const response = await fetch(resolveBlogPath(encodeURIComponent(fileName)), { cache: "no-store" });
+  const response = await fetchWithTimeout(resolveBlogPath(encodeURIComponent(fileName)), { cache: "no-store" }, FETCH_TIMEOUT_MS);
   if (!response.ok) {
     throw new Error(`No se pudo leer ${fileName}`);
   }
 
   const markdown = await response.text();
+  if (markdown.length > MAX_POST_BYTES) {
+    throw new Error(`Post demasiado grande: ${fileName}`);
+  }
   const parsed = parseFrontMatter(markdown);
 
   return {

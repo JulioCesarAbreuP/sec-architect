@@ -7,6 +7,10 @@
   const entropyValueElement = document.getElementById("entropyValue");
   const crackTimeValueElement = document.getElementById("crackTimeValue");
   const mitigationPanel = document.getElementById("mitigationPanel");
+  const FORM_TIMEOUT_MS = 10000;
+  const MAX_EMPRESA_LENGTH = 100;
+  const MAX_EMAIL_LENGTH = 100;
+  const MAX_MENSAJE_LENGTH = 1000;
 
   const RISK = {
     low: "BAJO",
@@ -17,6 +21,40 @@
   function sanitizeNumeric(value) {
     const normalized = String(value || "").replace(/[^0-9]/g, "");
     return normalized ? Number.parseInt(normalized, 10) : 0;
+  }
+
+  function sanitizeText(value, maxLength) {
+    return String(value || "")
+      .replace(/[\u0000-\u001F\u007F]/g, "")
+      .trim()
+      .slice(0, maxLength);
+  }
+
+  function isValidEmail(value) {
+    if (!value || value.length > MAX_EMAIL_LENGTH) {
+      return false;
+    }
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(value);
+  }
+
+  function fetchWithTimeout(url, options, timeoutMs) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    let timer = null;
+    const config = options || {};
+
+    if (controller) {
+      config.signal = controller.signal;
+      timer = window.setTimeout(function () {
+        controller.abort();
+      }, timeoutMs || FORM_TIMEOUT_MS);
+    }
+
+    return fetch(url, config).finally(function () {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    });
   }
 
   function toHex(bytes) {
@@ -213,8 +251,17 @@
       const submitButton = document.getElementById("submitBtn");
       const status = document.getElementById("formStatus");
       const formData = new FormData(contactForm);
+      const empresa = sanitizeText(formData.get("empresa"), MAX_EMPRESA_LENGTH);
+      const email = sanitizeText(formData.get("email"), MAX_EMAIL_LENGTH);
+      const mensaje = sanitizeText(formData.get("mensaje"), MAX_MENSAJE_LENGTH);
 
       if (formData.get("_hp_filter")) {
+        return;
+      }
+
+      if (!empresa || !mensaje || !isValidEmail(email)) {
+        status.className = "form-status is-visible is-error";
+        status.textContent = "Datos inválidos. Revisa empresa, correo y mensaje.";
         return;
       }
 
@@ -224,18 +271,20 @@
       status.textContent = "Procesando...";
 
       try {
-        const response = await fetch("https://formspree.io/f/mojpjoqk", {
+        const response = await fetchWithTimeout("https://formspree.io/f/mojpjoqk", {
           method: "POST",
           body: JSON.stringify({
-            empresa: formData.get("empresa"),
-            email: formData.get("email"),
-            mensaje: formData.get("mensaje")
+            empresa: empresa,
+            email: email,
+            mensaje: mensaje
           }),
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json"
-          }
-        });
+          },
+          mode: "cors",
+          credentials: "omit"
+        }, FORM_TIMEOUT_MS);
 
         if (!response.ok) {
           throw new Error("submit-failed");

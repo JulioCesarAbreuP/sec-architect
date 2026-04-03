@@ -113,6 +113,7 @@
     anchor.href = url;
     anchor.target = "_blank";
     anchor.rel = "noopener noreferrer";
+    anchor.referrerPolicy = "no-referrer";
     anchor.className = "site-social-link";
     anchor.setAttribute("aria-label", label);
 

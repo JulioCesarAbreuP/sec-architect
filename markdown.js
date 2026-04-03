@@ -1,6 +1,8 @@
 const postTitleElement = document.getElementById("postTitle");
 const postMetaElement = document.getElementById("postMeta");
 const postContentElement = document.getElementById("postContent");
+const POST_FETCH_TIMEOUT_MS = 8000;
+const MAX_MARKDOWN_LENGTH = 500000;
 
 function sanitizePostParam(value) {
   if (!value || typeof value !== "string") {
@@ -58,7 +60,15 @@ function sanitizeRenderedHtml(rawHtml) {
     }
 
     const input = value.trim();
-    if (input.startsWith("#") || input.startsWith("/")) {
+    if (input.startsWith("#")) {
+      return true;
+    }
+
+    if (input.startsWith("//")) {
+      return false;
+    }
+
+    if (input.startsWith("/")) {
       return true;
     }
 
@@ -195,7 +205,15 @@ function buildPostUrl(postFileName) {
 
 function resolveRelativeUrl(href, postDirectory) {
   // Validando URLs relativas para evitar referencias peligrosas fuera del alcance esperado del blog.
-  if (!href || /^(https?:|data:|mailto:|#|\/)/i.test(href)) {
+  if (!href) {
+    return href;
+  }
+
+  if (/^\/\//.test(href)) {
+    return "#";
+  }
+
+  if (/^(https?:|data:|mailto:|#|\/)/i.test(href)) {
     return href;
   }
 
@@ -239,6 +257,23 @@ function renderState(message) {
   postContentElement.appendChild(stateMessage);
 }
 
+function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  let timer = null;
+  const config = options || {};
+
+  if (controller) {
+    config.signal = controller.signal;
+    timer = window.setTimeout(() => controller.abort(), timeoutMs || POST_FETCH_TIMEOUT_MS);
+  }
+
+  return fetch(url, config).finally(() => {
+    if (timer) {
+      window.clearTimeout(timer);
+    }
+  });
+}
+
 async function initPost() {
   const params = new URLSearchParams(window.location.search);
   const postParam = sanitizePostParam(params.get("post"));
@@ -252,11 +287,14 @@ async function initPost() {
 
   let markdownText = "";
   try {
-    const response = await fetch(postPath, { cache: "no-store" });
+    const response = await fetchWithTimeout(postPath, { cache: "no-store" }, POST_FETCH_TIMEOUT_MS);
     if (!response.ok) {
       throw new Error("not-found");
     }
     markdownText = await response.text();
+    if (markdownText.length > MAX_MARKDOWN_LENGTH) {
+      throw new Error("markdown-too-large");
+    }
   } catch (_error) {
     renderState("No se pudo cargar el post solicitado. Verifica el nombre del archivo en /blog.");
     return;
