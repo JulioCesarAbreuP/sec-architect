@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SABSA IG4 Strategic Command Center | SEC_ARCHITECT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -1166,8 +1166,7 @@ function summarizeFindings(results){
     };
 }
 
-function formatMitreContext(ruleId, scenarioKey){
-    const mapped = resolveMitre(ruleId, scenarioKey);
+function formatMitreContext(mapped){
     if(!mapped){
         return '';
     }
@@ -1180,41 +1179,62 @@ function clearConsole(){
 }
 
 /* --- Radar --- */
-const radarCtx = document.getElementById('radarChart').getContext('2d');
 const baseValues = [100,100,100,100,100];
 
-const radarChart = new Chart(radarCtx,{
-    type:'radar',
-    data:{
-        labels:SABSA_ATTRIBUTES,
-        datasets:[
-            {
-                label:'Esperado',
-                data:baseValues,
-                borderColor:'#6b7280',
-                backgroundColor:'rgba(148,163,184,0.15)'
-            },
-            {
-                label:'Detectado',
-                data:baseValues,
-                borderColor:'#00f2ff',
-                backgroundColor:'rgba(0,242,255,0.18)'
-            }
-        ]
-    },
-    options:{
-        scales:{
-            r:{
-                ticks:{display:false},
-                grid:{color:'#1f2933'},
-                angleLines:{color:'#1f2933'}
-            }
-        },
-        plugins:{
-            legend:{ labels:{ color:'#9ca3af' } }
-        }
+const radarChart = {
+    data: { datasets: [{}, { data: [...baseValues] }] },
+    update(){ /* no-op fallback when Chart.js is unavailable */ }
+};
+
+function initializeRadarChart(){
+    const canvas = document.getElementById('radarChart');
+    if(!canvas){
+        log('Canvas radar no encontrado. Continuando sin visualización de gráfico.','warn');
+        return;
     }
-});
+
+    if(typeof window.Chart !== 'function'){
+        log('Chart.js no disponible. La evaluación seguirá sin radar visual.','warn');
+        return;
+    }
+
+    const radarCtx = canvas.getContext('2d');
+    const chart = new window.Chart(radarCtx,{
+        type:'radar',
+        data:{
+            labels:SABSA_ATTRIBUTES,
+            datasets:[
+                {
+                    label:'Esperado',
+                    data:baseValues,
+                    borderColor:'#6b7280',
+                    backgroundColor:'rgba(148,163,184,0.15)'
+                },
+                {
+                    label:'Detectado',
+                    data:baseValues,
+                    borderColor:'#00f2ff',
+                    backgroundColor:'rgba(0,242,255,0.18)'
+                }
+            ]
+        },
+        options:{
+            scales:{
+                r:{
+                    ticks:{display:false},
+                    grid:{color:'#1f2933'},
+                    angleLines:{color:'#1f2933'}
+                }
+            },
+            plugins:{
+                legend:{ labels:{ color:'#9ca3af' } }
+            }
+        }
+    });
+
+    radarChart.data = chart.data;
+    radarChart.update = chart.update.bind(chart);
+}
 
 /* --- Threat Matrix --- */
 function renderMatrix(scenarioKey, igLevel, riskIndex = 60){
@@ -1408,7 +1428,7 @@ async function runStrategicAudit(){
         await wait(220 + (i * 60));
 
         if(result.hasFailure){
-            log(`Evaluando control ${rule.id} (${rule.name})... [FALLO DETECTADO]${formatMitreContext(rule.id, scenarioKey)} [RISK:${result.riskScore}] [CONF:${result.confidence}%] [Progress: ${progress}%]`,'warn');
+            log(`Evaluando control ${rule.id} (${rule.name})... [FALLO DETECTADO]${formatMitreContext(result.mitre)} [RISK:${result.riskScore}] [CONF:${result.confidence}%] [Progress: ${progress}%]`,'warn');
         } else {
             log(`Evaluando control ${rule.id} (${rule.name})... [OK] [RISK:${result.riskScore}] [CONF:${result.confidence}%] [Progress: ${progress}%]`,'info');
         }
@@ -1457,6 +1477,7 @@ document.getElementById('btn-run').addEventListener('click',()=>{
     });
 });
 
+initializeRadarChart();
 void loadMitreCatalog();
 
 targetInput.addEventListener('keydown',(event)=>{
