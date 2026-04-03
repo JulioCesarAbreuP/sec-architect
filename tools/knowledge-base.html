@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+  <title>Base de Conocimiento | SEC_ARCHITECT</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="../assets/css/knowledge-base.page.css">
+</head>
+<body data-theme="dark">
+  <header>
+    <a href="../index.html" class="logo">SEC_<span>ARCHITECT</span></a>
+    <div class="header-right">
+      <a href="../tools.html" class="header-link">Herramientas</a>
+      <a href="../blog.html" class="header-link">Blog</a>
+      <a href="../sabsa-ig4-command-center.html" class="header-link">Command Center</a>
+    </div>
+  </header>
+
+  <main class="kb-page">
+    <section class="kb-hero">
+      <div class="kb-hero-copy">
+        <p class="kb-eyebrow">Dataset defensivo navegable</p>
+        <h1>Base de Conocimiento</h1>
+        <p class="kb-description">
+          Explora reglas técnicas agrupadas por NSA, CISA, MITRE, NIST/ISO y CVE.
+          La vista permite buscar por término, técnica, escenario o control defensivo y acotar por categoría o severidad.
+        </p>
+      </div>
+
+      <div class="kb-summary" aria-label="Resumen del dataset">
+        <article class="summary-card">
+          <span class="summary-label">Entradas</span>
+          <strong id="summaryTotal">0</strong>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Categorías</span>
+          <strong id="summaryFamilies">0</strong>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Criticidad alta o crítica</span>
+          <strong id="summaryPriority">0</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="kb-shell">
+      <form class="kb-filters" id="filtersForm" aria-label="Filtros de la base de conocimiento">
+        <label class="filter-block filter-search">
+          <span>Buscar</span>
+          <input id="searchInput" type="search" placeholder="Ej.: MFA, T1078, ransomware, supply chain" autocomplete="off">
+        </label>
+
+        <label class="filter-block">
+          <span>Categoría</span>
+          <select id="categoryFilter">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Fuente</span>
+          <select id="sourceFilter">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Riesgo</span>
+          <select id="riskFilter">
+            <option value="all">Todos</option>
+            <option value="critico">Crítico</option>
+            <option value="alto">Alto</option>
+            <option value="medio">Medio</option>
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Severidad CVE</span>
+          <select id="cveSeverityFilter">
+            <option value="all">Todas</option>
+            <option value="critica">Crítica</option>
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Técnica MITRE</span>
+          <select id="mitreFilter" multiple size="5" class="multi-select" title="Puedes seleccionar varias técnicas">
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Control NIST CSF</span>
+          <select id="nistFilter" multiple size="5" class="multi-select" title="Puedes seleccionar varios controles">
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Control ISO 27001</span>
+          <select id="isoFilter" multiple size="5" class="multi-select" title="Puedes seleccionar varios controles">
+          </select>
+        </label>
+
+        <label class="filter-block">
+          <span>Ordenar por</span>
+          <select id="sortFilter">
+            <option value="relevance">Relevancia</option>
+            <option value="risk-desc">Riesgo: mayor a menor</option>
+            <option value="source-asc">Fuente</option>
+            <option value="category-asc">Categoría</option>
+            <option value="code-asc">Código</option>
+          </select>
+        </label>
+
+        <button type="button" id="resetFilters" class="reset-btn">Limpiar filtros</button>
+        <button type="button" id="copyLink" class="reset-btn reset-btn-accent">Compartir vista</button>
+      </form>
+
+      <section class="kb-results-meta" aria-live="polite">
+        <div>
+          <p class="results-caption">Resultados visibles</p>
+          <h2 id="resultsCount">0 reglas</h2>
+          <p class="results-page-info" id="resultsPageInfo">Página 1 de 1</p>
+        </div>
+        <div class="results-tags" id="resultsTags"></div>
+      </section>
+
+      <section class="kb-state" id="loadingState">Cargando base de conocimiento...</section>
+      <section class="kb-state is-hidden" id="errorState">No fue posible cargar el dataset local.</section>
+      <section class="kb-state is-hidden" id="emptyState">No hay coincidencias para los filtros actuales.</section>
+
+      <section class="kb-grid is-hidden" id="resultsGrid" aria-label="Resultados de la base de conocimiento"></section>
+
+      <section class="kb-pagination is-hidden" id="paginationBar" aria-label="Paginación de resultados">
+        <label class="filter-block pagination-size">
+          <span>Resultados por página</span>
+          <select id="pageSizeFilter">
+            <option value="6">6</option>
+            <option value="12" selected>12</option>
+            <option value="24">24</option>
+          </select>
+        </label>
+
+        <div class="pagination-controls">
+          <button type="button" id="prevPage" class="pagination-btn">Anterior</button>
+          <div class="pagination-pages" id="paginationPages"></div>
+          <button type="button" id="nextPage" class="pagination-btn">Siguiente</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer data-site-footer="true"></footer>
+
+  <script src="../assets/js/site.js" defer></script>
+  <script src="../assets/js/knowledge-base.js" defer></script>
+</body>
+</html>

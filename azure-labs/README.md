@@ -12,7 +12,7 @@ Este módulo contiene **laboratorios prácticos de arquitectura cloud** diseñad
 
 - **Zero Trust Architecture**: Cada laboratorio implementa principios de confianza cero, donde ningún recurso es inherentemente confiable y todo acceso requiere verificación continua.
 - **Certificaciones de Referencia**: Alineados con AZ-305 (Azure Solutions Architect), SC-300 (Identity & Access Administrator), SC-100 (Cloud Security Architect) y AZ-500 (Azure Security Engineer).
-- **Buenas Prácticas de Seguridad**: Incorporan patrones validados de seguridad defensiva en profundidad, segregación de responsabilidades y principios de least privilege.
+- **Buenas Prácticas de Seguridad**: Incorporan patrones validados de seguridad defensiva en profundidad, segregación de responsabilidades y principios de mínimo privilegio.
 
 ### Estructura Modular
 
@@ -48,8 +48,8 @@ Cada componente verifica la identidad del componente anterior mediante tokens OA
 
 Least Privilege significa que cada recurso tiene **solo los permisos que necesita** para su función específica, nada más.
 
-- **RBAC Granular**: Cada role tiene un alcance específico (Subscription, Resource Group, Resource).
-- **Roles Personalizados**: Cuando los roles integrados son demasiado amplios, se crean roles personalizados con permisos exactamente necesarios.
+- **RBAC Granular**: Cada rol tiene un alcance específico (Subscription, Resource Group, Resource).
+- **Roles Personalizados**: Cuando los roles integrados son demasiado amplios, se crean roles personalizados con los permisos exactamente necesarios.
 - **Negación Explícita**: Se utilizan Deny assignments para bloquear operaciones peligrosas incluso si un role las permitiría.
 
 **Patrón de asignación**:
@@ -231,7 +231,7 @@ az account set --subscription $env:AZURE_SUBSCRIPTION_ID
 az account show
 ```
 
-#### Paso 2: Crear Resource Group
+#### Paso 2: Crear grupo de recursos
 ```powershell
 az group create `
   --name $env:AZURE_RESOURCE_GROUP `
@@ -301,13 +301,13 @@ az resource list --resource-group $env:AZURE_RESOURCE_GROUP --output table
   -ResourceGroupName $env:AZURE_RESOURCE_GROUP
 ```
 
-### 4.3 Estructura de Scripts
+### 4.3 Estructura de scripts
 
 #### deploy-bicep.ps1
 ```
 Tarea: Desplegar infraestructura usando Bicep
 Pasos:
-  1. Valida parametros de entrada
+  1. Valida parámetros de entrada
   2. Verifica credenciales de Azure
   3. Valida sintaxis de Bicep (az bicep build)
   4. Despliega con az deployment group create
@@ -323,7 +323,7 @@ Pasos:
   2. Verifica Managed Identities y RBAC
   3. Verifica Private Endpoints en servicios PaaS
   4. Verifica encriptación en Key Vault y Storage
-  5. Genera reporte de compliance
+  5. Genera reporte de cumplimiento
 ```
 
 #### cleanup.ps1
@@ -349,7 +349,7 @@ az network nsg list --resource-group $env:AZURE_RESOURCE_GROUP --output json
 az network nsg rule list --resource-group $env:AZURE_RESOURCE_GROUP `
   --nsg-name "nsg-backend" --output table
 
-# Verificar que não há reglas permitiendo * (Allow Any)
+# Verificar que no hay reglas permitiendo * (Allow Any)
 az network nsg rule list --resource-group $env:AZURE_RESOURCE_GROUP `
   --nsg-name "nsg-backend" `
   --query "[?access=='Allow' && properties.destinationPortRange=='*']" `
@@ -525,7 +525,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2023-06-01' = {
 3. Integrar con Log Analytics para análisis avanzado.
 4. Crear alertas personalizadas basadas en eventos de seguridad.
 
-### 6.4 Añadir Automatización con GitHub Actions
+### 6.4 Añadir automatización con GitHub Actions
 
 **Propósito**: CI/CD para despliegues consistentes y validación automática de seguridad.
 
@@ -533,30 +533,30 @@ resource firewall 'Microsoft.Network/azureFirewalls@2023-06-01' = {
 ```yaml
 trigger: Merge a main
   ↓
-Validate Bicep/Terraform
+Validar Bicep/Terraform
   ↓
-Deploy a Staging
+Desplegar a staging
   ↓
-Run security scans (SAST, DAST, secrets scan)
+Ejecutar análisis de seguridad (SAST, DAST, secrets scan)
   ↓
-Approval requerida
+Aprobación requerida
   ↓
-Deploy a Production
+Desplegar a producción
   ↓
-Post-deployment validation
+Validación posterior al despliegue
 ```
 
 **Fichero**: `.github/workflows/deploy.yml`
 
-### 6.5 Adicionar Módulos Complementarios de Zero Trust
+### 6.5 Añadir módulos complementarios de Zero Trust
 
-#### Conditional Access
+#### Acceso condicional
 ```
-Política: Si acceso desde RED no corporativa, requerir MFA
-Implementación: En Azure AD, no en Bicep
+Política: si el acceso proviene de una red no corporativa, requerir MFA
+Implementación: en Azure AD, no en Bicep
 ```
 
-#### Passwordless Sign-In
+#### Inicio de sesión sin contraseña
 ```
 Métodos:
 - Windows Hello for Business (on-premises)
@@ -564,9 +564,9 @@ Métodos:
 - Microsoft Authenticator app
 ```
 
-#### Encryption & Key Rotation
+#### Cifrado y rotación de claves
 ```
-Automatizar rotación de secretos en Key Vault usando EventGrid y Functions
+Automatizar la rotación de secretos en Key Vault usando Event Grid y Functions
 ```
 
 ---
@@ -585,7 +585,7 @@ azure-labs/
 │   ├── vnet.bicep          # Virtual Network + subnets + NSGs
 │   ├── storage.bicep       # Storage Account + Private Endpoints
 │   ├── outputs.bicep       # Outputs del despliegue
-│   └── parameters.json     # Valors para despliegue (dev/prod)
+│   └── parameters.json     # Valores para despliegue (dev/prod)
 ├── terraform/
 │   ├── main.tf             # Orquestador principal
 │   ├── identity.tf         # Definiciones de identidad
@@ -619,12 +619,12 @@ azure-labs/
 
 ---
 
-## 8. Recomendaciones Operacionales
+## 8. Recomendaciones operacionales
 
-### 8.1 Governance
+### 8.1 Gobernanza
 
 - **Tags**: Etiquetar todos los recursos con `environment=dev|prod`, `owner=team`, `cost-center=xxxx`.
-- **Policies**: Usar Azure Policy para enforcetar tagging, encryption, HTTPS, etc.
+- **Policies**: Usar Azure Policy para forzar tagging, encryption, HTTPS, etc.
 - **Resource Locks**: Aplicar CanNotDelete lock a recursos críticos en producción.
 
 ### 8.2 Costos
@@ -640,12 +640,12 @@ Los labs utilizan componentes mínimos pero incurren en costos:
 
 **Recomendación**: Ejecutar cleanup.ps1 después de cada lab.
 
-### 8.3 Testing
+### 8.3 Pruebas
 
-Cada despliegue debe validated automáticamente:
+Cada despliegue debe validarse automáticamente:
 
 ```powershell
-# Validación sintactica
+# Validación sintáctica
 az bicep build --file main.bicep
 
 # Validación de despliegue (what-if)
@@ -657,7 +657,7 @@ az deployment group create --what-if ...
 
 ---
 
-## 9. Resources y Referencias
+## 9. Recursos y referencias
 
 ### Documentación Oficial
 - [Azure Verified Modules (AVM)](https://azure.github.io/Azure-Verified-Modules/)

@@ -14,6 +14,8 @@ La estructura de este proyecto sigue una progresion contextual -> conceptual -> 
 
 ## Controles de Seguridad Implementados
 
+El repositorio incluye además una Base de Conocimiento estructurada en [data/knowledge-base.json](data/knowledge-base.json), con 50 reglas técnicas defensivas agrupadas en NSA, CISA, MITRE, NIST/ISO y CVE.
+
 ### 1. Mitigacion Avanzada de XSS e Injection
 
 - Content Security Policy (CSP) v3 para restringir origenes de scripts, estilos, fuentes y conexiones.

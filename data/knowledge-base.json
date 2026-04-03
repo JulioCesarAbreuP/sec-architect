@@ -1,0 +1,922 @@
+[
+  {
+    "id": "NSA-001",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "MFA resistente al phishing para cuentas privilegiadas",
+    "descripcion": "Toda cuenta administrativa debe autenticarse con factores resistentes al phishing para reducir secuestro de sesión y robo de credenciales.",
+    "riesgo": "critico",
+    "escenario": "Administradores de nube acceden a portales, VPN, consolas o bastiones expuestos a ataques de password spraying o AiTM.",
+    "controles_defensivos": [
+      "Exigir FIDO2 o certificados para roles privilegiados",
+      "Bloquear MFA basado solo en SMS para administracion",
+      "Aislar administracion en estaciones endurecidas"
+    ],
+    "mitre_attack": ["T1078", "T1556"],
+    "mapeo_nist_csf": ["PR.AA-02", "PR.AA-03"],
+    "mapeo_iso_27001": ["A.5.15", "A.8.5"],
+    "recomendacion_defensiva": "Combinar MFA fuerte con acceso condicional y cuentas separadas para administracion."
+  },
+  {
+    "id": "NSA-002",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Separacion de cuentas administrativas y de productividad",
+    "descripcion": "Las credenciales usadas para correo, navegacion y colaboracion no deben administrar infraestructura critica.",
+    "riesgo": "alto",
+    "escenario": "Un usuario privilegiado reutiliza su misma cuenta para tareas operativas y trabajo diario.",
+    "controles_defensivos": [
+      "Emitir cuentas admin separadas",
+      "Restringir inicio de sesion de cuentas admin a hosts aprobados",
+      "Aplicar politicas de acceso por contexto"
+    ],
+    "mitre_attack": ["T1078", "T1530"],
+    "mapeo_nist_csf": ["PR.AA-01", "PR.AA-06"],
+    "mapeo_iso_27001": ["A.5.15", "A.6.2"],
+    "recomendacion_defensiva": "Adoptar un modelo de administracion por niveles y prohibir el uso cotidiano de cuentas privilegiadas."
+  },
+  {
+    "id": "NSA-003",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Privilegios just-in-time y just-enough-access",
+    "descripcion": "El acceso elevado debe concederse por tiempo limitado y con permisos acotados al objetivo operativo real.",
+    "riesgo": "alto",
+    "escenario": "Equipos de soporte mantienen privilegios persistentes sobre suscripciones, identidades o secretos.",
+    "controles_defensivos": [
+      "Activacion temporal de roles privilegiados",
+      "Aprobacion para elevacion sensible",
+      "Revision automatizada de asignaciones permanentes"
+    ],
+    "mitre_attack": ["T1078", "T1484"],
+    "mapeo_nist_csf": ["PR.AA-04", "DE.AE-03"],
+    "mapeo_iso_27001": ["A.5.18", "A.8.2"],
+    "recomendacion_defensiva": "Reducir al minimo la ventana de exposicion de privilegios con elevacion temporal auditada."
+  },
+  {
+    "id": "NSA-004",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Hardening estricto de endpoints administrativos",
+    "descripcion": "Los equipos desde los que se administra infraestructura deben estar aislados, parchados y con minima superficie de ataque.",
+    "riesgo": "alto",
+    "escenario": "Administracion de nube desde estaciones generales con software no controlado o navegacion abierta.",
+    "controles_defensivos": [
+      "Usar estaciones de acceso privilegiado",
+      "Eliminar privilegios locales innecesarios",
+      "Aplicar allowlisting y EDR reforzado"
+    ],
+    "mitre_attack": ["T1059", "T1204"],
+    "mapeo_nist_csf": ["PR.PS-01", "PR.PT-03"],
+    "mapeo_iso_27001": ["A.8.7", "A.8.9"],
+    "recomendacion_defensiva": "Separar la administracion critica del puesto de trabajo general y endurecer el endpoint de administracion."
+  },
+  {
+    "id": "NSA-005",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Segmentacion de red para reducir movimiento lateral",
+    "descripcion": "Las cargas de trabajo sensibles deben aislarse en segmentos donde cada flujo permitido sea explicito y revisable.",
+    "riesgo": "alto",
+    "escenario": "Servicios de aplicacion, datos y gestion comparten la misma red plana o reglas permisivas.",
+    "controles_defensivos": [
+      "Separar planos de aplicacion, datos y gestion",
+      "Aplicar reglas deny-by-default",
+      "Inspeccionar trafico entre segmentos criticos"
+    ],
+    "mitre_attack": ["T1021", "T1570"],
+    "mapeo_nist_csf": ["PR.IR-01", "PR.PT-04"],
+    "mapeo_iso_27001": ["A.8.20", "A.8.22"],
+    "recomendacion_defensiva": "Diseñar microsegmentacion apoyada en identidad, puertos estrictos y rutas controladas."
+  },
+  {
+    "id": "NSA-006",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Registro y monitoreo centralizado de eventos de identidad",
+    "descripcion": "La telemetria de autenticacion, autorizacion y cambios privilegiados debe consolidarse para deteccion temprana.",
+    "riesgo": "alto",
+    "escenario": "Los eventos de inicio de sesion y asignacion de roles quedan dispersos en consolas separadas.",
+    "controles_defensivos": [
+      "Enviar logs a un SIEM central",
+      "Alertar sobre asignaciones privilegiadas y accesos anómalos",
+      "Retener evidencias para investigacion"
+    ],
+    "mitre_attack": ["T1078", "T1098"],
+    "mapeo_nist_csf": ["DE.CM-01", "DE.CM-03"],
+    "mapeo_iso_27001": ["A.8.15", "A.8.16"],
+    "recomendacion_defensiva": "Unificar identidad, actividad privilegiada y cambios de configuracion en analitica central."
+  },
+  {
+    "id": "NSA-007",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Proteccion de DNS y resolucion interna confiable",
+    "descripcion": "El plano de resolucion debe impedir desvio a destinos no autorizados y soportar servicios privados criticos.",
+    "riesgo": "medio",
+    "escenario": "Workloads consumen servicios privados, pero la resolucion DNS permite respuestas publicas o manipuladas.",
+    "controles_defensivos": [
+      "Usar zonas privadas y resolutores aprobados",
+      "Monitorear cambios de DNS sensible",
+      "Bloquear resolucion externa no controlada"
+    ],
+    "mitre_attack": ["T1565", "T1071"],
+    "mapeo_nist_csf": ["PR.PT-04", "DE.CM-09"],
+    "mapeo_iso_27001": ["A.8.20", "A.8.21"],
+    "recomendacion_defensiva": "Alinear DNS privado con segmentacion y validacion de origen para servicios internos."
+  },
+  {
+    "id": "NSA-008",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Cifrado de datos en transito y en reposo por defecto",
+    "descripcion": "Los datos sensibles deben mantenerse cifrados en todos los estados para reducir impacto ante compromiso parcial.",
+    "riesgo": "alto",
+    "escenario": "Almacenamientos, colas o secretos se exponen mediante protocolos debiles o configuraciones por defecto laxas.",
+    "controles_defensivos": [
+      "Forzar TLS moderno",
+      "Habilitar cifrado en reposo con claves gestionadas o del cliente",
+      "Revisar excepciones criptograficas"
+    ],
+    "mitre_attack": ["T1040", "T1557"],
+    "mapeo_nist_csf": ["PR.DS-01", "PR.DS-02"],
+    "mapeo_iso_27001": ["A.8.24", "A.8.25"],
+    "recomendacion_defensiva": "Definir baselines de cifrado y bloquear protocolos o suites obsoletas."
+  },
+  {
+    "id": "NSA-009",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Inventario continuo de activos y relaciones de confianza",
+    "descripcion": "No puede protegerse aquello que no se conoce; los activos y sus dependencias deben mantenerse identificados y clasificados.",
+    "riesgo": "medio",
+    "escenario": "Recursos, identidades y dependencias externas cambian rapido y quedan fuera del inventario oficial.",
+    "controles_defensivos": [
+      "Mantener CMDB o inventario automatizado",
+      "Etiquetar criticidad y propietario",
+      "Descubrir dependencias de red e identidad"
+    ],
+    "mitre_attack": ["T1580", "T1087"],
+    "mapeo_nist_csf": ["ID.AM-01", "ID.AM-05"],
+    "mapeo_iso_27001": ["A.5.9", "A.5.12"],
+    "recomendacion_defensiva": "Automatizar inventario y enriquecerlo con contexto de negocio, identidad y exposicion."
+  },
+  {
+    "id": "NSA-010",
+    "categoria": "NSA",
+    "fuente": "NSA",
+    "titulo": "Proteccion de la cadena de suministro de software",
+    "descripcion": "El consumo de paquetes, contenedores y artefactos debe validarse antes de incorporarse a entornos de confianza.",
+    "riesgo": "alto",
+    "escenario": "Pipelines descargan dependencias o imagenes no firmadas desde orígenes publicos sin validacion adicional.",
+    "controles_defensivos": [
+      "Fijar versiones y verificar firmas",
+      "Escanear vulnerabilidades y secretos en CI",
+      "Restringir registros y feeds confiables"
+    ],
+    "mitre_attack": ["T1195", "T1553"],
+    "mapeo_nist_csf": ["ID.SC-04", "PR.PS-02"],
+    "mapeo_iso_27001": ["A.5.21", "A.8.8"],
+    "recomendacion_defensiva": "Aplicar controles de procedencia, firma y escaneo continuo a la cadena de suministro."
+  },
+  {
+    "id": "CISA-001",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Reducir la superficie expuesta a internet",
+    "descripcion": "Los servicios administrativos o de datos no deben permanecer accesibles publicamente salvo necesidad operativa justificada.",
+    "riesgo": "critico",
+    "escenario": "Paneles de gestion, almacenamiento o bases de datos quedan expuestos con autenticacion debil.",
+    "controles_defensivos": [
+      "Deshabilitar exposicion publica por defecto",
+      "Mover administracion a redes privadas o bastiones",
+      "Aplicar allowlists y acceso contextual"
+    ],
+    "mitre_attack": ["T1133", "T1190"],
+    "mapeo_nist_csf": ["PR.AC-03", "PR.IR-01"],
+    "mapeo_iso_27001": ["A.8.20", "A.8.21"],
+    "recomendacion_defensiva": "Privatizar servicios sensibles y revisar exposicion publica como excepcion formal."
+  },
+  {
+    "id": "CISA-002",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Aplicar parches a activos expuestos con prioridad basada en explotacion",
+    "descripcion": "La remediacion debe priorizar vulnerabilidades explotadas activamente o presentes en catalogos de explotacion conocida.",
+    "riesgo": "critico",
+    "escenario": "Dispositivos perimetrales y aplicaciones web mantienen CVE conocidas durante ventanas prolongadas.",
+    "controles_defensivos": [
+      "Cruzar activos con catalogos KEV",
+      "Establecer SLA agresivos para sistemas expuestos",
+      "Verificar despliegue efectivo de parches"
+    ],
+    "mitre_attack": ["T1190", "T1068"],
+    "mapeo_nist_csf": ["PR.PS-03", "RS.MA-01"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.9"],
+    "recomendacion_defensiva": "Vincular gestion de vulnerabilidades con inteligencia de explotacion y exposicion real."
+  },
+  {
+    "id": "CISA-003",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Deshabilitar o limitar protocolos inseguros",
+    "descripcion": "Los servicios heredados o sin cifrado fuerte deben eliminarse o encapsularse con controles compensatorios temporales.",
+    "riesgo": "alto",
+    "escenario": "RDP, SMB antiguo, Telnet o servicios equivalentes se encuentran abiertos en redes de trabajo.",
+    "controles_defensivos": [
+      "Retirar protocolos obsoletos",
+      "Encapsular acceso remoto con bastion y MFA",
+      "Monitorear uso residual para plan de retiro"
+    ],
+    "mitre_attack": ["T1021", "T1046"],
+    "mapeo_nist_csf": ["PR.PT-03", "DE.CM-01"],
+    "mapeo_iso_27001": ["A.8.20", "A.8.27"],
+    "recomendacion_defensiva": "Eliminar dependencia operativa de protocolos debiles y bloquear su uso por politica."
+  },
+  {
+    "id": "CISA-004",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Backups offline y pruebas periodicas de recuperacion",
+    "descripcion": "La resiliencia frente a ransomware exige copias inmutables o desconectadas y recuperacion verificada.",
+    "riesgo": "alto",
+    "escenario": "La organizacion dispone de backups, pero nunca valida restauracion ni aislamiento frente a cifrado malicioso.",
+    "controles_defensivos": [
+      "Mantener copias offline o inmutables",
+      "Probar restauraciones por servicio critico",
+      "Separar credenciales de backup del dominio operativo"
+    ],
+    "mitre_attack": ["T1486", "T1490"],
+    "mapeo_nist_csf": ["RC.RP-01", "PR.DS-04"],
+    "mapeo_iso_27001": ["A.8.13", "A.5.30"],
+    "recomendacion_defensiva": "Medir capacidad real de restauracion, no solo existencia de copias."
+  },
+  {
+    "id": "CISA-005",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Listados de software autorizado y control de ejecucion",
+    "descripcion": "Solo debe ejecutarse codigo previamente aprobado en equipos o servidores criticos.",
+    "riesgo": "alto",
+    "escenario": "Usuarios o administradores pueden descargar y ejecutar binarios no controlados en sistemas clave.",
+    "controles_defensivos": [
+      "Aplicar application allowlisting",
+      "Restringir instalacion local",
+      "Registrar intentos de ejecucion bloqueados"
+    ],
+    "mitre_attack": ["T1059", "T1204"],
+    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-05"],
+    "mapeo_iso_27001": ["A.8.7", "A.8.9"],
+    "recomendacion_defensiva": "Reducir la capacidad de introducir herramientas ajenas al baseline corporativo."
+  },
+  {
+    "id": "CISA-006",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Proteccion reforzada del correo y la identidad",
+    "descripcion": "El correo sigue siendo vector principal de acceso inicial y robo de credenciales; debe tratarse como plano critico.",
+    "riesgo": "alto",
+    "escenario": "Campañas de phishing buscan credenciales corporativas o despliegue de malware via correo.",
+    "controles_defensivos": [
+      "Aplicar DMARC, SPF y DKIM",
+      "Habilitar analisis de adjuntos y enlaces",
+      "Exigir MFA resistente al phishing"
+    ],
+    "mitre_attack": ["T1566", "T1059"],
+    "mapeo_nist_csf": ["PR.AA-03", "DE.CM-08"],
+    "mapeo_iso_27001": ["A.5.15", "A.8.23"],
+    "recomendacion_defensiva": "Tratar identidad y correo como una misma superficie de riesgo prioritaria."
+  },
+  {
+    "id": "CISA-007",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Monitoreo de cambios en cuentas y grupos privilegiados",
+    "descripcion": "Las altas, bajas o modificaciones en privilegios deben disparar validacion inmediata.",
+    "riesgo": "alto",
+    "escenario": "Un atacante agrega miembros a grupos admin o crea persistencia mediante nuevas cuentas privilegiadas.",
+    "controles_defensivos": [
+      "Alertar altas en grupos sensibles",
+      "Requerir aprobacion para cambios de privilegios",
+      "Correlacionar con origen y dispositivo"
+    ],
+    "mitre_attack": ["T1098", "T1078"],
+    "mapeo_nist_csf": ["DE.CM-03", "PR.AA-04"],
+    "mapeo_iso_27001": ["A.8.2", "A.8.15"],
+    "recomendacion_defensiva": "Tratar toda modificacion de privilegios como evento de seguridad y no solo administrativo."
+  },
+  {
+    "id": "CISA-008",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Bloqueo de macros y contenido activo no confiable",
+    "descripcion": "El contenido activo procedente de correo o internet debe ejecutarse bloqueado por defecto.",
+    "riesgo": "medio",
+    "escenario": "Usuarios abren documentos con macros o scripts embebidos procedentes de fuentes externas.",
+    "controles_defensivos": [
+      "Deshabilitar macros de internet",
+      "Aislar apertura de documentos",
+      "Registrar intentos de activacion"
+    ],
+    "mitre_attack": ["T1204", "T1566.001"],
+    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-05"],
+    "mapeo_iso_27001": ["A.8.7", "A.8.23"],
+    "recomendacion_defensiva": "Eliminar la ejecucion implicita de contenido activo recibido externamente."
+  },
+  {
+    "id": "CISA-009",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Fortalecer acceso remoto con minimo privilegio",
+    "descripcion": "Todo acceso remoto debe autenticarse con contexto fuerte, estar segmentado y ofrecer la menor capacidad necesaria.",
+    "riesgo": "alto",
+    "escenario": "Equipos de soporte o terceros acceden por VPN o escritorio remoto a recursos internos.",
+    "controles_defensivos": [
+      "Aplicar MFA y bastiones",
+      "Restringir origenes y horarios",
+      "Registrar sesiones y comandos sensibles"
+    ],
+    "mitre_attack": ["T1133", "T1021"],
+    "mapeo_nist_csf": ["PR.AA-03", "PR.AC-03"],
+    "mapeo_iso_27001": ["A.5.15", "A.8.21"],
+    "recomendacion_defensiva": "Sustituir acceso remoto amplio por corredores controlados y auditados."
+  },
+  {
+    "id": "CISA-010",
+    "categoria": "CISA",
+    "fuente": "CISA",
+    "titulo": "Segmentar y proteger herramientas de gestion centralizada",
+    "descripcion": "Las plataformas de orquestacion, monitoreo y despliegue concentran alto valor para el atacante y requieren aislamiento adicional.",
+    "riesgo": "alto",
+    "escenario": "Consolas de CI/CD, RMM o administracion central pueden empujar configuracion o codigo a multiples activos.",
+    "controles_defensivos": [
+      "Aislar red y acceso de herramientas de gestion",
+      "Usar cuentas separadas y MFA fuerte",
+      "Alertar sobre cambios masivos o inesperados"
+    ],
+    "mitre_attack": ["T1072", "T1195"],
+    "mapeo_nist_csf": ["ID.AM-05", "PR.AA-06"],
+    "mapeo_iso_27001": ["A.5.22", "A.8.20"],
+    "recomendacion_defensiva": "Tratar el plano de gestion como activo tier-0 o equivalente por su impacto transversal."
+  },
+  {
+    "id": "MITRE-001",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Detectar abuso de cuentas validas",
+    "descripcion": "El uso de credenciales legitimas sigue siendo una tecnica recurrente para evadir controles perimetrales.",
+    "riesgo": "critico",
+    "escenario": "Un atacante opera con credenciales robadas desde ubicaciones atipicas o dispositivos no habituales.",
+    "controles_defensivos": [
+      "Analizar comportamiento de inicio de sesion",
+      "Aplicar acceso condicional basado en riesgo",
+      "Separar cuentas de alto privilegio"
+    ],
+    "mitre_attack": ["T1078"],
+    "mapeo_nist_csf": ["DE.CM-03", "PR.AA-03"],
+    "mapeo_iso_27001": ["A.5.15", "A.8.16"],
+    "recomendacion_defensiva": "Correlacionar autenticacion, geografia, dispositivo y rol para detectar uso ilegitimo de cuentas validas."
+  },
+  {
+    "id": "MITRE-002",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Reducir riesgo de password spraying",
+    "descripcion": "Los ataques de spraying explotan contraseñas comunes contra multiples cuentas con bajo ruido por cuenta individual.",
+    "riesgo": "alto",
+    "escenario": "Servicios de autenticacion federada o VPN reciben intentos fallidos dispersos contra muchas identidades.",
+    "controles_defensivos": [
+      "Imponer MFA fuerte",
+      "Bloquear listas de contraseñas debiles",
+      "Alertar patrones distribuidos de fallo"
+    ],
+    "mitre_attack": ["T1110.003"],
+    "mapeo_nist_csf": ["PR.AA-03", "DE.CM-03"],
+    "mapeo_iso_27001": ["A.5.17", "A.8.16"],
+    "recomendacion_defensiva": "Combinar proteccion de credenciales con analitica de fallos agregados por servicio y origen."
+  },
+  {
+    "id": "MITRE-003",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Vigilar creacion o modificacion de cuentas",
+    "descripcion": "La persistencia mediante nuevas cuentas o cambio de atributos de acceso es una tecnica de larga duracion frecuente.",
+    "riesgo": "alto",
+    "escenario": "Tras una intrusión, el atacante crea cuentas de servicio o restablece credenciales existentes.",
+    "controles_defensivos": [
+      "Alertar altas y resets fuera de proceso",
+      "Aprobar cambios de identidad sensibles",
+      "Reconciliar cuentas contra inventario autorizado"
+    ],
+    "mitre_attack": ["T1136", "T1098"],
+    "mapeo_nist_csf": ["DE.CM-03", "PR.AA-04"],
+    "mapeo_iso_27001": ["A.5.16", "A.8.2"],
+    "recomendacion_defensiva": "Hacer que cada alta o modificacion privilegiada sea verificable, reversible y trazable."
+  },
+  {
+    "id": "MITRE-004",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Limitar interpretes y ejecucion de scripts",
+    "descripcion": "El abuso de PowerShell, shell o runtimes de script favorece ejecucion flexible y pos-explotacion rapida.",
+    "riesgo": "alto",
+    "escenario": "Hosts administrativos permiten ejecucion amplia de scripts sin control de firma ni logging detallado.",
+    "controles_defensivos": [
+      "Restringir scripting a casos aprobados",
+      "Habilitar logging de comandos y transcripcion",
+      "Firmar scripts operativos"
+    ],
+    "mitre_attack": ["T1059"],
+    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-09"],
+    "mapeo_iso_27001": ["A.8.7", "A.8.15"],
+    "recomendacion_defensiva": "Tratar los interpretes como capacidad privilegiada y no como herramienta de uso irrestricto."
+  },
+  {
+    "id": "MITRE-005",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Controlar exfiltracion sobre canales comunes",
+    "descripcion": "La exfiltracion suele camuflarse sobre HTTPS, APIs o almacenamiento conocido para evitar sospecha.",
+    "riesgo": "alto",
+    "escenario": "Workloads comprometidos envian datos a servicios cloud o endpoints web aparentemente legitimos.",
+    "controles_defensivos": [
+      "Inspeccionar egress critico",
+      "Aplicar allowlists por destino y servicio",
+      "Correlacionar volumen y patrón de transferencia"
+    ],
+    "mitre_attack": ["T1041", "T1567"],
+    "mapeo_nist_csf": ["DE.CM-01", "PR.IR-01"],
+    "mapeo_iso_27001": ["A.8.20", "A.8.23"],
+    "recomendacion_defensiva": "Diseñar control de salida con contexto de aplicacion y no solo filtrado basico de puertos."
+  },
+  {
+    "id": "MITRE-006",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Defender servicios remotos frente a movimiento lateral",
+    "descripcion": "RDP, SSH, WinRM y servicios equivalentes se explotan con rapidez una vez comprometida una identidad o un host.",
+    "riesgo": "alto",
+    "escenario": "Un atacante pivota desde un activo inicial hacia administracion remota interna.",
+    "controles_defensivos": [
+      "Eliminar acceso remoto innecesario",
+      "MFA y jump hosts para administracion",
+      "Analizar patrones de acceso lateral"
+    ],
+    "mitre_attack": ["T1021"],
+    "mapeo_nist_csf": ["PR.AC-03", "DE.CM-01"],
+    "mapeo_iso_27001": ["A.8.21", "A.8.16"],
+    "recomendacion_defensiva": "Minimizar rutas laterales y exigir corredores de acceso administrado."
+  },
+  {
+    "id": "MITRE-007",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Detectar descubrimiento de cuentas y permisos",
+    "descripcion": "Los atacantes enumeran usuarios, grupos y privilegios para preparar escalada y persistencia.",
+    "riesgo": "medio",
+    "escenario": "Consultas repetitivas a directorio, APIs de identidad o comandos de inventario desde hosts no habituales.",
+    "controles_defensivos": [
+      "Alertar ráfagas de enumeracion",
+      "Reducir permisos de lectura innecesarios",
+      "Relacionar descubrimiento con actividad posterior"
+    ],
+    "mitre_attack": ["T1087", "T1069"],
+    "mapeo_nist_csf": ["DE.CM-09", "PR.AA-06"],
+    "mapeo_iso_27001": ["A.5.18", "A.8.16"],
+    "recomendacion_defensiva": "Limitar la visibilidad del directorio y detectar enumeracion contextualizada."
+  },
+  {
+    "id": "MITRE-008",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Prevenir manipulacion de artefactos y configuracion",
+    "descripcion": "La alteracion de scripts, manifiestos o pipelines permite persistencia y ejecucion de codigo malicioso con confianza heredada.",
+    "riesgo": "alto",
+    "escenario": "Repositorios o pipelines modificados introducen binarios, scripts o cambios de despliegue sin revision adecuada.",
+    "controles_defensivos": [
+      "Proteger ramas y aprobaciones",
+      "Verificar firmas y procedencia",
+      "Registrar cambios en pipelines sensibles"
+    ],
+    "mitre_attack": ["T1565", "T1195"],
+    "mapeo_nist_csf": ["ID.SC-04", "PR.PS-02"],
+    "mapeo_iso_27001": ["A.5.21", "A.8.8"],
+    "recomendacion_defensiva": "Proteger repositorios y automatizaciones como activos de alto impacto operacional."
+  },
+  {
+    "id": "MITRE-009",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Mitigar abuso de APIs cloud",
+    "descripcion": "Las APIs de nube permiten descubrimiento, cambio de configuracion y exfiltracion sin necesidad de acceso interactivo tradicional.",
+    "riesgo": "alto",
+    "escenario": "Credenciales de automatizacion o tokens de acceso son usados para operar directamente sobre APIs de gestion.",
+    "controles_defensivos": [
+      "Aplicar minimo privilegio a identidades de workload",
+      "Alertar llamadas sensibles inusuales",
+      "Rotar y limitar tokens de automatizacion"
+    ],
+    "mitre_attack": ["T1526", "T1078.004"],
+    "mapeo_nist_csf": ["PR.AA-04", "DE.CM-03"],
+    "mapeo_iso_27001": ["A.5.18", "A.8.16"],
+    "recomendacion_defensiva": "Modelar las APIs cloud como superficie primaria de ataque y deteccion."
+  },
+  {
+    "id": "MITRE-010",
+    "categoria": "MITRE",
+    "fuente": "MITRE ATT&CK",
+    "titulo": "Rastrear ejecucion desde artefactos temporales o descargados",
+    "descripcion": "La ejecucion desde directorios temporales o descargas es un patron comun de implantacion inicial o pos-explotacion.",
+    "riesgo": "medio",
+    "escenario": "Usuarios o procesos de servicio lanzan binarios desde ubicaciones efimeras tras una entrega maliciosa.",
+    "controles_defensivos": [
+      "Bloquear ejecucion desde temp y perfiles de usuario",
+      "Correlacionar descarga y ejecucion inmediata",
+      "Aplicar reputacion y allowlisting"
+    ],
+    "mitre_attack": ["T1204", "T1059"],
+    "mapeo_nist_csf": ["PR.PS-01", "DE.CM-05"],
+    "mapeo_iso_27001": ["A.8.7", "A.8.23"],
+    "recomendacion_defensiva": "Reducir rutas de ejecucion oportunista y detectar cadenas descarga-ejecucion."
+  },
+  {
+    "id": "NISTISO-001",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Gobernar activos segun criticidad y propietario",
+    "descripcion": "Cada activo relevante debe tener clasificacion, propietario y expectativas de proteccion definidas.",
+    "riesgo": "medio",
+    "escenario": "Recursos cloud se crean rapidamente sin responsable claro ni nivel de criticidad formal.",
+    "controles_defensivos": [
+      "Etiquetado obligatorio",
+      "Inventario con propietario y entorno",
+      "Revisiones periodicas de activos huérfanos"
+    ],
+    "mitre_attack": ["T1580"],
+    "mapeo_nist_csf": ["ID.AM-01", "ID.GV-01"],
+    "mapeo_iso_27001": ["A.5.9", "A.5.12"],
+    "recomendacion_defensiva": "Vincular el inventario tecnico con responsabilidad operativa y de negocio."
+  },
+  {
+    "id": "NISTISO-002",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Gestion de acceso basada en politicas y revision",
+    "descripcion": "El acceso debe definirse por politica, revisarse periodicamente y revocarse cuando ya no sea necesario.",
+    "riesgo": "alto",
+    "escenario": "Usuarios, terceros o workloads conservan privilegios tras cambios de rol o finalizacion de proyectos.",
+    "controles_defensivos": [
+      "Recertificacion de accesos",
+      "Separacion de funciones",
+      "Bajas y revocaciones automatizadas"
+    ],
+    "mitre_attack": ["T1078", "T1098"],
+    "mapeo_nist_csf": ["PR.AA-01", "PR.AA-05"],
+    "mapeo_iso_27001": ["A.5.15", "A.5.18"],
+    "recomendacion_defensiva": "Institucionalizar revisiones de acceso como control recurrente y no puntual."
+  },
+  {
+    "id": "NISTISO-003",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Baselines de configuracion segura",
+    "descripcion": "Los sistemas deben desplegarse desde configuraciones endurecidas y controladas contra deriva.",
+    "riesgo": "alto",
+    "escenario": "Entornos nuevos heredan defaults permisivos o cambios manuales fuera de IaC.",
+    "controles_defensivos": [
+      "Plantillas endurecidas",
+      "Control de deriva de configuracion",
+      "Excepciones temporales aprobadas"
+    ],
+    "mitre_attack": ["T1562", "T1190"],
+    "mapeo_nist_csf": ["PR.PS-02", "PR.PS-03"],
+    "mapeo_iso_27001": ["A.8.9", "A.8.32"],
+    "recomendacion_defensiva": "Hacer de IaC y policy-as-code el mecanismo primario de configuracion segura."
+  },
+  {
+    "id": "NISTISO-004",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Proteccion de datos segun sensibilidad",
+    "descripcion": "La seleccion de controles debe depender de la criticidad, sensibilidad y obligaciones regulatorias del dato.",
+    "riesgo": "alto",
+    "escenario": "Datos sensibles comparten almacenamiento o rutas de acceso con informacion de bajo impacto.",
+    "controles_defensivos": [
+      "Clasificacion de datos",
+      "Cifrado y retencion acordes al nivel",
+      "Segregacion logica o fisica"
+    ],
+    "mitre_attack": ["T1537", "T1041"],
+    "mapeo_nist_csf": ["PR.DS-01", "PR.DS-05"],
+    "mapeo_iso_27001": ["A.5.12", "A.8.12"],
+    "recomendacion_defensiva": "Alinear almacenamiento, acceso y ciclo de vida con la sensibilidad real del dato."
+  },
+  {
+    "id": "NISTISO-005",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Registro suficiente para deteccion e investigacion",
+    "descripcion": "Los logs deben ser completos, sincronizados y útiles para detectar, contener y reconstruir incidentes.",
+    "riesgo": "alto",
+    "escenario": "Un incidente ocurre, pero la retencion o calidad del log impide entender secuencia y alcance.",
+    "controles_defensivos": [
+      "Centralizar logs críticos",
+      "Sincronizar tiempo y contexto",
+      "Proteger integridad y retencion"
+    ],
+    "mitre_attack": ["T1070", "T1562"],
+    "mapeo_nist_csf": ["DE.CM-01", "RS.AN-03"],
+    "mapeo_iso_27001": ["A.8.15", "A.8.16"],
+    "recomendacion_defensiva": "Diseñar telemetria pensando en respuesta a incidentes y no solo en troubleshooting."
+  },
+  {
+    "id": "NISTISO-006",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Gestion formal de vulnerabilidades",
+    "descripcion": "La vulnerabilidad debe tratarse como proceso continuo que combina descubrimiento, priorizacion y verificacion de cierre.",
+    "riesgo": "alto",
+    "escenario": "Los escaneos se ejecutan, pero no existe seguimiento efectivo ni prioridad segun explotabilidad.",
+    "controles_defensivos": [
+      "Inventario y escaneo recurrente",
+      "Prioridad basada en criticidad y exposicion",
+      "Validacion posterior al parche"
+    ],
+    "mitre_attack": ["T1190", "T1068"],
+    "mapeo_nist_csf": ["ID.RA-01", "PR.PS-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.9"],
+    "recomendacion_defensiva": "Cerrar el ciclo entre hallazgo, remediacion y evidencia de solucion efectiva."
+  },
+  {
+    "id": "NISTISO-007",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Capacidad de respuesta documentada y ejercitada",
+    "descripcion": "Los planes de respuesta deben ser operables, conocidos y probados en ejercicios tecnicos y de crisis.",
+    "riesgo": "medio",
+    "escenario": "Los equipos disponen de documentos, pero no han ensayado decisiones ni contencion bajo presion realista.",
+    "controles_defensivos": [
+      "Playbooks por tipo de incidente",
+      "Ejercicios tabletop y tecnicos",
+      "Lecciones aprendidas integradas"
+    ],
+    "mitre_attack": ["T1486", "T1531"],
+    "mapeo_nist_csf": ["RS.RP-01", "RC.IM-01"],
+    "mapeo_iso_27001": ["A.5.24", "A.5.27"],
+    "recomendacion_defensiva": "Medir respuesta por tiempos y decisiones efectivas, no solo por existencia documental."
+  },
+  {
+    "id": "NISTISO-008",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Asegurar proveedores y terceros",
+    "descripcion": "Los riesgos de terceros deben evaluarse antes de integrar servicios, software o acceso operacional.",
+    "riesgo": "alto",
+    "escenario": "Proveedores acceden a entornos productivos o suministran componentes sin requisitos de seguridad verificables.",
+    "controles_defensivos": [
+      "Evaluacion de terceros",
+      "Clausulas de seguridad y notificacion",
+      "Acceso segregado y monitoreado"
+    ],
+    "mitre_attack": ["T1195", "T1133"],
+    "mapeo_nist_csf": ["ID.SC-01", "ID.SC-05"],
+    "mapeo_iso_27001": ["A.5.19", "A.5.20"],
+    "recomendacion_defensiva": "Gestionar terceros como extensiones de la superficie de riesgo propia."
+  },
+  {
+    "id": "NISTISO-009",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Control de cambios con trazabilidad",
+    "descripcion": "Los cambios en configuracion, codigo e infraestructura deben seguir flujo autorizado y auditable.",
+    "riesgo": "medio",
+    "escenario": "Cambios urgentes o manuales introducen desviaciones sin registro suficiente ni aprobacion clara.",
+    "controles_defensivos": [
+      "PR review y aprobacion por pares",
+      "Registro de cambios y justificacion",
+      "Rollback documentado"
+    ],
+    "mitre_attack": ["T1565", "T1195"],
+    "mapeo_nist_csf": ["GV.OV-01", "PR.PS-02"],
+    "mapeo_iso_27001": ["A.8.32", "A.5.37"],
+    "recomendacion_defensiva": "Reducir cambios fuera de proceso y conservar evidencia clara de quien cambió qué y por qué."
+  },
+  {
+    "id": "NISTISO-010",
+    "categoria": "NIST_ISO",
+    "fuente": "NIST CSF / ISO 27001",
+    "titulo": "Continuidad operativa y redundancia proporcional",
+    "descripcion": "La resiliencia debe planificarse segun impacto de negocio, dependencias tecnicas y objetivos de recuperacion.",
+    "riesgo": "medio",
+    "escenario": "Servicios criticos carecen de redundancia, pruebas de failover o RTO/RPO definidos.",
+    "controles_defensivos": [
+      "Definir RTO y RPO",
+      "Diseñar redundancia por capa",
+      "Probar failover y recuperacion"
+    ],
+    "mitre_attack": ["T1499", "T1489"],
+    "mapeo_nist_csf": ["RC.RP-01", "RC.CO-03"],
+    "mapeo_iso_27001": ["A.5.29", "A.5.30"],
+    "recomendacion_defensiva": "Alinear arquitectura resiliente con impacto real del servicio y dependencia cruzada."
+  },
+  {
+    "id": "CVE-001",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2021-44228",
+    "titulo": "Log4Shell en Log4j",
+    "descripcion": "Vulnerabilidad de ejecucion remota a traves de sustitucion JNDI en aplicaciones Java que usan Log4j vulnerable.",
+    "categoria_vulnerabilidad": "remote code execution",
+    "severidad": "critica",
+    "escenario": "Aplicaciones Java registran entradas controladas por usuario sin mitigaciones ni version corregida.",
+    "controles_defensivos": [
+      "Actualizar Log4j a versiones corregidas",
+      "Aplicar mitigaciones de JNDI donde proceda",
+      "Inventariar librerias transitivas"
+    ],
+    "mitre_attack": ["T1190", "T1059"],
+    "mapeo_nist_csf": ["ID.RA-01", "PR.PS-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.9"],
+    "recomendacion_defensiva": "Mantener SBOM y respuesta acelerada para dependencias criticas explotadas masivamente."
+  },
+  {
+    "id": "CVE-002",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-23397",
+    "titulo": "Escalada y robo de hashes en Microsoft Outlook",
+    "descripcion": "Un recordatorio especialmente manipulado puede provocar autenticacion NTLM saliente sin interaccion del usuario.",
+    "categoria_vulnerabilidad": "credential exposure",
+    "severidad": "alta",
+    "escenario": "Clientes Outlook on-premises o de escritorio sin parche procesan elementos maliciosos.",
+    "controles_defensivos": [
+      "Aplicar parches de seguridad",
+      "Bloquear NTLM saliente cuando sea viable",
+      "Buscar indicadores en correo y logs"
+    ],
+    "mitre_attack": ["T1557", "T1114"],
+    "mapeo_nist_csf": ["PR.PS-03", "DE.CM-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "recomendacion_defensiva": "Reducir protocolos heredados y endurecer clientes de correo ante abuso de autenticacion."
+  },
+  {
+    "id": "CVE-003",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-3519",
+    "titulo": "RCE en Citrix ADC y Gateway",
+    "descripcion": "Dispositivos expuestos pueden ser comprometidos remotamente y usados como punto de entrada perimetral.",
+    "categoria_vulnerabilidad": "remote code execution",
+    "severidad": "critica",
+    "escenario": "Gateways de acceso remoto o balanceadores Citrix permanecen expuestos sin actualizar.",
+    "controles_defensivos": [
+      "Actualizar a builds corregidas",
+      "Buscar webshells e IOC posteriores",
+      "Restringir administracion y revisar persistencia"
+    ],
+    "mitre_attack": ["T1190", "T1505.003"],
+    "mapeo_nist_csf": ["PR.PS-03", "RS.AN-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "recomendacion_defensiva": "Tratar appliances perimetrales como prioridad maxima de parcheo y caza post-compromiso."
+  },
+  {
+    "id": "CVE-004",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2024-3400",
+    "titulo": "Command injection en PAN-OS GlobalProtect",
+    "descripcion": "Un firewall expuesto puede sufrir ejecucion arbitraria sin autenticacion en versiones afectadas.",
+    "categoria_vulnerabilidad": "command injection",
+    "severidad": "critica",
+    "escenario": "Dispositivos VPN/perimetrales Palo Alto accesibles desde internet permanecen vulnerables.",
+    "controles_defensivos": [
+      "Aplicar hotfix o version corregida",
+      "Revisar telemetria de explotacion",
+      "Aislar servicios comprometidos"
+    ],
+    "mitre_attack": ["T1190", "T1059"],
+    "mapeo_nist_csf": ["PR.PS-03", "DE.CM-01"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "recomendacion_defensiva": "Integrar appliances de borde en el ciclo de vulnerabilidades con SLA mas agresivo."
+  },
+  {
+    "id": "CVE-005",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-4966",
+    "titulo": "Citrix Bleed",
+    "descripcion": "Fallo de divulgacion de memoria que permite robar tokens o informacion sensible desde dispositivos Citrix NetScaler.",
+    "categoria_vulnerabilidad": "information disclosure",
+    "severidad": "critica",
+    "escenario": "Dispositivos expuestos mantienen sesiones de usuarios o administradores sin invalidez posterior al compromiso.",
+    "controles_defensivos": [
+      "Actualizar a version corregida",
+      "Invalidar sesiones y tokens",
+      "Buscar reutilizacion posterior de credenciales"
+    ],
+    "mitre_attack": ["T1040", "T1528"],
+    "mapeo_nist_csf": ["PR.PS-03", "RS.MI-01"],
+    "mapeo_iso_27001": ["A.8.8", "A.5.17"],
+    "recomendacion_defensiva": "Tras una fuga de memoria en acceso remoto, asumir compromiso de sesiones activas y rotarlas."
+  },
+  {
+    "id": "CVE-006",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-20198",
+    "titulo": "Zero-day en Cisco IOS XE Web UI",
+    "descripcion": "Permite crear cuentas privilegiadas en dispositivos expuestos mediante la interfaz web vulnerable.",
+    "categoria_vulnerabilidad": "privilege escalation",
+    "severidad": "critica",
+    "escenario": "Equipos de red publican la Web UI y mantienen versiones afectadas.",
+    "controles_defensivos": [
+      "Deshabilitar Web UI si no es necesaria",
+      "Aplicar version corregida",
+      "Buscar cuentas no autorizadas creadas"
+    ],
+    "mitre_attack": ["T1136", "T1078"],
+    "mapeo_nist_csf": ["PR.AC-03", "PR.PS-03"],
+    "mapeo_iso_27001": ["A.5.16", "A.8.8"],
+    "recomendacion_defensiva": "Eliminar superficies administrativas expuestas y verificar persistencia tras el parcheo."
+  },
+  {
+    "id": "CVE-007",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-22515",
+    "titulo": "Bypass de autenticacion en Confluence Data Center",
+    "descripcion": "Permite acceso no autorizado y posible toma de control en instancias vulnerables expuestas.",
+    "categoria_vulnerabilidad": "authentication bypass",
+    "severidad": "critica",
+    "escenario": "Plataformas colaborativas publicadas a internet carecen de parche o segmentacion adecuada.",
+    "controles_defensivos": [
+      "Actualizar inmediatamente",
+      "Aislar instancias expuestas",
+      "Revisar cuentas y cambios posteriores"
+    ],
+    "mitre_attack": ["T1190", "T1078"],
+    "mapeo_nist_csf": ["PR.PS-03", "RS.AN-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "recomendacion_defensiva": "La colaboracion expuesta debe entrar en la misma prioridad que un servicio perimetral critico."
+  },
+  {
+    "id": "CVE-008",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-34362",
+    "titulo": "SQL injection en MOVEit Transfer",
+    "descripcion": "La vulnerabilidad permite acceso no autorizado y robo de datos en servidores de transferencia gestionada.",
+    "categoria_vulnerabilidad": "sql injection",
+    "severidad": "critica",
+    "escenario": "Plataformas MFT expuestas a internet concentran archivos sensibles y credenciales operativas.",
+    "controles_defensivos": [
+      "Aplicar parches y mitigaciones del proveedor",
+      "Buscar webshells e indicadores",
+      "Notificar y revisar posibles datos exfiltrados"
+    ],
+    "mitre_attack": ["T1190", "T1505.003"],
+    "mapeo_nist_csf": ["PR.PS-03", "RS.AN-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "recomendacion_defensiva": "Los sistemas de transferencia gestionada deben tener monitoreo intensivo y segmentacion fuerte."
+  },
+  {
+    "id": "CVE-009",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2022-47966",
+    "titulo": "RCE por deserializacion en Zoho ManageEngine",
+    "descripcion": "Productos de gestion empresarial afectados permiten ejecucion remota si usan configuraciones vulnerables.",
+    "categoria_vulnerabilidad": "remote code execution",
+    "severidad": "critica",
+    "escenario": "Herramientas de gestion y autoservicio expuestas a internet o a terceros conservan versiones vulnerables.",
+    "controles_defensivos": [
+      "Actualizar software afectado",
+      "Restringir exposicion externa",
+      "Inspeccionar cambios y cuentas creadas"
+    ],
+    "mitre_attack": ["T1190", "T1059"],
+    "mapeo_nist_csf": ["PR.PS-03", "PR.AC-03"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.21"],
+    "recomendacion_defensiva": "Aislar plataformas de gestion centralizada y mantenerlas fuera del perimetro publico siempre que sea posible."
+  },
+  {
+    "id": "CVE-010",
+    "categoria": "CVE",
+    "fuente": "CVE",
+    "cve_id": "CVE-2023-35182",
+    "titulo": "RCE en Ivanti Endpoint Manager Mobile",
+    "descripcion": "La interfaz expuesta puede permitir ejecucion remota y compromiso del servicio de gestion movil.",
+    "categoria_vulnerabilidad": "remote code execution",
+    "severidad": "alta",
+    "escenario": "Servidores de gestion de dispositivos moviles mantienen acceso publico y version vulnerable.",
+    "controles_defensivos": [
+      "Actualizar a version corregida",
+      "Restringir acceso administrativo",
+      "Revisar integridad y configuracion post-incidente"
+    ],
+    "mitre_attack": ["T1190", "T1078"],
+    "mapeo_nist_csf": ["PR.PS-03", "RS.MI-01"],
+    "mapeo_iso_27001": ["A.8.8", "A.8.16"],
+    "recomendacion_defensiva": "Dar prioridad de remediacion alta a plataformas que administran endpoints o politicas moviles."
+  }
+]
