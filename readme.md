@@ -87,3 +87,7 @@ SEC_ARCHITECT existe para demostrar que la seguridad puede ser rigurosa sin ser 
 - MITRE mapping dashboard: [docs/mitre-mapping-dashboard.md](docs/mitre-mapping-dashboard.md)
 - Riesgos y endurecimiento: [docs/design-risks-hardening.md](docs/design-risks-hardening.md)
 - Evaluación recruiter: [docs/recruiter-evaluation.md](docs/recruiter-evaluation.md)
+- C4 container view: [docs/c4-container-view.md](docs/c4-container-view.md)
+- Dockerfile: [Dockerfile](Dockerfile)
+- CI de seguridad: [.github/workflows/security-ci.yml](.github/workflows/security-ci.yml)
+- Security policy check: [scripts/security-policy-check.ps1](scripts/security-policy-check.ps1)
