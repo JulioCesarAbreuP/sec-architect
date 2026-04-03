@@ -1,39 +1,39 @@
 # Lab 03 — Managed Identities
 
-**Domain:** Identity  
-**Duration:** ~20 minutes  
+**Dominio:** Identity  
+**Duración:** ~20 minutos  
 **IaC:** [bicep/identity.bicep](../bicep/identity.bicep) · [terraform/identity.tf](../terraform/identity.tf)
 
 ---
 
-## Objectives
+## Objetivos
 
-- Create a User-Assigned Managed Identity (UAMI) for workload authentication.
-- Understand the difference between System-Assigned and User-Assigned identities.
-- Retrieve an access token from IMDS in code — no credentials required.
-- Assign the UAMI to a downstream resource (Key Vault, Storage).
+- Crear una User-Assigned Managed Identity (UAMI) para la autenticación del workload.
+- Comprender la diferencia entre identidades System-Assigned y User-Assigned.
+- Obtener un access token desde IMDS en código, sin requerir credenciales.
+- Asignar la UAMI a un recurso downstream (Key Vault, Storage).
 
 ## System-Assigned vs User-Assigned
 
 | | System-Assigned | User-Assigned |
 |--|----------------|--------------|
-| Lifecycle | Tied to resource | Independent resource |
-| Reuse across resources | No | Yes |
-| Role assignments survive resource delete | No | Yes |
-| Best for | Single-resource workloads | Shared infra, scale sets |
+| Ciclo de vida | Ligada al recurso | Recurso independiente |
+| Reutilización entre recursos | No | Sí |
+| Las asignaciones de rol sobreviven a la eliminación del recurso | No | Sí |
+| Mejor para | Workloads de un solo recurso | Infraestructura compartida, scale sets |
 
-This lab uses **User-Assigned** to allow the same identity to access both Key Vault and Storage.
+Este laboratorio usa **User-Assigned** para permitir que la misma identidad acceda tanto a Key Vault como a Storage.
 
-## How Token Acquisition Works
+## Cómo funciona la obtención de tokens
 
-When a workload runs on Azure (VM, Container App, Functions):
+Cuando un workload se ejecuta en Azure (VM, Container App, Functions):
 
-1. Code calls `GET http://169.254.169.254/metadata/identity/oauth2/token?resource=https://vault.azure.net/&api-version=2018-02-01` (IMDS).
-2. Azure returns a JWT signed by Entra ID.
-3. Workload presents the JWT as `Authorization: Bearer <token>` to Key Vault/Storage.
-4. The resource validates the JWT claims and checks the caller's RBAC role.
+1. El código llama a `GET http://169.254.169.254/metadata/identity/oauth2/token?resource=https://vault.azure.net/&api-version=2018-02-01` (IMDS).
+2. Azure devuelve un JWT firmado por Entra ID.
+3. El workload presenta el JWT como `Authorization: Bearer <token>` ante Key Vault/Storage.
+4. El recurso valida los claims del JWT y verifica el rol RBAC del llamador.
 
-### Python Example (using `azure-identity`)
+### Ejemplo en Python (usando `azure-identity`)
 
 ```python
 from azure.identity import ManagedIdentityCredential
@@ -45,7 +45,7 @@ secret = client.get_secret("my-secret")
 print(secret.value)
 ```
 
-### PowerShell Example
+### Ejemplo en PowerShell
 
 ```powershell
 $token = (Invoke-RestMethod `
@@ -58,7 +58,7 @@ Invoke-RestMethod `
   -Headers @{Authorization = "Bearer $token"}
 ```
 
-## Deployment Steps
+## Pasos de despliegue
 
 ### Bicep
 
@@ -75,7 +75,7 @@ az deployment group create \
 terraform apply -target=azurerm_user_assigned_identity.workload
 ```
 
-## Validation
+## Validación
 
 ```powershell
 az identity show \
@@ -84,10 +84,10 @@ az identity show \
   --query "{clientId:clientId, principalId:principalId}"
 ```
 
-## Zero Trust Mapping
+## Mapeo a Zero Trust
 
-| Principle | Control |
+| Principio | Control |
 |-----------|---------|
-| Verify Explicitly | Cryptographic identity issued by Entra ID; no password to steal |
-| Least Privilege | UAMI only receives roles it needs on specific resources |
-| Assume Breach | If token is intercepted it expires in ≤1 hour; no long-lived credential |
+| Verify Explicitly | Identidad criptográfica emitida por Entra ID; no hay contraseña que robar |
+| Least Privilege | La UAMI solo recibe los roles que necesita sobre recursos específicos |
+| Assume Breach | Si un token es interceptado expira en ≤1 hora; no existe una credencial de larga duración |

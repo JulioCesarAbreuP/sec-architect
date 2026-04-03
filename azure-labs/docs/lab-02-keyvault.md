@@ -1,42 +1,42 @@
 # Lab 02 — Azure Key Vault
 
-**Domain:** Secrets Management  
-**Duration:** ~30 minutes  
+**Dominio:** Secrets Management  
+**Duración:** ~30 minutos  
 **IaC:** [bicep/keyvault.bicep](../bicep/keyvault.bicep) · [terraform/keyvault.tf](../terraform/keyvault.tf)
 
 ---
 
-## Objectives
+## Objetivos
 
-- Deploy Key Vault with RBAC authorization (no legacy access policies).
-- Enforce soft-delete (90 days) and purge protection.
-- Disable all public network access.
-- Attach a private endpoint to `snet-privateendpoints`.
-- Grant least-privilege RBAC roles to admin and workload identity.
+- Desplegar Key Vault con autorización basada en RBAC (sin access policies legacy).
+- Aplicar soft-delete (90 días) y purge protection.
+- Deshabilitar todo acceso público de red.
+- Asociar un private endpoint a `snet-privateendpoints`.
+- Asignar roles RBAC de least privilege a la identidad administrativa y al workload.
 
-## Key Security Decisions
+## Decisiones clave de seguridad
 
-| Setting | Value | Why |
+| Configuración | Valor | Motivo |
 |---------|-------|-----|
-| `enableRbacAuthorization` | `true` | Centralized Azure RBAC instead of per-vault ACLs |
-| `publicNetworkAccess` | `Disabled` | All traffic via Private Endpoint only |
-| `enablePurgeProtection` | `true` | Prevents permanent secret destruction |
-| `softDeleteRetentionInDays` | `90` | Minimum retention for regulatory compliance |
-| `networkAcls.defaultAction` | `Deny` | Deny-by-default; Azure services bypass for ARM operations |
+| `enableRbacAuthorization` | `true` | Azure RBAC centralizado en lugar de ACL por vault |
+| `publicNetworkAccess` | `Disabled` | Todo el tráfico pasa solo por Private Endpoint |
+| `enablePurgeProtection` | `true` | Evita la destrucción permanente de secretos |
+| `softDeleteRetentionInDays` | `90` | Retención mínima para cumplimiento regulatorio |
+| `networkAcls.defaultAction` | `Deny` | Denegación por defecto; los servicios de Azure exceptúan esta restricción en operaciones de ARM |
 
-## RBAC Roles Assigned
+## Roles RBAC asignados
 
-| Identity | Role | Scope |
+| Identidad | Rol | Alcance |
 |----------|------|-------|
 | Admin AAD Group | `Key Vault Administrator` | Key Vault |
 | Workload Managed Identity | `Key Vault Secrets User` | Key Vault |
 
-## Deployment Steps
+## Pasos de despliegue
 
 ### Bicep
 
 ```powershell
-# Get admin group object ID
+# Obtener el object ID del grupo administrador
 $adminOid = (az ad group show --group "kv-admins" --query id -o tsv)
 
 az deployment group create \
@@ -53,31 +53,31 @@ terraform apply \
   -var="kv_admin_object_id=$(az ad group show --group kv-admins --query id -o tsv)"
 ```
 
-## Validation
+## Validación
 
 ```powershell
-# Confirm public access is disabled
+# Confirmar que el acceso público está deshabilitado
 az keyvault show \
   --name <kv-name> \
   --resource-group rg-zerotrust-lab \
   --query properties.publicNetworkAccess
 
-# Attempt access from internet (should fail)
+# Intentar acceso desde internet (debe fallar)
 curl https://<kv-name>.vault.azure.net/secrets?api-version=7.4
 
-# List role assignments
+# Listar asignaciones de rol
 az role assignment list \
   --scope $(az keyvault show --name <kv-name> --resource-group rg-zerotrust-lab --query id -o tsv) \
   --output table
 ```
 
-## Audit Trail
+## Ruta de auditoría (Audit Trail)
 
-Key Vault emits `AuditEvent` logs that record every secret read, write, and delete.
-These are forwarded to the Log Analytics Workspace configured in `logAnalyticsWorkspaceId`.
+Key Vault emite logs `AuditEvent` que registran cada lectura, escritura y eliminación de secretos.
+Estos eventos se envían al Log Analytics Workspace configurado en `logAnalyticsWorkspaceId`.
 
 ```kql
-// KQL — show last 50 secret reads
+// KQL — mostrar las últimas 50 lecturas de secretos
 AzureDiagnostics
 | where ResourceType == "VAULTS"
 | where OperationName == "SecretGet"
@@ -85,10 +85,10 @@ AzureDiagnostics
 | top 50 by TimeGenerated desc
 ```
 
-## Zero Trust Mapping
+## Mapeo a Zero Trust
 
-| Principle | Control |
+| Principio | Control |
 |-----------|---------|
-| Verify Explicitly | Every request requires valid Entra ID token + RBAC role |
-| Least Privilege | Workload gets `Secrets User` (read only); admin gets `Administrator` |
-| Assume Breach | Complete audit trail; purge protection prevents cover-up |
+| Verify Explicitly | Cada solicitud requiere un token válido de Entra ID + un rol RBAC |
+| Least Privilege | El workload recibe `Secrets User` (solo lectura); el administrador recibe `Administrator` |
+| Assume Breach | Audit trail completo; purge protection evita encubrimiento o eliminación definitiva |

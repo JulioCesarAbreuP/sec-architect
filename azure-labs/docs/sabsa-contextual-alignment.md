@@ -1,37 +1,37 @@
-# SABSA Contextual Alignment — Zero Trust Azure Lab
+# Alineación contextual de SABSA — Zero Trust Azure Lab
 
-## Overview
+## Visión general
 
-SABSA (Sherwood Applied Business Security Architecture) provides a layered framework for aligning security architecture to business objectives.
-This document maps the Zero Trust Azure lab controls to the **Contextual** and **Conceptual** layers of SABSA.
+SABSA (Sherwood Applied Business Security Architecture) proporciona un marco en capas para alinear la arquitectura de seguridad con los objetivos del negocio.
+Este documento alinea los controles del Zero Trust Azure Lab con las capas **Contextual** y **Conceptual** de SABSA.
 
 ---
 
-## SABSA Layers Applied
+## Capas de SABSA aplicadas
 
-| Layer | What it answers | Lab artefact |
+| Capa | Qué responde | Artefacto del laboratorio |
 |-------|----------------|--------------|
-| Contextual (Business) | Why are we doing this? | Business risk drivers below |
-| Conceptual (Architecture) | What do we protect? | Assets and trust boundaries |
-| Logical (Design) | How does it work? | Zero Trust principles |
-| Physical (Technology) | With what? | Azure services |
-| Component (Implementation) | How exactly? | Bicep / Terraform modules |
+| Contextual (Business) | ¿Por qué hacemos esto? | Factores de riesgo de negocio descritos más abajo |
+| Conceptual (Architecture) | ¿Qué protegemos? | Activos y límites de confianza (trust boundaries) |
+| Logical (Design) | ¿Cómo funciona? | Principios de Zero Trust |
+| Physical (Technology) | ¿Con qué? | Servicios de Azure |
+| Component (Implementation) | ¿Cómo exactamente? | Módulos de Bicep / Terraform |
 
 ---
 
-## Contextual Layer — Business Risk Drivers
+## Capa Contextual — factores de riesgo del negocio
 
-| Risk | Business Impact | Likelihood |
+| Riesgo | Impacto de negocio | Probabilidad |
 |------|----------------|-----------|
-| Credential compromise | Data breach, regulatory fine | High |
-| Insider threat | IP theft, sabotage | Medium |
-| Lateral movement after initial breach | Full environment compromise | High |
-| Secrets leaked in code | Supply chain attack entry point | High |
-| Unencrypted data in transit | Compliance violation | Medium |
+| Credential compromise | Brecha de datos, multa regulatoria | Alta |
+| Insider threat | Robo de propiedad intelectual, sabotaje | Media |
+| Lateral movement después de una brecha inicial | Compromiso completo del entorno | Alta |
+| Secretos expuestos en código | Punto de entrada para supply chain attack | Alta |
+| Datos en tránsito sin cifrar | Incumplimiento regulatorio | Media |
 
 ---
 
-## Conceptual Layer — Assets and Trust Boundaries
+## Capa Conceptual — activos y límites de confianza
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -60,34 +60,34 @@ This document maps the Zero Trust Azure lab controls to the **Contextual** and *
 
 ---
 
-## Logical Layer — Zero Trust Controls Map
+## Capa Logical — mapa de controles de Zero Trust
 
-| Zero Trust Principle | SABSA Security Attribute | Control |
+| Principio de Zero Trust | Atributo de seguridad SABSA | Control |
 |---------------------|------------------------|---------|
-| Verify Explicitly | Authenticity | Managed Identity + Entra ID token |
-| Verify Explicitly | Non-repudiation | Key Vault AuditEvent logs |
-| Least Privilege | Confidentiality | Scoped RBAC roles per resource |
+| Verify Explicitly | Authenticity | Managed Identity + token de Entra ID |
+| Verify Explicitly | Non-repudiation | Logs `AuditEvent` de Key Vault |
+| Least Privilege | Confidentiality | Roles RBAC acotados por recurso |
 | Least Privilege | Integrity | `allowSharedKeyAccess: false` |
-| Assume Breach | Availability | Private endpoints eliminate public attack surface |
-| Assume Breach | Auditability | Log Analytics + KQL alerts |
+| Assume Breach | Availability | Los private endpoints eliminan la superficie de ataque pública |
+| Assume Breach | Auditability | Log Analytics + consultas y alertas KQL |
 
 ---
 
-## Physical Layer — Azure Service Mapping
+## Capa Physical — mapeo de servicios de Azure
 
-| Security Function | Azure Service |
+| Función de seguridad | Servicio de Azure |
 |-------------------|--------------|
 | Identity Provider | Microsoft Entra ID |
 | Secret Store | Azure Key Vault |
-| Network Segmentation | Azure Virtual Network + NSG |
-| Private Connectivity | Azure Private Endpoint + Private DNS |
-| Privileged Access | Azure Bastion |
-| SIEM / Log Aggregation | Azure Log Analytics Workspace |
-| IaC Enforcement | Bicep / Terraform + CI Validation |
+| Segmentación de red | Azure Virtual Network + NSG |
+| Conectividad privada | Azure Private Endpoint + Private DNS |
+| Acceso privilegiado | Azure Bastion |
+| SIEM / agregación de logs | Azure Log Analytics Workspace |
+| Cumplimiento de IaC | Bicep / Terraform + validación en CI |
 
 ---
 
-## References
+## Referencias
 
 - SABSA Institute: https://sabsa.org
 - Microsoft Zero Trust: https://learn.microsoft.com/security/zero-trust/

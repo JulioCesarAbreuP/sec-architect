@@ -11,6 +11,7 @@
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
 
     <link rel="icon" href="/sec-architect/assets/favicon.png" type="image/png">
+    <link rel="stylesheet" href="assets/css/site.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -31,6 +32,52 @@
             background: radial-gradient(circle at top, #050816 0, #020308 45%, #000 100%);
             color: var(--text-main);
             font-family: system-ui, sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #eef4fb;
+            --bg-panel: rgba(255, 255, 255, 0.94);
+            --border-soft: rgba(10, 25, 47, 0.12);
+            --text-main: #102033;
+            --text-dim: #56657a;
+        }
+
+        [data-theme="light"] body,
+        body[data-theme="light"] {
+            background: radial-gradient(circle at top, rgba(0, 120, 212, 0.08), transparent 34%), linear-gradient(180deg, #f5f9ff 0%, #eef4fb 60%, #e8eff7 100%);
+            color: var(--text-main);
+        }
+
+        body[data-theme="light"] header.nav-header {
+            background: rgba(255, 255, 255, 0.82);
+            border-bottom-color: rgba(0, 120, 212, 0.2);
+        }
+
+        body[data-theme="light"] .nav-menu a,
+        body[data-theme="light"] .nav-social a {
+            color: var(--text-dim);
+        }
+
+        body[data-theme="light"] .panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(244, 248, 252, 0.98) 100%);
+            box-shadow: 0 18px 38px rgba(30, 64, 175, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        }
+
+        body[data-theme="light"] .console,
+        body[data-theme="light"] .console-shell,
+        body[data-theme="light"] .matrix-shell,
+        body[data-theme="light"] .chart-shell,
+        body[data-theme="light"] .rules-shell,
+        body[data-theme="light"] code,
+        body[data-theme="light"] .terminal-input,
+        body[data-theme="light"] .terminal-select {
+            background: rgba(245, 249, 255, 0.96);
+            color: var(--text-main);
+            border-color: rgba(10, 25, 47, 0.1);
+        }
+
+        body[data-theme="light"] .matrix-row-primary td {
+            background: rgba(0, 120, 212, 0.08);
         }
 
         /* NAVBAR */
@@ -625,7 +672,7 @@
     </style>
 </head>
 
-<body>
+<body data-theme="dark">
 
 <header class="nav-header">
     <nav class="nav-container">
@@ -758,9 +805,7 @@
 
 </main>
 
-<footer>
-    Este panel representa una vista lógica de controles y remediación conceptual. No ejecuta acciones reales ni interactúa con recursos de producción.
-</footer>
+<footer data-site-footer="true"></footer>
 
 <script>
 /* --- Datos base --- */
@@ -1132,6 +1177,7 @@ document.getElementById('btn-run').addEventListener('click',()=>{
     renderRemediation(scenarioSelect.value, igSelect.value, profileSelect.value);
     setActivePanel(doctrinePanel);
 </script>
+    <script src="assets/js/site.js" defer></script>
 
 </body>
 </html>

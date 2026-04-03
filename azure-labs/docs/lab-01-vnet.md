@@ -1,19 +1,19 @@
-# Lab 01 — Virtual Network & Network Segmentation
+# Lab 01 — Virtual Network y segmentación de red
 
-**Domain:** Network  
-**Duration:** ~30 minutes  
+**Dominio:** Network  
+**Duración:** ~30 minutos  
 **IaC:** [bicep/vnet.bicep](../bicep/vnet.bicep) · [terraform/networking.tf](../terraform/networking.tf)
 
 ---
 
-## Objectives
+## Objetivos
 
-- Deploy a hub VNet with three purpose-specific subnets.
-- Apply NSGs that implement implicit deny for internet-sourced traffic.
-- Create Private DNS Zones for Key Vault and Blob Storage.
-- Enable VNet diagnostic logs to Log Analytics.
+- Desplegar una hub VNet con tres subredes definidas por propósito.
+- Aplicar NSGs con denegación implícita para tráfico originado en internet.
+- Crear Private DNS Zones para Key Vault y Blob Storage.
+- Habilitar logs de diagnóstico de VNet hacia Log Analytics.
 
-## Architecture
+## Arquitectura
 
 ```
 Hub VNet — 10.0.0.0/16
@@ -22,22 +22,22 @@ Hub VNet — 10.0.0.0/16
 └── snet-privateendpoints 10.0.2.0/24  (data-plane PEs)
 ```
 
-## NSG Rules Explained
+## Reglas de NSG explicadas
 
-### snet-app NSG
+### NSG de snet-app
 
-| Priority | Name | Direction | Action | Notes |
+| Prioridad | Nombre | Dirección | Acción | Notas |
 |----------|------|-----------|--------|-------|
-| 100 | deny-internet-inbound | Inbound | **Deny** | No direct internet exposure |
-| 200 | allow-vnet-https-inbound | Inbound | Allow | VNet-to-VNet HTTPS only |
+| 100 | deny-internet-inbound | Inbound | **Deny** | Sin exposición directa a internet |
+| 200 | allow-vnet-https-inbound | Inbound | Allow | Solo HTTPS entre recursos dentro de la VNet |
 
-### snet-privateendpoints NSG
+### NSG de snet-privateendpoints
 
-| Priority | Name | Direction | Action | Notes |
+| Prioridad | Nombre | Dirección | Acción | Notas |
 |----------|------|-----------|--------|-------|
-| 100 | deny-internet-inbound | Inbound | **Deny** | PEs reachable only from within VNet |
+| 100 | deny-internet-inbound | Inbound | **Deny** | Los Private Endpoints solo son alcanzables desde la VNet |
 
-## Deployment Steps
+## Pasos de despliegue
 
 ### Bicep
 
@@ -55,17 +55,17 @@ terraform -chdir=terraform init
 terraform -chdir=terraform apply -target=module.networking
 ```
 
-## Validation
+## Validación
 
 ```powershell
-# Confirm subnets exist
+# Confirmar que las subredes existen
 az network vnet subnet list \
   --resource-group rg-zerotrust-lab \
   --vnet-name ztlab-vnet-dev \
   --query "[].{name:name, prefix:addressPrefix}" \
   --output table
 
-# Confirm NSG is associated
+# Confirmar que el NSG está asociado
 az network vnet subnet show \
   --resource-group rg-zerotrust-lab \
   --vnet-name ztlab-vnet-dev \
@@ -73,15 +73,15 @@ az network vnet subnet show \
   --query networkSecurityGroup.id
 ```
 
-## Zero Trust Mapping
+## Mapeo a Zero Trust
 
-| Principle | Control |
+| Principio | Control |
 |-----------|---------|
-| Assume Breach | Subnets isolated; east-west traffic limited |
-| Verify Explicitly | Bastion requires Entra ID auth before RDP/SSH |
-| Least Privilege | NSGs default-deny; only required ports open |
+| Assume Breach | Subredes aisladas; tráfico este-oeste acotado |
+| Verify Explicitly | Bastion requiere autenticación con Entra ID antes de RDP/SSH |
+| Least Privilege | Los NSGs deniegan por defecto; solo se abren los puertos necesarios |
 
-## Cleanup
+## Limpieza
 
 ```powershell
 ./scripts/cleanup.ps1 -ResourceGroup rg-zerotrust-lab

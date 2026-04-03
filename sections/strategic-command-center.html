@@ -11,6 +11,7 @@
     <title>Strategic Command Center | SEC_ARCHITECT</title>
     <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/site.css">
     <style>
         :root {
             --bg: #020308;
@@ -26,6 +27,15 @@
             background: radial-gradient(circle at top, rgba(0, 242, 255, 0.08), transparent 32%), linear-gradient(180deg, #050816 0%, #020308 60%, #000 100%);
             color: var(--text);
             font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        body[data-theme="light"] {
+            --bg: #f5f9ff;
+            --panel: #ffffff;
+            --text: #102033;
+            --sub: #52627b;
+            --cyan: #0078d4;
+            --line: rgba(10, 25, 47, 0.12);
+            background: radial-gradient(circle at top, rgba(0, 120, 212, 0.08), transparent 32%), linear-gradient(180deg, #f5f9ff 0%, #eef4fb 60%, #e8eff7 100%);
         }
         main {
             max-width: 980px;
@@ -85,7 +95,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <main>
         <article class="page">
             <h1>Strategic Command Center</h1>
@@ -110,5 +120,7 @@
             <a class="back-link" href="../index.html">Volver al index</a>
         </article>
     </main>
+    <footer data-site-footer="true"></footer>
+    <script src="../assets/js/site.js" defer></script>
 </body>
 </html>

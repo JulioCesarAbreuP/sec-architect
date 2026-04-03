@@ -1,27 +1,27 @@
-# Lab 05 — Monitoring & Alerting
+# Lab 05 — Monitoring y Alerting
 
-**Domain:** Operations / Visibility  
-**Duration:** ~25 minutes
+**Dominio:** Operations / Visibility  
+**Duración:** ~25 minutos
 
 ---
 
-## Objectives
+## Objetivos
 
-- Forward diagnostic logs from VNet, Key Vault, and Storage to Log Analytics.
-- Write KQL queries to detect suspicious activity.
-- Create metric alerts for Key Vault throttling and unauthorized attempts.
+- Enviar logs de diagnóstico desde VNet, Key Vault y Storage hacia Log Analytics.
+- Escribir consultas KQL para detectar actividad sospechosa.
+- Crear alertas de métricas para throttling de Key Vault e intentos no autorizados.
 
-## Log Sources
+## Fuentes de logs
 
-| Resource | Log Categories | Metrics |
+| Recurso | Categorías de logs | Métricas |
 |----------|---------------|---------|
 | VNet / NSG | VMProtectionAlerts | AllMetrics |
 | Key Vault | AuditEvent, AzurePolicyEvaluationDetails | AllMetrics |
 | Storage | (transaction metrics) | Transaction |
 
-## Useful KQL Queries
+## Consultas KQL útiles
 
-### 1 — Key Vault unauthorized access attempts
+### 1 — Intentos de acceso no autorizado a Key Vault
 
 ```kql
 AzureDiagnostics
@@ -31,7 +31,7 @@ AzureDiagnostics
 | order by TimeGenerated desc
 ```
 
-### 2 — Secret read audit (who read what)
+### 2 — Auditoría de lectura de secretos (quién leyó qué)
 
 ```kql
 AzureDiagnostics
@@ -41,7 +41,7 @@ AzureDiagnostics
 | order by ReadCount desc
 ```
 
-### 3 — NSG deny hits (potential lateral movement)
+### 3 — Eventos de denegación en NSG (posible lateral movement)
 
 ```kql
 AzureMetrics
@@ -51,7 +51,7 @@ AzureMetrics
 | order by TimeGenerated desc
 ```
 
-### 4 — Storage anomalous access
+### 4 — Acceso anómalo a Storage
 
 ```kql
 StorageTableLogs
@@ -60,7 +60,7 @@ StorageTableLogs
 | order by TimeGenerated desc
 ```
 
-## Creating an Alert — Key Vault Unauthorized Access
+## Crear una alerta — acceso no autorizado a Key Vault
 
 ```powershell
 az monitor metrics alert create \
@@ -74,7 +74,7 @@ az monitor metrics alert create \
   --description "Alert on unauthorized Key Vault access"
 ```
 
-## Deploying Log Analytics (if not existing)
+## Desplegar Log Analytics (si aún no existe)
 
 ```powershell
 az monitor log-analytics workspace create \
@@ -85,12 +85,12 @@ az monitor log-analytics workspace create \
   --retention-time 90
 ```
 
-Then pass the workspace ID as `logAnalyticsWorkspaceId` parameter when deploying lab resources.
+Luego, pasa el workspace ID como parámetro `logAnalyticsWorkspaceId` al desplegar los recursos del laboratorio.
 
-## Zero Trust Mapping
+## Mapeo a Zero Trust
 
-| Principle | Control |
+| Principio | Control |
 |-----------|---------|
-| Assume Breach | Continuous monitoring detects anomalies early |
-| Verify Explicitly | Audit logs record every authenticated request |
-| Least Privilege | Alerts surface when accounts exceed expected access patterns |
+| Assume Breach | El monitoreo continuo detecta anomalías de forma temprana |
+| Verify Explicitly | Los audit logs registran cada solicitud autenticada |
+| Least Privilege | Las alertas evidencian cuándo las cuentas exceden los patrones de acceso esperados |

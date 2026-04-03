@@ -1,36 +1,36 @@
-# Zero Trust Overview — Azure Lab
+# Visión general de Zero Trust — Azure Lab
 
-## What is Zero Trust?
+## ¿Qué es Zero Trust?
 
-Zero Trust is a security model built on three core principles:
+Zero Trust es un modelo de seguridad basado en tres principios centrales:
 
-1. **Verify Explicitly** — Authenticate and authorize every request using all available signals (identity, location, device health, service, workload, data classification).
-2. **Use Least Privilege Access** — Limit user and workload access with just-in-time (JIT) and just-enough-access (JEA), risk-based adaptive policies, and data protection.
-3. **Assume Breach** — Minimize blast radius, segment access, verify end-to-end encryption, and use analytics to get visibility and detect threats early.
+1. **Verify Explicitly** — Autenticar y autorizar cada solicitud usando todas las señales disponibles (identidad, ubicación, estado del dispositivo, servicio, workload y clasificación de datos).
+2. **Use Least Privilege Access** — Limitar el acceso de usuarios y workloads con just-in-time (JIT), just-enough-access (JEA), políticas adaptativas basadas en riesgo y protección de datos.
+3. **Assume Breach** — Minimizar el radio de impacto, segmentar accesos, verificar cifrado de extremo a extremo y usar analítica para obtener visibilidad y detectar amenazas de forma temprana.
 
-## Architecture Pillars in This Lab
+## Pilares de arquitectura en este laboratorio
 
-| Pillar | Implementation |
+| Pilar | Implementación |
 |--------|---------------|
-| **Identity** | User-Assigned Managed Identities; no service principal passwords |
-| **Network** | Hub VNet with NSG-segmented subnets; no route to internet |
-| **Data** | Storage with `allowSharedKeyAccess: false`; private endpoints only |
-| **Applications** | Workloads authenticate via IMDS → Entra ID token exchange |
-| **Infrastructure** | Bicep/Terraform enforced config; IaC reviewed in CI pipeline |
-| **Monitoring** | All resource diagnostics → Log Analytics Workspace |
+| **Identity** | User-Assigned Managed Identities; sin contraseñas de service principal |
+| **Network** | Hub VNet con subredes segmentadas por NSG; sin ruta a internet |
+| **Data** | Storage con `allowSharedKeyAccess: false`; solo private endpoints |
+| **Applications** | Los workloads se autentican mediante IMDS → intercambio de tokens con Entra ID |
+| **Infrastructure** | Configuración impuesta con Bicep/Terraform; IaC revisada en pipeline de CI |
+| **Monitoring** | Todos los diagnósticos de recursos → Log Analytics Workspace |
 
 ## Control Plane vs. Data Plane
 
 ```
 Control Plane (Azure Resource Manager / Portal)
-  Azure RBAC roles control who can manage resources.
+  Azure RBAC roles controlan quién puede administrar recursos.
 
 Data Plane (Key Vault secrets API, Blob storage API)
-  Azure RBAC roles control who can read/write data.
-  Public access DISABLED — traffic must traverse Private Endpoint.
+  Azure RBAC roles controlan quién puede leer/escribir datos.
+  Public access DISABLED: el tráfico debe pasar por Private Endpoint.
 ```
 
-## Network Topology
+## Topología de red
 
 ```
 Internet
@@ -51,18 +51,18 @@ Internet
                                └───────────────────────┘
 ```
 
-## Threat Mitigations
+## Mitigaciones de amenazas
 
-| Threat | Mitigation |
+| Amenaza | Mitigación |
 |--------|-----------|
-| Credential theft | No passwords — Managed Identity only |
-| Secret exfiltration | Key Vault purge protection + RBAC; audit logs |
-| Data exfiltration | Private endpoints; storage public access disabled |
-| Lateral movement | NSG deny-internet-inbound on all compute subnets |
-| Insider threat | Entra ID Conditional Access; PIM for privileged roles |
-| Supply chain | IaC linted and scanned in CI (tfsec / PSRule for Azure) |
+| Credential theft | Sin contraseñas: solo Managed Identity |
+| Exfiltración de secretos | Key Vault purge protection + RBAC; audit logs |
+| Exfiltración de datos | Private endpoints; acceso público a Storage deshabilitado |
+| Lateral movement | NSG `deny-internet-inbound` en todas las subredes de cómputo |
+| Insider threat | Entra ID Conditional Access; PIM para roles privilegiados |
+| Supply chain | IaC validada y analizada en CI (`tfsec` / PSRule for Azure) |
 
-## References
+## Referencias
 
 - [Microsoft Zero Trust Guidance](https://learn.microsoft.com/security/zero-trust/)
 - [Azure network security best practices](https://learn.microsoft.com/azure/security/fundamentals/network-best-practices)

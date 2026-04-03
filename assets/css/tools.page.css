@@ -7,6 +7,15 @@
   --text-dim: #9ca3b5;
 }
 
+[data-theme="light"] {
+  --bg-dark: #f5f9ff;
+  --bg-panel: #ffffff;
+  --border-soft: rgba(10, 25, 47, 0.12);
+  --neon-blue: #0078d4;
+  --text-main: #102033;
+  --text-dim: #52627b;
+}
+
 body {
   margin: 0;
   background: radial-gradient(circle at top, #050816 0, #020308 45%, #000 100%);

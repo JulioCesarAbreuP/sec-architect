@@ -1,29 +1,29 @@
-# Lab 04 — Storage Account & Private Endpoints
+# Lab 04 — Storage Account y Private Endpoints
 
-**Domain:** Data  
-**Duration:** ~30 minutes  
+**Dominio:** Data  
+**Duración:** ~30 minutos  
 **IaC:** [bicep/storage.bicep](../bicep/storage.bicep) · [terraform/storage.tf](../terraform/storage.tf)
 
 ---
 
-## Objectives
+## Objetivos
 
-- Deploy a Storage Account with zero public internet exposure.
-- Disable shared key authentication (force Entra ID / RBAC).
-- Attach a private endpoint for the Blob sub-resource.
-- Validate that public access attempts fail.
+- Desplegar un Storage Account con cero exposición a internet público.
+- Deshabilitar la autenticación por shared key (forzar Entra ID / RBAC).
+- Asociar un private endpoint al subrecurso Blob.
+- Validar que los intentos de acceso público fallen.
 
-## Key Security Decisions
+## Decisiones clave de seguridad
 
-| Setting | Value | Why |
+| Configuración | Valor | Motivo |
 |---------|-------|-----|
-| `allowBlobPublicAccess` | `false` | No anonymous read access to blobs |
-| `allowSharedKeyAccess` | `false` | Connection strings and SAS tokens disabled |
-| `publicNetworkAccess` | `Disabled` | All traffic via private endpoint only |
-| `minimumTlsVersion` | `TLS1_2` | Prevent downgrade attacks |
-| `supportsHttpsTrafficOnly` | `true` | Encrypt data in transit |
+| `allowBlobPublicAccess` | `false` | Sin acceso de lectura anónima a blobs |
+| `allowSharedKeyAccess` | `false` | Connection strings y SAS tokens deshabilitados |
+| `publicNetworkAccess` | `Disabled` | Todo el tráfico pasa solo por private endpoint |
+| `minimumTlsVersion` | `TLS1_2` | Evita ataques de downgrade |
+| `supportsHttpsTrafficOnly` | `true` | Cifra los datos en tránsito |
 
-## Private Endpoint DNS Resolution
+## Resolución DNS de Private Endpoint
 
 ```
 Workload resolves: ztlabstdev123456.blob.core.windows.net
@@ -37,44 +37,44 @@ Workload resolves: ztlabstdev123456.blob.core.windows.net
                     Storage Account (private network path)
 ```
 
-## RBAC Role
+## Rol RBAC
 
-The workload User-Assigned Managed Identity receives **Storage Blob Data Contributor** on the storage account — sufficient to read, write, and delete blobs without a connection string.
+La workload User-Assigned Managed Identity recibe **Storage Blob Data Contributor** sobre el storage account, suficiente para leer, escribir y eliminar blobs sin usar connection string.
 
-## Upload a Blob from a VM in snet-app
+## Cargar un Blob desde una VM en snet-app
 
 ```powershell
-# Authenticate with managed identity (no login needed on Azure VM)
+# Autenticarse con managed identity (no hace falta login en una Azure VM)
 Connect-AzAccount -Identity -AccountId "<UAMI_CLIENT_ID>"
 
-# Upload
+# Cargar archivo
 $ctx = New-AzStorageContext -StorageAccountName "<storage-name>" -UseConnectedAccount
 Set-AzStorageBlobContent -Container "data" -File ".\sample.txt" -Blob "sample.txt" -Context $ctx
 ```
 
-## Validation
+## Validación
 
 ```powershell
-# Confirm public network access is disabled
+# Confirmar que el acceso público de red está deshabilitado
 az storage account show \
   --name <storage-name> \
   --resource-group rg-zerotrust-lab \
   --query "publicNetworkAccess"
 
-# Attempt public access (should fail with AuthorizationFailure or connection refused)
+# Intentar acceso público (debe fallar con AuthorizationFailure o conexión rechazada)
 curl "https://<storage-name>.blob.core.windows.net/data/sample.txt"
 
-# Confirm private endpoint exists
+# Confirmar que el private endpoint existe
 az network private-endpoint list \
   --resource-group rg-zerotrust-lab \
   --query "[?contains(name,'blob')].{name:name,state:provisioningState}" \
   --output table
 ```
 
-## Zero Trust Mapping
+## Mapeo a Zero Trust
 
-| Principle | Control |
+| Principio | Control |
 |-----------|---------|
-| Verify Explicitly | Every blob operation requires Entra ID token + RBAC role check |
-| Least Privilege | `Storage Blob Data Contributor` — cannot manage account settings |
-| Assume Breach | No shared key → stolen connection string is useless; all traffic in private network |
+| Verify Explicitly | Cada operación sobre blobs requiere token de Entra ID + validación del rol RBAC |
+| Least Privilege | `Storage Blob Data Contributor`: no puede administrar la configuración de la cuenta |
+| Assume Breach | No hay shared key → una connection string robada es inútil; todo el tráfico permanece en la red privada |
