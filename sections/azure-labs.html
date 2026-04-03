@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+    <title>Azure‑Labs | SEC_ARCHITECT</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #020308;
+            --panel: #070910;
+            --text: #f5f7fb;
+            --sub: #9ca3b5;
+            --cyan: #00f2ff;
+            --line: rgba(255, 255, 255, 0.08);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top, rgba(0, 242, 255, 0.08), transparent 32%), linear-gradient(180deg, #050816 0%, #020308 60%, #000 100%);
+            color: var(--text);
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        main {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 2.2rem 1.2rem 4rem;
+        }
+        .page {
+            background: rgba(7, 9, 16, 0.96);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 1.8rem;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        }
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.05;
+        }
+        .description {
+            margin-top: 0.9rem;
+            color: var(--sub);
+            line-height: 1.7;
+        }
+        h2 {
+            margin: 1.8rem 0 0.8rem;
+            color: var(--cyan);
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+        p, li {
+            color: var(--sub);
+            line-height: 1.7;
+        }
+        ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+        a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+        a:hover {
+            text-shadow: 0 0 12px rgba(0, 242, 255, 0.35);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.6rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            background: var(--cyan);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <article class="page">
+            <h1>Azure‑Labs</h1>
+            <p class="description">Laboratorios técnicos con evidencia, validación cruzada y enfoque pedagógico.</p>
+
+            <section>
+                <h2>¿Qué es este módulo?</h2>
+                <p>Azure‑Labs reúne piezas prácticas de arquitectura cloud orientadas a seguridad, identidad, segmentación y resiliencia. El objetivo del módulo es convertir buenas prácticas y patrones empresariales en laboratorios reproducibles con contexto, evidencia y criterio técnico.</p>
+            </section>
+
+            <section>
+                <h2>Contenido del módulo</h2>
+                <ul>
+                    <li><a href="../azure-labs/README.md">Lista de laboratorios</a></li>
+                    <li><a href="../azure-labs/docs/lab-01-vnet.md">Laboratorios destacados</a></li>
+                    <li><a href="../azure-labs/docs/zero-trust-overview.md">Documentación</a></li>
+                    <li><a href="../post.html?post=identidad-vs-cuenta.md">Blog relacionado</a></li>
+                </ul>
+            </section>
+
+            <a class="back-link" href="../index.html">Volver al index</a>
+        </article>
+    </main>
+</body>
+</html>
