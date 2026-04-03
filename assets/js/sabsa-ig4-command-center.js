@@ -429,6 +429,9 @@ function buildAIArtifacts(params){
         const riskPrompt = typeof ai.buildRiskAnalyzerPrompt === 'function'
             ? ai.buildRiskAnalyzerPrompt(baseInput, { mode })
             : '';
+        const fullAnalysisPrompt = typeof ai.buildSecArchitectAnalysisPrompt === 'function'
+            ? ai.buildSecArchitectAnalysisPrompt(baseInput, { mode, context: 'Contexto SABSA IG4 Command Center' })
+            : '';
         const controlPrompt = typeof ai.buildControlMapperPrompt === 'function'
             ? ai.buildControlMapperPrompt(baseInput, 'Contexto SABSA IG4 Command Center', { mode })
             : '';
@@ -437,6 +440,7 @@ function buildAIArtifacts(params){
             : '';
 
         promptsByMode[mode] = {
+            secArchitectAnalysis: fullAnalysisPrompt,
             riskAnalyzer: riskPrompt,
             controlMapper: controlPrompt,
             architectureExplainer: architecturePrompt
