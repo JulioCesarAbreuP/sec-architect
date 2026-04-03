@@ -33,7 +33,7 @@ function Get-Head([string]$htmlText) {
     return ""
 }
 
-function Get-TagCount([string]$text, [string]$needle) {
+function Measure-TagOccurrence([string]$text, [string]$needle) {
     return ([regex]::Matches($text, [regex]::Escape($needle), [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)).Count
 }
 
@@ -52,7 +52,7 @@ try {
         }
 
         foreach ($key in $ogKeys) {
-            $count = Get-TagCount $head $key
+            $count = Measure-TagOccurrence $head $key
             if ($count -gt 1) {
                 $issues += "[DUPLICATE] $relative has duplicated tag key: $key (count=$count)"
             }
@@ -60,7 +60,7 @@ try {
 
         if ($requiredEntryPages -contains $relative) {
             foreach ($mustHave in @('property="og:title"','property="og:image"','property="og:url"','name="twitter:image"')) {
-                $count = Get-TagCount $head $mustHave
+                $count = Measure-TagOccurrence $head $mustHave
                 if ($count -eq 0) {
                     $issues += "[MISSING] $relative missing required metadata: $mustHave"
                 }
