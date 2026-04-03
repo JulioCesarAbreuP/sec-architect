@@ -9,8 +9,19 @@ function resolveBlogPath(fileName) {
 }
 
 function buildPostLink(fileName) {
-  const target = `post.html?post=${encodeURIComponent(fileName)}`;
-  return isNestedBlogIndex ? `../${target}` : target;
+  const staticRoutes = {
+    "identidad-vs-cuenta.md": "blog/identidad-vs-cuenta/",
+    "identidad-y-cuenta.md": "blog/identidad-y-cuenta/",
+    "sabsa-ig4-command-center.md": "blog/sabsa-ig4-command-center/"
+  };
+
+  const staticTarget = staticRoutes[fileName];
+  if (staticTarget) {
+    return isNestedBlogIndex ? `../${staticTarget.replace(/^blog\//, "")}` : staticTarget;
+  }
+
+  const fallbackTarget = `post.html?post=${encodeURIComponent(fileName)}`;
+  return isNestedBlogIndex ? `../${fallbackTarget}` : fallbackTarget;
 }
 
 function sanitizeFileName(fileName) {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Identidad y Cuenta | SEC_ARCHITECT</title>
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content;" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+<meta http-equiv="X-Frame-Options" content="DENY" />
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+<meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+<meta name="description" content="Guia practica para separar identidad y cuenta en arquitecturas cloud con enfoque de seguridad." />
+<meta property="og:title" content="SEC_ARCHITECT · Framework de Arquitectura de Defensa Estructural" />
+<meta property="og:description" content="Framework de arquitectura de defensa estructural para PYMEs, alineado con NIST, CIS v8 y MITRE ATT&CK." />
+<meta property="og:image" content="https://juliocesarabreup.github.io/sec-architect/assets/img/preview-sec-architect.png" />
+<meta property="og:url" content="https://juliocesarabreup.github.io/sec-architect/blog/identidad-y-cuenta/" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SEC_ARCHITECT · Framework de Arquitectura de Defensa Estructural" />
+<meta name="twitter:description" content="Framework de arquitectura de defensa estructural para PYMEs." />
+<meta name="twitter:image" content="https://juliocesarabreup.github.io/sec-architect/assets/img/preview-sec-architect.png" />
+<link rel="canonical" href="https://juliocesarabreup.github.io/sec-architect/blog/identidad-y-cuenta/" />
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg" />
+<link rel="stylesheet" href="../../assets/css/site.css" />
+<link rel="stylesheet" href="../assets/article.page.css" />
+</head>
+<body data-theme="dark">
+<header class="article-topbar">
+  <a class="article-link" href="../index.html">Volver al blog</a>
+  <a class="article-link" href="../../index.html">Inicio</a>
+</header>
+
+<h1>Identidad y cuenta: dos capas que no se deben mezclar</h1>
+
+<p>
+Este artículo explica por qué en arquitectura de seguridad la identidad y la cuenta son capas distintas.
+Separarlas mejora el control de acceso, la trazabilidad y la gobernanza de privilegios.
+</p>
+
+<h2>Punto clave</h2>
+<p>
+La identidad representa al sujeto; la cuenta representa su implementación en un sistema concreto.
+Diseñar sin esta separación genera errores de autorización y auditoría.
+</p>
+
+<h2>Aplicación práctica</h2>
+<ul>
+<li>Asignar RBAC a identidades con propósito claro.</li>
+<li>Evitar cuentas compartidas o sin propietario.</li>
+<li>Auditar continuamente cuentas privilegiadas.</li>
+</ul>
+
+<footer data-site-footer="true"></footer>
+<script src="../../assets/js/site.js" defer></script>
+</body>
+</html>
