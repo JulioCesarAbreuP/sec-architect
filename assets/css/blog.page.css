@@ -25,6 +25,7 @@ body {
   font-family: "Plus Jakarta Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   padding: 2rem;
+  overflow-x: hidden;
 }
 
 .container {
@@ -85,6 +86,8 @@ body {
 }
 
 .tagline-full {
+  display: block;
+  max-width: 100%;
   white-space: nowrap;
   overflow: visible;
   text-overflow: clip;
@@ -139,4 +142,68 @@ body {
   border: 1px dashed var(--border-line);
   border-radius: 12px;
   padding: 1.2rem;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 1rem;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1.8rem;
+  }
+
+  .title {
+    font-size: 1.7rem;
+  }
+
+  .subtitle {
+    margin-top: 0.65rem;
+    margin-bottom: 1.35rem;
+    font-size: 0.94rem;
+    max-width: 100%;
+  }
+
+  .tagline-full {
+    font-size: 0.82rem;
+    letter-spacing: -0.005em;
+  }
+
+  .post-item {
+    padding: 0.9rem 0.9rem;
+  }
+
+  .post-title {
+    font-size: 0.98rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 1024px) {
+  body {
+    padding: 1.5rem;
+  }
+
+  .container {
+    max-width: 880px;
+  }
+
+  .title {
+    font-size: 2.15rem;
+  }
+
+  .subtitle {
+    max-width: 100%;
+  }
+
+  .tagline-full {
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .container {
+    max-width: 920px;
+  }
 }

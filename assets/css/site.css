@@ -29,6 +29,24 @@
 
 main {
   width: 100%;
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+p,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .site-footer {
@@ -102,9 +120,38 @@ main {
   color: var(--text-sub, var(--text, #b7c0d7));
 }
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .site-theme-toggle {
-    top: 0.75rem;
-    right: 0.75rem;
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 38px;
+    height: 38px;
+  }
+
+  .site-footer {
+    margin-top: 2.5rem;
+    padding: 1.2rem 0.85rem 2rem;
+  }
+
+  .site-footer-links {
+    gap: 0.9rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 1024px) {
+  .site-theme-toggle {
+    top: 0.85rem;
+    right: 0.85rem;
+  }
+
+  .site-footer {
+    margin-top: 3rem;
+    padding: 1.45rem 1rem 2.2rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .site-footer {
+    margin-top: 4rem;
   }
 }
