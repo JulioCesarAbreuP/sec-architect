@@ -1,181 +1,78 @@
-# SEC_ARCHITECT | Framework Defensivo de Arquitectura
+# SEC_ARCHITECT
+### Framework de Arquitectura de Defensa Estructural para PYMEs
 
-![HTML](https://img.shields.io/badge/HTML-Framework-orange)
-![Architecture](https://img.shields.io/badge/Architecture-SABSA%20Aligned-0a0a0a)
-![NIST](https://img.shields.io/badge/NIST%20CSF-Mapped-005ea2)
-![MITRE](https://img.shields.io/badge/MITRE%20ATT%26CK-Contextualized-a100ff)
-![CIS](https://img.shields.io/badge/CIS%20v8-Controls%20Driven-00b7c3)
+SEC_ARCHITECT es un framework técnico y editorial para diseñar, explicar y operar arquitectura defensiva con claridad.
+Está pensado para arquitectos de seguridad, equipos de defensa y organizaciones que necesitan convertir marcos y controles en una práctica estructurada, accionable y pedagógica.
 
-SEC_ARCHITECT es un framework editorial y técnico para diseñar, explicar y operar defensa estructural en entornos cloud.
-Combina narrativa arquitectónica, visualización operativa y trazabilidad de controles para convertir principios de seguridad en decisiones verificables.
+## Visión
 
-## Qué es este framework
+Convertir la arquitectura de seguridad en un sistema vivo: accionable para operación, pedagógico para adopción y estructurado para gobernanza.
+SEC_ARCHITECT cierra la brecha entre estrategia, implementación y comprensión organizacional.
 
-- Un marco de arquitectura defensiva orientado a identidad, resiliencia y gobernanza técnica.
-- Un entorno de trabajo modular para estudiar, ejecutar y documentar decisiones de seguridad.
-- Una plataforma de referencia para alinear diseño estratégico con controles operacionales.
-
-## Para quién está diseñado
-
-- Arquitectos de seguridad y arquitectos cloud.
-- Equipos Blue Team y líderes de ciberdefensa.
-- Responsables de modernización técnica en PYMEs y entornos empresariales.
-- Profesionales en preparación de rutas AZ-305, SC-300, SC-100 y AZ-500.
-
-## Cómo se usa
-
-1. Navega los módulos visuales desde [index.html](index.html).
-2. Explora escenarios y mapeos en `Command Center`, `Knowledge-Base` e `Intelligence Dashboard`.
-3. Profundiza con laboratorios en [azure-labs/README.md](azure-labs/README.md).
-4. Reutiliza el dataset defensivo de [data/knowledge-base.json](data/knowledge-base.json).
-
-## Estructura del proyecto
-
-- `index.html`: entrada principal y narrativa de valor.
-- `sabsa-ig4-command-center.html`: consola estratégica y simulación defensiva.
-- `tools/knowledge-base.html`: explorador de reglas con filtros avanzados.
-- `intelligence-dashboard.html`: panel analítico sobre inteligencia defensiva.
-- `azure-labs/`: laboratorio técnico con Bicep, Terraform y guías.
-- `GLOSARIO.md`: base conceptual y definiciones de referencia.
-
-## Módulos incluidos
+## Módulos principales
 
 ### 1) Command Center
-- Orquesta contexto estratégico, decisiones y visualizaciones de riesgo.
-- Enlace: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
+Superficie estratégica para modelar escenarios, niveles de riesgo y decisiones de mitigación.
 
-### 2) Knowledge-Base
-- Repositorio navegable de reglas defensivas con mapeo MITRE/NIST/ISO.
-- Enlace: [tools/knowledge-base.html](tools/knowledge-base.html)
+### 2) Knowledge-Base (NSA, CISA, MITRE, NIST, ISO)
+Base estructurada de reglas defensivas con mapeo a estándares y contexto operativo.
 
 ### 3) Intelligence Dashboard
-- Vista de inteligencia operativa para búsqueda, filtrado y priorización de reglas.
-- Enlace: [intelligence-dashboard.html](intelligence-dashboard.html)
+Capa de lectura analítica para priorizar decisiones por categoría, riesgo, severidad y marcos asociados.
 
-### 4) Laboratorios
-- Implementación guiada de patrones Zero Trust en Azure.
-- Enlace: [azure-labs/README.md](azure-labs/README.md)
+### 4) Laboratorios (Azure-Labs)
+Entornos guiados para llevar patrones defensivos a implementación técnica y validación.
 
 ### 5) Glosario técnico
-- Léxico de arquitectura, defensa y gobierno de seguridad.
-- Enlace: [GLOSARIO.md](GLOSARIO.md)
+Lenguaje común para alinear arquitectura, operación y cumplimiento sin ambigüedad.
 
-### 6) Simulador certificador
-- Módulo de entrenamiento y evaluación estructurada por dominio técnico.
-- Estado: en evolución dentro del roadmap del framework.
+### 6) Simulador de madurez y certificación
+Modelo de evaluación progresiva para medir evolución técnica y capacidad defensiva.
 
-## Integración entre módulos
+## Alineación con estándares
 
-- `Command Center` consume escenarios y postura táctica.
-- `Knowledge-Base` centraliza reglas técnicas y mapeos.
-- `Intelligence Dashboard` consume `data/knowledge-base.json` vía `fetch()` para analítica y priorización.
-- `Laboratorios` materializan los controles en infraestructura reproducible.
-- `Glosario técnico` mantiene consistencia terminológica para diseño y operación.
+- NIST CSF para estructura de gobierno y mejora continua.
+- CIS v8 para controles prácticos de reducción de superficie de ataque.
+- MITRE ATT&CK para mapeo de técnicas adversarias y respuesta defensiva.
+- Zero Trust para diseño basado en verificación continua y privilegio mínimo.
 
-## Extensión del framework
+## Para quién está pensado
 
-1. Añade nuevas reglas en [data/knowledge-base.json](data/knowledge-base.json).
-2. Amplía visualizaciones en `tools/` o paneles raíz.
-3. Incorpora nuevos labs en `azure-labs/docs/` y su IaC asociado.
-4. Mantén mapeos MITRE, NIST CSF e ISO 27001 para trazabilidad integral.
+- PYMEs que necesitan madurar su postura sin perder foco operativo.
+- Arquitectos de seguridad que requieren un marco claro para diseñar y justificar decisiones.
+- Responsables de cumplimiento que buscan trazabilidad entre controles y riesgo.
+- Equipos de defensa que necesitan coherencia entre estrategia, datos y ejecución.
+
+## Cómo empezar
+
+- Comprender la estructura general del framework y su narrativa de defensa.
+- Recorrer los módulos en orden estratégico: visión, base de conocimiento, inteligencia y laboratorio.
+- Identificar escenarios prioritarios según contexto organizacional.
+- Mapear riesgos y controles a los marcos de referencia del proyecto.
+- Establecer un ciclo de mejora continua con evidencia técnica y aprendizaje operativo.
 
 ## Roadmap del proyecto
 
-- `v1`: Command Center + Knowledge-Base + laboratorios base.
-- `v2`: Intelligence Dashboard con filtros avanzados y enlaces compartibles.
-- `v3`: Simulador certificador por dominio (identidad, red, datos, monitoreo).
-- `v4`: Exportadores de evidencia y reportes para gobierno técnico.
+- Más escenarios defensivos orientados a contextos reales de PYMEs.
+- Más reglas en Knowledge-Base con clasificación avanzada por impacto.
+- Más dashboards para lectura ejecutiva, técnica y de cumplimiento.
+- Mayor integración entre laboratorios, evidencias y modelos de madurez.
+- Evolución del simulador hacia rutas de certificación por dominios.
 
-## Contacto
+## Filosofía del framework
 
-- [LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)# SEC_ARCHITECT | Framework Defensivo de Arquitectura
+SEC_ARCHITECT existe para demostrar que la seguridad puede ser rigurosa sin ser opaca.
 
-![HTML](https://img.shields.io/badge/HTML-Framework-orange)
-![Architecture](https://img.shields.io/badge/Architecture-SABSA%20Aligned-0a0a0a)
-![NIST](https://img.shields.io/badge/NIST%20CSF-Mapped-005ea2)
-![MITRE](https://img.shields.io/badge/MITRE%20ATT%26CK-Contextualized-a100ff)
-![CIS](https://img.shields.io/badge/CIS%20v8-Controls%20Driven-00b7c3)
+- Claridad para decidir mejor.
+- Estructura para operar con disciplina.
+- Pedagogía para escalar conocimiento.
+- Defensa realista para proteger lo que importa.
 
-SEC_ARCHITECT es un framework editorial y técnico para diseñar, explicar y operar defensa estructural en entornos cloud.
-Combina narrativa arquitectónica, visualización operativa y trazabilidad de controles para convertir principios de seguridad en decisiones verificables.
+## Enlaces internos
 
-## Qué es este framework
-
-- Un marco de arquitectura defensiva orientado a identidad, resiliencia y gobernanza técnica.
-- Un entorno de trabajo modular para estudiar, ejecutar y documentar decisiones de seguridad.
-- Una plataforma de referencia para alinear diseño estratégico con controles operacionales.
-
-## Para quién está diseñado
-
-- Arquitectos de seguridad y arquitectos cloud.
-- Equipos Blue Team y líderes de ciberdefensa.
-- Responsables de modernización técnica en PYMEs y entornos empresariales.
-- Profesionales en preparación de rutas AZ-305, SC-300, SC-100 y AZ-500.
-
-## Cómo se usa
-
-1. Navega los módulos visuales desde [index.html](index.html).
-2. Explora escenarios y mapeos en `Command Center`, `Knowledge-Base` e `Intelligence Dashboard`.
-3. Profundiza con laboratorios en [azure-labs/README.md](azure-labs/README.md).
-4. Reutiliza el dataset defensivo de [data/knowledge-base.json](data/knowledge-base.json).
-
-## Estructura del proyecto
-
-- `index.html`: entrada principal y narrativa de valor.
-- `sabsa-ig4-command-center.html`: consola estratégica y simulación defensiva.
-- `tools/knowledge-base.html`: explorador de reglas con filtros avanzados.
-- `intelligence-dashboard.html`: panel analítico sobre inteligencia defensiva.
-- `azure-labs/`: laboratorio técnico con Bicep, Terraform y guías.
-- `GLOSARIO.md`: base conceptual y definiciones de referencia.
-
-## Módulos incluidos
-
-### 1) Command Center
-- Orquesta contexto estratégico, decisiones y visualizaciones de riesgo.
-- Enlace: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
-
-### 2) Knowledge-Base
-- Repositorio navegable de reglas defensivas con mapeo MITRE/NIST/ISO.
-- Enlace: [tools/knowledge-base.html](tools/knowledge-base.html)
-
-### 3) Intelligence Dashboard
-- Vista de inteligencia operativa para búsqueda, filtrado y priorización de reglas.
-- Enlace: [intelligence-dashboard.html](intelligence-dashboard.html)
-
-### 4) Laboratorios
-- Implementación guiada de patrones Zero Trust en Azure.
-- Enlace: [azure-labs/README.md](azure-labs/README.md)
-
-### 5) Glosario técnico
-- Léxico de arquitectura, defensa y gobierno de seguridad.
-- Enlace: [GLOSARIO.md](GLOSARIO.md)
-
-### 6) Simulador certificador
-- Módulo de entrenamiento y evaluación estructurada por dominio técnico.
-- Estado: en evolución dentro del roadmap del framework.
-
-## Integración entre módulos
-
-- `Command Center` consume escenarios y postura táctica.
-- `Knowledge-Base` centraliza reglas técnicas y mapeos.
-- `Intelligence Dashboard` consume `data/knowledge-base.json` vía `fetch()` para analítica y priorización.
-- `Laboratorios` materializan los controles en infraestructura reproducible.
-- `Glosario técnico` mantiene consistencia terminológica para diseño y operación.
-
-## Extensión del framework
-
-1. Añade nuevas reglas en [data/knowledge-base.json](data/knowledge-base.json).
-2. Amplía visualizaciones en `tools/` o paneles raíz.
-3. Incorpora nuevos labs en `azure-labs/docs/` y su IaC asociado.
-4. Mantén mapeos MITRE, NIST CSF e ISO 27001 para trazabilidad integral.
-
-## Roadmap del proyecto
-
-- `v1`: Command Center + Knowledge-Base + laboratorios base.
-- `v2`: Intelligence Dashboard con filtros avanzados y enlaces compartibles.
-- `v3`: Simulador certificador por dominio (identidad, red, datos, monitoreo).
-- `v4`: Exportadores de evidencia y reportes para gobierno técnico.
-
-## Contacto
-
-- [LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)
+- Inicio: [index.html](index.html)
+- Herramientas: [tools.html](tools.html)
+- Command Center: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
+- Knowledge-Base: [tools/knowledge-base.html](tools/knowledge-base.html)
+- Intelligence Dashboard: [intelligence-dashboard.html](intelligence-dashboard.html)
+- Azure-Labs: [azure-labs/README.md](azure-labs/README.md)
