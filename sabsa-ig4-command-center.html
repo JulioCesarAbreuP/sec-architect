@@ -5,13 +5,9 @@
     <title>SABSA IG4 Strategic Command Center | SEC_ARCHITECT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Favicon oficial -->
     <link rel="icon" href="/sec-architect/assets/favicon.png" type="image/png">
-
-    <!-- Chart.js para el radar -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Estilos base -->
     <style>
         :root {
             --bg-dark: #020308;
@@ -95,7 +91,7 @@
             color: var(--neon-blue);
         }
 
-        /* LAYOUT PRINCIPAL */
+        /* LAYOUT */
         .layout {
             display: grid;
             grid-template-columns: 340px 1fr 360px;
@@ -123,8 +119,8 @@
             color: var(--text-dim);
         }
 
-        /* INPUTS */
-        .terminal-input {
+        .terminal-input,
+        .terminal-select {
             width: 100%;
             background: #020308;
             border: 1px solid var(--border-soft);
@@ -132,6 +128,7 @@
             padding: 10px;
             font-family: Consolas, monospace;
             margin-bottom: 10px;
+            font-size: 0.8rem;
         }
 
         .btn-primary {
@@ -145,6 +142,13 @@
             cursor: pointer;
             border-radius: 4px;
             box-shadow: 0 0 18px rgba(0, 242, 255, 0.4);
+            font-size: 0.8rem;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: default;
+            box-shadow: none;
         }
 
         .console {
@@ -164,7 +168,6 @@
             margin-top: 10px;
         }
 
-        /* THREAT MATRIX */
         .matrix-table {
             width: 100%;
             border-collapse: collapse;
@@ -188,7 +191,6 @@
         .sev-med { background: rgba(255,189,0,0.1); color: var(--neon-gold); }
         .sev-high { background: rgba(255,0,60,0.1); color: var(--neon-red); }
 
-        /* REMEDIACIÓN */
         .remediation-card {
             background: rgba(255,0,60,0.08);
             border-left: 4px solid var(--neon-red);
@@ -213,12 +215,34 @@
             color: var(--text-dim);
             border-top: 1px solid var(--border-soft);
         }
+
+        .badge-ig {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .hint {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <header class="nav-header">
     <nav class="nav-container">
         <div class="nav-brand">
@@ -234,22 +258,34 @@
         </ul>
 
         <div class="nav-social">
-            <a href="https://github.com/juliocesarabreup" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://github.com/juliocesarabreup" target="_blank">GitHub</a>
+            <a href="https://www.linkedin.com/in/juliocesarabreup" target="_blank">LinkedIn</a>
         </div>
     </nav>
 </header>
 
-<!-- LAYOUT PRINCIPAL -->
 <main class="layout">
 
-    <!-- PANEL IZQUIERDO -->
+    <!-- PANEL IZQUIERDO: DOCTRINA + IG -->
     <section class="panel">
         <div class="panel-title">Doctrina de Control</div>
-        <div class="panel-subtitle">NIST · SABSA · SC‑300 · AZ‑305</div>
+        <div class="panel-subtitle">NIST · SABSA · Zero Trust</div>
 
-        <label style="margin-top:10px;">Escenario</label>
-        <select id="scenario-select" class="terminal-input">
+        <div style="margin-top:8px;">
+            <span class="badge-ig" id="ig-badge">IG4 · Estratégico</span>
+        </div>
+
+        <label style="margin-top:12px;">Nivel de madurez (IG)</label>
+        <select id="ig-select" class="terminal-select">
+            <option value="1">IG1 · Inicial</option>
+            <option value="2">IG2 · Repetible</option>
+            <option value="3">IG3 · Gestionado</option>
+            <option value="4" selected>IG4 · Optimizado</option>
+        </select>
+        <div class="hint">El nivel IG ajusta la sensibilidad del radar y la severidad de la matriz.</div>
+
+        <label style="margin-top:12px;">Escenario</label>
+        <select id="scenario-select" class="terminal-select">
             <option value="cred-stuffing">Credential Stuffing</option>
             <option value="excess-priv">Privilegios Excesivos</option>
             <option value="no-mfa">Identidad sin MFA</option>
@@ -258,7 +294,7 @@
         </select>
 
         <label>Perfil</label>
-        <select id="profile-select" class="terminal-input">
+        <select id="profile-select" class="terminal-select">
             <option value="gov">Gobierno / Casa Blanca</option>
             <option value="enterprise">Enterprise Global</option>
             <option value="critical">Infraestructura Crítica</option>
@@ -269,26 +305,29 @@
         <div id="rule-list" style="margin-top:10px;"></div>
     </section>
 
-    <!-- PANEL CENTRAL -->
+    <!-- PANEL CENTRAL: OPERATIONS + CLI SIMULADA -->
     <section class="panel">
         <div class="panel-title">Operations Command Center</div>
-        <div class="panel-subtitle">Evaluación SABSA IG4</div>
+        <div class="panel-subtitle">Evaluación SABSA IG · Simulación CLI</div>
 
         <input id="target-input" class="terminal-input" placeholder="TENANT ID o dominio conceptual...">
 
-        <button class="btn-primary" id="btn-run">Ejecutar Evaluación</button>
+        <input id="cli-input" class="terminal-input" placeholder="az ad user list --query ...">
+        <div class="hint">CLI simulada: se valida sintaxis y se genera respuesta conceptual. No se ejecutan comandos reales.</div>
 
-        <div class="console" id="console">[SYSTEM] SABSA Engine listo.</div>
+        <button class="btn-primary" id="btn-run">Ejecutar Evaluación Arquitectónica</button>
+
+        <div class="console" id="console">[SYSTEM] SABSA Engine listo. Ingrese objetivo y escenario.</div>
 
         <div class="chart-wrapper">
             <canvas id="radarChart"></canvas>
         </div>
     </section>
 
-    <!-- PANEL DERECHO -->
+    <!-- PANEL DERECHO: THREAT MATRIX + REMEDIACIÓN -->
     <section class="panel">
         <div class="panel-title">Threat Matrix</div>
-        <div class="panel-subtitle">Atributos SABSA</div>
+        <div class="panel-subtitle">Atributos SABSA · Severidad dinámica</div>
 
         <table class="matrix-table">
             <thead>
@@ -308,10 +347,9 @@
 </main>
 
 <footer>
-    Parte del ecosistema <span style="color:var(--neon-blue)">SEC_ARCHITECT</span>.
+    Este panel representa una vista lógica de controles y remediación conceptual. No ejecuta acciones reales ni interactúa con recursos de producción.
 </footer>
 
-<!-- MOTOR JS -->
 <script>
 /* --- Datos base --- */
 const SABSA_ATTRIBUTES = ['Confidencialidad','Integridad','Disponibilidad','Resiliencia','Auditabilidad'];
@@ -320,27 +358,74 @@ const RULES = [
     { id:'SC-300-01', name:'MFA Phishing-Resistant', attr:'Confidencialidad' },
     { id:'AZ-305-05', name:'Network Micro-Segmentation', attr:'Disponibilidad' },
     { id:'AZ-104-12', name:'RBAC Governance', attr:'Integridad' },
-    { id:'NIST-RA-05', name:'Risk Assessment', attr:'Resiliencia' }
+    { id:'NIST-RA-05', name:'Risk Assessment', attr:'Resiliencia' },
+    { id:'NIST-AU-06', name:'Audit Review, Analysis, and Reporting', attr:'Auditabilidad' }
 ];
 
 const SCENARIOS = {
-    'cred-stuffing': { attr:'Confidencialidad', delta:[30,10,0,5,15], sev:'high' },
-    'excess-priv':   { attr:'Integridad',       delta:[10,40,5,10,20], sev:'high' },
-    'no-mfa':        { attr:'Confidencialidad', delta:[35,15,0,5,10], sev:'med' },
-    'segmentation':  { attr:'Disponibilidad',   delta:[5,15,35,10,10], sev:'med' },
-    'legacy-config': { attr:'Auditabilidad',    delta:[10,10,5,15,35], sev:'med' }
+    'cred-stuffing': {
+        name:'Credential Stuffing',
+        attr:'Confidencialidad',
+        delta:[30,10,0,5,15],
+        sev:'high',
+        cliHint:'Revisión de inicios de sesión anómalos y MFA.'
+    },
+    'excess-priv': {
+        name:'Privilegios Excesivos',
+        attr:'Integridad',
+        delta:[10,40,5,10,20],
+        sev:'high',
+        cliHint:'Inventario de roles y objetos con privilegios elevados.'
+    },
+    'no-mfa': {
+        name:'Identidad sin MFA',
+        attr:'Confidencialidad',
+        delta:[35,15,0,5,10],
+        sev:'med',
+        cliHint:'Detección de cuentas sin MFA habilitado.'
+    },
+    'segmentation': {
+        name:'Segmentación Inconsistente',
+        attr:'Disponibilidad',
+        delta:[5,15,35,10,10],
+        sev:'med',
+        cliHint:'Revisión de NSG, rutas y zonas de confianza.'
+    },
+    'legacy-config': {
+        name:'Configuración Legacy',
+        attr:'Auditabilidad',
+        delta:[10,10,5,15,35],
+        sev:'med',
+        cliHint:'Identificación de protocolos y configuraciones obsoletas.'
+    }
 };
 
 const PROFILES = {
-    'gov':        { weight:[1.2,1.3,1.1,1.2,1.3] },
-    'enterprise': { weight:[1.1,1.1,1.1,1.1,1.1] },
-    'critical':   { weight:[1.1,1.3,1.3,1.2,1.2] },
-    'finance':    { weight:[1.3,1.2,1.0,1.1,1.3] },
-    'startup':    { weight:[1.2,1.0,1.0,1.2,1.1] }
+    'gov':        { label:'Gobierno / Casa Blanca', weight:[1.2,1.3,1.1,1.2,1.3] },
+    'enterprise': { label:'Enterprise Global',       weight:[1.1,1.1,1.1,1.1,1.1] },
+    'critical':   { label:'Infraestructura Crítica',weight:[1.1,1.3,1.3,1.2,1.2] },
+    'finance':    { label:'Finanzas',               weight:[1.3,1.2,1.0,1.1,1.3] },
+    'startup':    { label:'Startup Zero Trust',     weight:[1.2,1.0,1.0,1.2,1.1] }
 };
 
-/* --- Render reglas --- */
+const IG_LEVELS = {
+    1: { label:'IG1 · Inicial',      sensitivity:0.6 },
+    2: { label:'IG2 · Repetible',    sensitivity:0.8 },
+    3: { label:'IG3 · Gestionado',   sensitivity:1.0 },
+    4: { label:'IG4 · Optimizado',   sensitivity:1.2 }
+};
+
+/* --- DOM --- */
 const ruleList = document.getElementById('rule-list');
+const consoleEl = document.getElementById('console');
+const matrixBody = document.getElementById('matrix-body');
+const remediationPanel = document.getElementById('remediation-panel');
+const igSelect = document.getElementById('ig-select');
+const igBadge = document.getElementById('ig-badge');
+const cliInput = document.getElementById('cli-input');
+const btnRun = document.getElementById('btn-run');
+
+/* --- Reglas --- */
 RULES.forEach(r=>{
     ruleList.innerHTML += `
         <div style="border-bottom:1px solid #222; padding:6px 0;">
@@ -352,15 +437,18 @@ RULES.forEach(r=>{
 });
 
 /* --- Consola --- */
-const consoleEl = document.getElementById('console');
-function log(msg,color='info'){
+function log(msg, level='info'){
     const ts = new Date().toISOString();
-    const c = color==='crit'?'var(--neon-red)':color==='warn'?'var(--neon-gold)':'#a5ffb5';
-    consoleEl.innerHTML += `<div style="color:${c}">[${ts}] ${msg}</div>`;
+    let color = '#a5ffb5';
+    if(level==='warn') color = 'var(--neon-gold)';
+    if(level==='crit') color = 'var(--neon-red)';
+    if(level==='sys')  color = '#60a5fa';
+
+    consoleEl.innerHTML += `<div style="color:${color}">[${ts}] ${msg}</div>`;
     consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
-/* --- Radar Chart --- */
+/* --- Radar --- */
 const radarCtx = document.getElementById('radarChart').getContext('2d');
 const baseValues = [100,100,100,100,100];
 
@@ -369,25 +457,55 @@ const radarChart = new Chart(radarCtx,{
     data:{
         labels:SABSA_ATTRIBUTES,
         datasets:[
-            { label:'Esperado', data:baseValues, borderColor:'#6b7280', backgroundColor:'rgba(148,163,184,0.15)' },
-            { label:'Detectado', data:baseValues, borderColor:'#00f2ff', backgroundColor:'rgba(0,242,255,0.18)' }
+            {
+                label:'Esperado',
+                data:baseValues,
+                borderColor:'#6b7280',
+                backgroundColor:'rgba(148,163,184,0.15)'
+            },
+            {
+                label:'Detectado',
+                data:baseValues,
+                borderColor:'#00f2ff',
+                backgroundColor:'rgba(0,242,255,0.18)'
+            }
         ]
     },
     options:{
-        scales:{ r:{ ticks:{display:false}, grid:{color:'#1f2933'}, angleLines:{color:'#1f2933'} } },
-        plugins:{ legend:{ labels:{ color:'#9ca3af' } } }
+        scales:{
+            r:{
+                ticks:{display:false},
+                grid:{color:'#1f2933'},
+                angleLines:{color:'#1f2933'}
+            }
+        },
+        plugins:{
+            legend:{ labels:{ color:'#9ca3af' } }
+        }
     }
 });
 
 /* --- Threat Matrix --- */
-const matrixBody = document.getElementById('matrix-body');
-function renderMatrix(scenarioKey){
+function renderMatrix(scenarioKey, igLevel){
     matrixBody.innerHTML='';
+    const scenario = SCENARIOS[scenarioKey];
+    const sensitivity = IG_LEVELS[igLevel].sensitivity;
+
     SABSA_ATTRIBUTES.forEach(attr=>{
-        const isPrimary = SCENARIOS[scenarioKey].attr===attr;
-        const sev = isPrimary?SCENARIOS[scenarioKey].sev:'low';
-        const status = isPrimary?'Degradado':'Estable';
-        const action = isPrimary?'Aplicar directiva IG4':'Monitorizar';
+        const isPrimary = scenario.attr===attr;
+        let sev = 'low';
+        let status = 'Estable';
+        let action = 'Monitorizar';
+
+        if(isPrimary){
+            sev = scenario.sev;
+            status = 'Degradado';
+            action = igLevel >= 3 ? 'Aplicar directiva IG4' : 'Planificar remediación';
+        } else if(sensitivity > 1 && Math.random() < 0.25){
+            sev = 'med';
+            status = 'Sensibilizado';
+            action = 'Revisión contextual';
+        }
 
         matrixBody.innerHTML += `
             <tr>
@@ -401,54 +519,108 @@ function renderMatrix(scenarioKey){
 }
 
 /* --- Remediación --- */
-const remediationPanel = document.getElementById('remediation-panel');
-function renderRemediation(scenarioKey){
+function renderRemediation(scenarioKey, igLevel, profileKey){
     const s = SCENARIOS[scenarioKey];
+    const profile = PROFILES[profileKey];
+
     remediationPanel.innerHTML = `
         <div class="remediation-card">
-            <strong style="color:var(--neon-red)">Directiva IG4</strong><br>
-            Vector detectado: <strong>${scenarioKey}</strong><br>
-            Atributo afectado: <strong>${s.attr}</strong>
+            <strong style="color:var(--neon-red)">Directiva IG${igLevel}</strong><br>
+            Escenario: <strong>${s.name}</strong><br>
+            Atributo afectado: <strong>${s.attr}</strong><br>
+            Perfil: <strong>${profile.label}</strong>
 
             <code>
 # Comando conceptual (no ejecuta nada real)
-az ad user list --query "[].{id:id,displayName:displayName}"
+# Contexto: ${s.cliHint}
+az ad user list --query "[].{id:id,displayName:displayName}" --all
             </code>
 
             <p style="font-size:0.75rem; color:var(--text-dim);">
-                Esta directiva es conceptual y forma parte del modelo pedagógico SABSA IG4.
+                Esta salida representa una remediación conceptual basada en marcos SABSA y Zero Trust.
+                No se ejecutan acciones reales ni se interactúa con recursos de producción.
             </p>
         </div>
     `;
 }
 
+/* --- IG Badge --- */
+igSelect.addEventListener('change',()=>{
+    const igLevel = igSelect.value;
+    igBadge.textContent = IG_LEVELS[igLevel].label;
+});
+
+/* --- Validación CLI simulada --- */
+function validateCli(command){
+    if(!command.trim()) return { ok:false, reason:'Comando vacío.' };
+
+    if(!command.startsWith('az ')){
+        return { ok:false, reason:'Solo se simulan comandos az (Azure CLI).' };
+    }
+
+    if(command.includes('delete') || command.includes('remove') || command.includes('purge')){
+        return { ok:false, reason:'Operaciones destructivas no están permitidas ni siquiera en simulación.' };
+    }
+
+    return { ok:true, reason:'Sintaxis aceptada para simulación conceptual.' };
+}
+
 /* --- Ejecución --- */
 document.getElementById('btn-run').addEventListener('click',()=>{
+    const target = document.getElementById('target-input').value.trim();
     const scenarioKey = document.getElementById('scenario-select').value;
     const profileKey = document.getElementById('profile-select').value;
+    const igLevel = igSelect.value;
+    const cliCmd = cliInput.value.trim();
 
-    consoleEl.innerHTML='[SYSTEM] Iniciando evaluación...';
+    consoleEl.innerHTML = '[SYSTEM] Iniciando evaluación arquitectónica...';
 
-    log('Cargando doctrina SABSA IG4...');
-    RULES.forEach(r=> log(`Evaluando control ${r.id} (${r.name})...`));
+    if(!target){
+        log('Objetivo no definido. Ingrese un Tenant ID o dominio conceptual.','warn');
+        return;
+    }
+
+    const cliValidation = validateCli(cliCmd || 'az ad user list');
+    if(!cliValidation.ok){
+        log(`CLI rechazado: ${cliValidation.reason}`,'warn');
+    } else {
+        log(`CLI aceptado para simulación: "${cliCmd || 'az ad user list'}"`,'sys');
+    }
+
+    btnRun.disabled = true;
+
+    log(`Objetivo: ${target}`,'info');
+    log(`Escenario: ${SCENARIOS[scenarioKey].name}`,'info');
+    log(`Perfil: ${PROFILES[profileKey].label}`,'info');
+    log(`Nivel IG: ${IG_LEVELS[igLevel].label}`,'info');
+
+    setTimeout(()=>{
+        log('Resolviendo controles asociados a la doctrina SABSA IG...','sys');
+        RULES.forEach(r=> log(`Evaluando control ${r.id} (${r.name})...`,'info'));
+    },400);
 
     setTimeout(()=>{
         log('Desviación detectada en atributo clave.','warn');
-        log('Generando Threat Matrix y directiva IG4...','crit');
+        log('Generando Threat Matrix y directiva IG correspondiente...','crit');
 
-        /* Radar */
         const deltas = SCENARIOS[scenarioKey].delta;
         const weights = PROFILES[profileKey].weight;
+        const sensitivity = IG_LEVELS[igLevel].sensitivity;
 
-        const newValues = baseValues.map((v,i)=>Math.max(10, v - deltas[i]*weights[i]));
+        const newValues = baseValues.map((v,i)=>{
+            const impact = deltas[i] * weights[i] * sensitivity;
+            return Math.max(10, v - impact);
+        });
+
         radarChart.data.datasets[1].data = newValues;
         radarChart.update();
 
-        /* Matrix + Remediación */
-        renderMatrix(scenarioKey);
-        renderRemediation(scenarioKey);
+        renderMatrix(scenarioKey, igLevel);
+        renderRemediation(scenarioKey, igLevel, profileKey);
 
-    },1200);
+        log('Evaluación completada. Resultados disponibles en radar y Threat Matrix.','sys');
+        btnRun.disabled = false;
+    },1400);
 });
 </script>
 
