@@ -106,6 +106,7 @@
             gap: 22px;
             padding: 26px 22px 34px;
             align-items: start;
+            perspective: 1400px;
         }
 
         .panel {
@@ -120,6 +121,7 @@
             overflow: hidden;
             transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
             animation: panel-fade-in 0.65s ease both;
+            backdrop-filter: blur(14px);
         }
 
         .panel::before {
@@ -135,6 +137,26 @@
             transform: translateY(-4px);
             border-color: rgba(0, 242, 255, 0.28);
             box-shadow: 0 30px 65px rgba(0, 0, 0, 0.6), 0 0 28px rgba(0, 242, 255, 0.08);
+        }
+
+        .panel.is-active {
+            border-color: rgba(0, 242, 255, 0.32);
+            box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.08), 0 28px 60px rgba(0, 0, 0, 0.62), 0 0 34px rgba(0, 242, 255, 0.12);
+        }
+
+        .panel.is-loading {
+            border-color: rgba(0, 242, 255, 0.34);
+            box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.1), 0 28px 60px rgba(0, 0, 0, 0.66), 0 0 42px rgba(0, 242, 255, 0.16);
+        }
+
+        .panel.is-loading::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.08), transparent);
+            transform: translateX(-100%);
+            animation: scan-panel 1.15s linear infinite;
+            pointer-events: none;
         }
 
         .panel > * {
@@ -168,6 +190,7 @@
         .panel-stack {
             display: grid;
             gap: 14px;
+            transition: opacity 0.26s ease, transform 0.26s ease;
         }
 
         .control-group {
@@ -193,6 +216,16 @@
             border-radius: 12px;
             background: rgba(0, 242, 255, 0.05);
             border: 1px solid rgba(0, 242, 255, 0.14);
+        }
+
+        .status-strip::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(0, 242, 255, 0.95) 0%, rgba(0, 242, 255, 0.2) 70%, transparent 100%);
+            box-shadow: 0 0 14px rgba(0, 242, 255, 0.35);
+            flex: 0 0 auto;
         }
 
         .terminal-input,
@@ -252,6 +285,26 @@
             box-shadow: 0 8px 16px rgba(0, 242, 255, 0.16);
         }
 
+        .btn-primary.is-loading {
+            position: relative;
+            color: rgba(0, 0, 0, 0.82);
+            box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.14), 0 0 24px rgba(0, 242, 255, 0.26), 0 18px 30px rgba(0, 242, 255, 0.16);
+        }
+
+        .btn-primary.is-loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            width: 14px;
+            height: 14px;
+            margin-top: -7px;
+            border-radius: 999px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-top-color: rgba(0, 0, 0, 0.82);
+            animation: spin-loader 0.8s linear infinite;
+        }
+
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: default;
@@ -269,6 +322,12 @@
 
         .console-shell {
             padding: 10px;
+            transition: border-color 0.24s ease, box-shadow 0.24s ease, transform 0.24s ease;
+        }
+
+        .console-shell.is-live {
+            border-color: rgba(0, 242, 255, 0.18);
+            box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.06), 0 0 26px rgba(0, 242, 255, 0.08);
         }
 
         .console {
@@ -282,12 +341,23 @@
             font-size: 0.75rem;
             color: #a5ffb5;
             margin-top: 0;
+            transition: border-color 0.24s ease, box-shadow 0.24s ease, opacity 0.24s ease;
+        }
+
+        .console.is-streaming {
+            border-color: rgba(0, 242, 255, 0.16);
+            box-shadow: inset 0 0 18px rgba(0, 242, 255, 0.06);
         }
 
         .chart-wrapper {
             height: 310px;
             padding: 12px 14px 10px;
             margin-top: 0;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+        }
+
+        .chart-shell.is-live .chart-wrapper {
+            transform: translateY(-1px);
         }
 
         .matrix-table {
@@ -295,12 +365,14 @@
             border-collapse: collapse;
             margin-top: 0;
             font-size: 0.75rem;
+            transition: opacity 0.24s ease, transform 0.24s ease;
         }
 
         .matrix-table th,
         .matrix-table td {
             border-bottom: 1px solid rgba(255,255,255,0.06);
             padding: 8px 6px;
+            transition: background-color 0.24s ease, color 0.24s ease, transform 0.24s ease;
         }
 
         .matrix-table th {
@@ -323,6 +395,38 @@
         .sev-low { background: rgba(0,255,156,0.1); color: var(--accent-green); }
         .sev-med { background: rgba(255,189,0,0.1); color: var(--neon-gold); }
         .sev-high { background: rgba(255,0,60,0.1); color: var(--neon-red); }
+
+        .matrix-row-primary td {
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        .matrix-row-primary td:first-child {
+            color: var(--neon-blue);
+            font-weight: 700;
+        }
+
+        .matrix-row-primary {
+            animation: matrix-row-glow 0.7s ease;
+        }
+
+        .matrix-shell.is-highlighted {
+            border-color: rgba(0, 242, 255, 0.18);
+            box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.05), 0 0 24px rgba(0, 242, 255, 0.08);
+        }
+
+        .panel-threat.sev-low {
+            border-color: rgba(0, 255, 156, 0.18);
+        }
+
+        .panel-threat.sev-med {
+            border-color: rgba(255, 189, 0, 0.22);
+            box-shadow: 0 0 0 1px rgba(255, 189, 0, 0.05), 0 28px 60px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 189, 0, 0.08);
+        }
+
+        .panel-threat.sev-high {
+            border-color: rgba(255, 0, 60, 0.26);
+            box-shadow: 0 0 0 1px rgba(255, 0, 60, 0.05), 0 30px 64px rgba(0, 0, 0, 0.62), 0 0 28px rgba(255, 0, 60, 0.1);
+        }
 
         .remediation-card {
             background: rgba(255,0,60,0.08);
@@ -376,6 +480,31 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
+        .rule-item {
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 0;
+            transition: transform 0.18s ease, color 0.18s ease;
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .rule-item:hover {
+            transform: translateX(2px);
+        }
+
+        .rule-id {
+            color: var(--neon-gold);
+            font-size: 0.75rem;
+        }
+
+        .rule-attr {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
         .ops-inputs {
             display: grid;
             gap: 12px;
@@ -390,12 +519,27 @@
             animation: pulse-border 0.45s ease;
         }
 
+        .panel-transition {
+            animation: panel-fade-refresh 0.38s ease;
+        }
+
         @keyframes panel-fade-in {
             from {
                 opacity: 0;
                 transform: translateY(18px);
             }
             to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes panel-fade-refresh {
+            0% {
+                opacity: 0.72;
+                transform: translateY(6px);
+            }
+            100% {
                 opacity: 1;
                 transform: translateY(0);
             }
@@ -410,6 +554,32 @@
             }
             100% {
                 box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+            }
+        }
+
+        @keyframes matrix-row-glow {
+            0% {
+                transform: translateX(-6px);
+                opacity: 0.45;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scan-panel {
+            from {
+                transform: translateX(-110%);
+            }
+            to {
+                transform: translateX(110%);
+            }
+        }
+
+        @keyframes spin-loader {
+            to {
+                transform: rotate(360deg);
             }
         }
 
@@ -517,7 +687,7 @@
             <div class="control-group">
                 <label>Perfil</label>
                 <select id="profile-select" class="terminal-select">
-                    <option value="gov">Gobierno / Casa Blanca</option>
+                    <option value="gov">Gobierno Federal Estratégico</option>
                     <option value="enterprise">Enterprise Global</option>
                     <option value="critical">Infraestructura Crítica</option>
                     <option value="finance">Finanzas</option>
@@ -643,7 +813,7 @@ const SCENARIOS = {
 };
 
 const PROFILES = {
-    'gov':        { label:'Gobierno / Casa Blanca', weight:[1.2,1.3,1.1,1.2,1.3] },
+    'gov':        { label:'Gobierno Federal Estratégico', weight:[1.2,1.3,1.1,1.2,1.3] },
     'enterprise': { label:'Enterprise Global',       weight:[1.1,1.1,1.1,1.1,1.1] },
     'critical':   { label:'Infraestructura Crítica',weight:[1.1,1.3,1.3,1.2,1.2] },
     'finance':    { label:'Finanzas',               weight:[1.3,1.2,1.0,1.1,1.3] },
@@ -669,6 +839,45 @@ const btnRun = document.getElementById('btn-run');
 const scenarioSelect = document.getElementById('scenario-select');
 const profileSelect = document.getElementById('profile-select');
 const targetInput = document.getElementById('target-input');
+const doctrinePanel = document.querySelector('.panel-doctrine');
+const operationsPanel = document.querySelector('.panel-operations');
+const threatPanel = document.querySelector('.panel-threat');
+const consoleShell = document.querySelector('.console-shell');
+const chartShell = document.querySelector('.chart-shell');
+const matrixShell = document.querySelector('.matrix-shell');
+
+function animatePanelTransition(element){
+    element.classList.remove('panel-transition');
+    void element.offsetWidth;
+    element.classList.add('panel-transition');
+}
+
+function setActivePanel(panel){
+    [doctrinePanel, operationsPanel, threatPanel].forEach(current=> current.classList.remove('is-active'));
+    if(panel){
+        panel.classList.add('is-active');
+        animatePanelTransition(panel);
+    }
+}
+
+function setExecutionState(isLoading){
+    operationsPanel.classList.toggle('is-loading', isLoading);
+    btnRun.classList.toggle('is-loading', isLoading);
+    consoleShell.classList.toggle('is-live', isLoading);
+    consoleEl.classList.toggle('is-streaming', isLoading);
+    chartShell.classList.toggle('is-live', isLoading);
+}
+
+function setThreatSeverityState(severity){
+    threatPanel.classList.remove('sev-low','sev-med','sev-high');
+    if(severity){
+        threatPanel.classList.add(`sev-${severity}`);
+    }
+    matrixShell.classList.remove('is-highlighted');
+    void matrixShell.offsetWidth;
+    matrixShell.classList.add('is-highlighted');
+    setTimeout(()=> matrixShell.classList.remove('is-highlighted'), 520);
+}
 
 function pulseElement(element){
     element.classList.remove('feedback-flash','is-engaged','is-pressed');
@@ -688,10 +897,10 @@ function pulseElement(element){
 /* --- Reglas --- */
 RULES.forEach(r=>{
     ruleList.innerHTML += `
-        <div style="border-bottom:1px solid #222; padding:6px 0;">
-            <div style="color:var(--neon-gold); font-size:0.75rem;">[${r.id}]</div>
+        <div class="rule-item">
+            <div class="rule-id">[${r.id}]</div>
             <div>${r.name}</div>
-            <div style="color:var(--text-dim); font-size:0.75rem;">${r.attr}</div>
+            <div class="rule-attr">${r.attr}</div>
         </div>
     `;
 });
@@ -750,6 +959,8 @@ function renderMatrix(scenarioKey, igLevel){
     matrixBody.innerHTML='';
     const scenario = SCENARIOS[scenarioKey];
     const sensitivity = IG_LEVELS[igLevel].sensitivity;
+    setThreatSeverityState(scenario.sev);
+    animatePanelTransition(threatPanel);
 
     SABSA_ATTRIBUTES.forEach(attr=>{
         const isPrimary = scenario.attr===attr;
@@ -768,7 +979,7 @@ function renderMatrix(scenarioKey, igLevel){
         }
 
         matrixBody.innerHTML += `
-            <tr>
+            <tr class="${isPrimary ? 'matrix-row-primary' : ''}">
                 <td>${attr}</td>
                 <td>${status}</td>
                 <td><span class="sev-pill sev-${sev}">${sev}</span></td>
@@ -782,6 +993,7 @@ function renderMatrix(scenarioKey, igLevel){
 function renderRemediation(scenarioKey, igLevel, profileKey){
     const s = SCENARIOS[scenarioKey];
     const profile = PROFILES[profileKey];
+    animatePanelTransition(remediationPanel);
 
     remediationPanel.innerHTML = `
         <div class="remediation-card">
@@ -809,12 +1021,33 @@ igSelect.addEventListener('change',()=>{
     const igLevel = igSelect.value;
     igBadge.textContent = IG_LEVELS[igLevel].label;
     pulseElement(igSelect);
+    setActivePanel(doctrinePanel);
+    renderMatrix(scenarioSelect.value, igLevel);
+    renderRemediation(scenarioSelect.value, igLevel, profileSelect.value);
 });
 
-scenarioSelect.addEventListener('change',()=> pulseElement(scenarioSelect));
-profileSelect.addEventListener('change',()=> pulseElement(profileSelect));
-targetInput.addEventListener('change',()=> pulseElement(targetInput));
-cliInput.addEventListener('change',()=> pulseElement(cliInput));
+scenarioSelect.addEventListener('change',()=>{
+    pulseElement(scenarioSelect);
+    setActivePanel(threatPanel);
+    renderMatrix(scenarioSelect.value, igSelect.value);
+    renderRemediation(scenarioSelect.value, igSelect.value, profileSelect.value);
+});
+
+profileSelect.addEventListener('change',()=>{
+    pulseElement(profileSelect);
+    setActivePanel(doctrinePanel);
+    renderRemediation(scenarioSelect.value, igSelect.value, profileSelect.value);
+});
+
+targetInput.addEventListener('change',()=>{
+    pulseElement(targetInput);
+    setActivePanel(operationsPanel);
+});
+
+cliInput.addEventListener('change',()=>{
+    pulseElement(cliInput);
+    setActivePanel(operationsPanel);
+});
 
 /* --- Validación CLI simulada --- */
 function validateCli(command){
@@ -834,6 +1067,7 @@ function validateCli(command){
 /* --- Ejecución --- */
 document.getElementById('btn-run').addEventListener('click',()=>{
     pulseElement(btnRun);
+    setActivePanel(operationsPanel);
     const target = document.getElementById('target-input').value.trim();
     const scenarioKey = document.getElementById('scenario-select').value;
     const profileKey = document.getElementById('profile-select').value;
@@ -841,9 +1075,11 @@ document.getElementById('btn-run').addEventListener('click',()=>{
     const cliCmd = cliInput.value.trim();
 
     consoleEl.innerHTML = '[SYSTEM] Iniciando evaluación arquitectónica...';
+    setExecutionState(true);
 
     if(!target){
         log('Objetivo no definido. Ingrese un Tenant ID o dominio conceptual.','warn');
+        setExecutionState(false);
         return;
     }
 
@@ -887,8 +1123,14 @@ document.getElementById('btn-run').addEventListener('click',()=>{
 
         log('Evaluación completada. Resultados disponibles en radar y Threat Matrix.','sys');
         btnRun.disabled = false;
+        setExecutionState(false);
+        setActivePanel(threatPanel);
     },1400);
 });
+
+    renderMatrix(scenarioSelect.value, igSelect.value);
+    renderRemediation(scenarioSelect.value, igSelect.value, profileSelect.value);
+    setActivePanel(doctrinePanel);
 </script>
 
 </body>
