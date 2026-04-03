@@ -4,6 +4,13 @@
 SEC_ARCHITECT es un framework técnico y editorial para diseñar, explicar y operar arquitectura defensiva con claridad.
 Está pensado para arquitectos de seguridad, equipos de defensa y organizaciones que necesitan convertir marcos y controles en una práctica estructurada, accionable y pedagógica.
 
+## 📘 Lectura recomendada (Staff/Lead)
+
+- [Staff/Lead Architecture Overview](docs/README_Staff.md)
+- [Architecture Board](docs/SEC_ARCHITECT_STAFF_BOARD.md)
+- [Architecture Map](docs/architecture-high-level.md)
+- [Security Overview](docs/design-risks-hardening.md)
+
 ## Visión
 
 Convertir la arquitectura de seguridad en un sistema vivo: accionable para operación, pedagógico para adopción y estructurado para gobernanza.
