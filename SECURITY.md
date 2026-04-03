@@ -57,12 +57,22 @@ Si identifica un fallo crítico (bypass de CSP, XSS, CSRF, inyección DOM, fuga 
 
 Abra un Issue con la etiqueta [SECURITY].
 
+Si el hallazgo implica riesgo de explotación activa o exposición sensible, utilice reporte privado mediante GitHub Security Advisories cuando esté disponible en el repositorio.
+
 Incluya:
 
 - Vector de ataque
 - Evidencia
 - Reproducción
 - Mitigación sugerida (OWASP, NIST o CIS)
+
+## 2.1 Ventanas objetivo de respuesta
+
+- Triage inicial: dentro de 72 horas.
+- Clasificación de severidad: dentro de 5 días hábiles.
+- Plan de mitigación para severidad alta/crítica: dentro de 10 días hábiles.
+
+Estas ventanas son objetivos operativos y pueden variar según complejidad técnica.
 
 ## 3. Pull Requests y Contribuciones
 Se valoran especialmente PRs que:
