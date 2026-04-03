@@ -98,56 +98,158 @@
 
         /* LAYOUT */
         .layout {
+            max-width: 1540px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: 340px 1fr 360px;
-            gap: 18px;
-            padding: 22px;
+            grid-template-columns: minmax(300px, 360px) minmax(520px, 1.2fr) minmax(320px, 400px);
+            grid-template-areas: "doctrine operations threat";
+            gap: 22px;
+            padding: 26px 22px 34px;
+            align-items: start;
         }
 
         .panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-soft);
-            border-radius: 10px;
-            padding: 16px;
-            box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+            position: relative;
+            background:
+                radial-gradient(circle at top right, rgba(0, 242, 255, 0.08), transparent 38%),
+                linear-gradient(180deg, rgba(9, 13, 22, 0.98) 0%, rgba(5, 8, 16, 0.98) 100%);
+            border: 1px solid rgba(0, 242, 255, 0.12);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            animation: panel-fade-in 0.65s ease both;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.08), transparent 42%, rgba(0, 242, 255, 0.03));
+            opacity: 0.7;
+        }
+
+        .panel:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 242, 255, 0.28);
+            box-shadow: 0 30px 65px rgba(0, 0, 0, 0.6), 0 0 28px rgba(0, 242, 255, 0.08);
+        }
+
+        .panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .panel-doctrine { grid-area: doctrine; }
+        .panel-operations { grid-area: operations; }
+        .panel-threat { grid-area: threat; }
+
+        .panel-header {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .panel-title {
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--neon-blue);
             text-transform: uppercase;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.18em;
         }
 
         .panel-subtitle {
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .panel-stack {
+            display: grid;
+            gap: 14px;
+        }
+
+        .control-group {
+            display: grid;
+            gap: 7px;
+        }
+
+        .control-group label,
+        .panel label {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #c9d5e8;
+        }
+
+        .status-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.14);
         }
 
         .terminal-input,
         .terminal-select {
             width: 100%;
-            background: #020308;
-            border: 1px solid var(--border-soft);
+            background: rgba(2, 3, 8, 0.92);
+            border: 1px solid rgba(156, 163, 181, 0.16);
             color: var(--neon-blue);
-            padding: 10px;
+            padding: 11px 12px;
             font-family: Consolas, monospace;
-            margin-bottom: 10px;
+            margin-bottom: 0;
             font-size: 0.8rem;
+            border-radius: 10px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+        }
+
+        .terminal-input:hover,
+        .terminal-select:hover {
+            border-color: rgba(0, 242, 255, 0.3);
+        }
+
+        .terminal-input:focus,
+        .terminal-select:focus,
+        .terminal-input.is-engaged,
+        .terminal-select.is-engaged {
+            outline: none;
+            border-color: rgba(0, 242, 255, 0.55);
+            box-shadow: 0 0 0 3px rgba(0, 242, 255, 0.12), 0 0 16px rgba(0, 242, 255, 0.14);
+            transform: translateY(-1px);
         }
 
         .btn-primary {
             width: 100%;
-            background: var(--neon-blue);
+            background: linear-gradient(135deg, var(--neon-blue), #66fff4);
             color: #000;
             border: none;
-            padding: 12px;
+            padding: 13px;
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
-            border-radius: 4px;
-            box-shadow: 0 0 18px rgba(0, 242, 255, 0.4);
+            border-radius: 10px;
+            box-shadow: 0 16px 28px rgba(0, 242, 255, 0.18);
             font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 34px rgba(0, 242, 255, 0.24);
+            filter: saturate(1.03);
+        }
+
+        .btn-primary:active,
+        .btn-primary.is-pressed {
+            transform: translateY(0);
+            box-shadow: 0 8px 16px rgba(0, 242, 255, 0.16);
         }
 
         .btn-primary:disabled {
@@ -156,38 +258,64 @@
             box-shadow: none;
         }
 
+        .console-shell,
+        .matrix-shell,
+        .chart-shell {
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(2, 3, 8, 0.7);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .console-shell {
+            padding: 10px;
+        }
+
         .console {
             background: #020308;
-            border: 1px solid var(--border-soft);
-            padding: 10px;
-            height: 150px;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 12px;
+            height: 186px;
             overflow-y: auto;
             font-family: Consolas, monospace;
             font-size: 0.75rem;
             color: #a5ffb5;
-            margin-top: 10px;
+            margin-top: 0;
         }
 
         .chart-wrapper {
-            height: 260px;
-            margin-top: 10px;
+            height: 310px;
+            padding: 12px 14px 10px;
+            margin-top: 0;
         }
 
         .matrix-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 0;
             font-size: 0.75rem;
         }
 
         .matrix-table th,
         .matrix-table td {
             border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding: 6px;
+            padding: 8px 6px;
+        }
+
+        .matrix-table th {
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.64rem;
         }
 
         .sev-pill {
-            padding: 2px 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 56px;
+            padding: 3px 8px;
             border-radius: 999px;
             font-size: 0.65rem;
         }
@@ -199,18 +327,21 @@
         .remediation-card {
             background: rgba(255,0,60,0.08);
             border-left: 4px solid var(--neon-red);
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 6px;
+            padding: 14px;
+            margin-top: 14px;
+            border-radius: 10px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
         }
 
         code {
             display: block;
             background: #000;
-            padding: 8px;
-            margin-top: 6px;
+            padding: 10px;
+            margin-top: 8px;
             color: var(--neon-gold);
             font-size: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         footer {
@@ -238,9 +369,87 @@
             margin-top: 4px;
         }
 
+        .rules-shell {
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .ops-inputs {
+            display: grid;
+            gap: 12px;
+        }
+
+        .ops-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .feedback-flash {
+            animation: pulse-border 0.45s ease;
+        }
+
+        @keyframes panel-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+            }
+            50% {
+                box-shadow: 0 0 0 4px rgba(0, 242, 255, 0.14);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+            }
+        }
+
+        @media (max-width: 1360px) {
+            .layout {
+                grid-template-columns: minmax(280px, 330px) minmax(0, 1fr);
+                grid-template-areas:
+                    "doctrine operations"
+                    "threat threat";
+            }
+        }
+
         @media (max-width: 1200px) {
             .layout {
                 grid-template-columns: 1fr;
+                grid-template-areas:
+                    "doctrine"
+                    "operations"
+                    "threat";
+                padding: 20px 16px 28px;
+            }
+
+            .chart-wrapper {
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                gap: 16px;
+                padding: 16px 12px 24px;
+            }
+
+            .panel {
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .chart-wrapper {
+                height: 240px;
             }
         }
     </style>
@@ -272,81 +481,109 @@
 <main class="layout">
 
     <!-- PANEL IZQUIERDO: DOCTRINA + IG -->
-    <section class="panel">
-        <div class="panel-title">Doctrina de Control</div>
-        <div class="panel-subtitle">NIST · SABSA · Zero Trust</div>
-
-        <div style="margin-top:8px;">
-            <span class="badge-ig" id="ig-badge">IG4 · Estratégico</span>
+    <section class="panel panel-doctrine">
+        <div class="panel-header">
+            <div class="panel-title">Doctrina de Control</div>
+            <div class="panel-subtitle">NIST · SABSA · Zero Trust</div>
         </div>
 
-        <label style="margin-top:12px;">Nivel de madurez (IG)</label>
-        <select id="ig-select" class="terminal-select">
-            <option value="1">IG1 · Inicial</option>
-            <option value="2">IG2 · Repetible</option>
-            <option value="3">IG3 · Gestionado</option>
-            <option value="4" selected>IG4 · Optimizado</option>
-        </select>
-        <div class="hint">El nivel IG ajusta la sensibilidad del radar y la severidad de la matriz.</div>
+        <div class="panel-stack">
+            <div class="status-strip">
+                <span class="badge-ig" id="ig-badge">IG4 · Estratégico</span>
+            </div>
 
-        <label style="margin-top:12px;">Escenario</label>
-        <select id="scenario-select" class="terminal-select">
-            <option value="cred-stuffing">Credential Stuffing</option>
-            <option value="excess-priv">Privilegios Excesivos</option>
-            <option value="no-mfa">Identidad sin MFA</option>
-            <option value="segmentation">Segmentación Inconsistente</option>
-            <option value="legacy-config">Configuración Legacy</option>
-        </select>
+            <div class="control-group">
+                <label>Nivel de madurez (IG)</label>
+                <select id="ig-select" class="terminal-select">
+                    <option value="1">IG1 · Inicial</option>
+                    <option value="2">IG2 · Repetible</option>
+                    <option value="3">IG3 · Gestionado</option>
+                    <option value="4" selected>IG4 · Optimizado</option>
+                </select>
+                <div class="hint">El nivel IG ajusta la sensibilidad del radar y la severidad de la matriz.</div>
+            </div>
 
-        <label>Perfil</label>
-        <select id="profile-select" class="terminal-select">
-            <option value="gov">Gobierno / Casa Blanca</option>
-            <option value="enterprise">Enterprise Global</option>
-            <option value="critical">Infraestructura Crítica</option>
-            <option value="finance">Finanzas</option>
-            <option value="startup">Startup Zero Trust</option>
-        </select>
+            <div class="control-group">
+                <label>Escenario</label>
+                <select id="scenario-select" class="terminal-select">
+                    <option value="cred-stuffing">Credential Stuffing</option>
+                    <option value="excess-priv">Privilegios Excesivos</option>
+                    <option value="no-mfa">Identidad sin MFA</option>
+                    <option value="segmentation">Segmentación Inconsistente</option>
+                    <option value="legacy-config">Configuración Legacy</option>
+                </select>
+            </div>
 
-        <div id="rule-list" style="margin-top:10px;"></div>
+            <div class="control-group">
+                <label>Perfil</label>
+                <select id="profile-select" class="terminal-select">
+                    <option value="gov">Gobierno / Casa Blanca</option>
+                    <option value="enterprise">Enterprise Global</option>
+                    <option value="critical">Infraestructura Crítica</option>
+                    <option value="finance">Finanzas</option>
+                    <option value="startup">Startup Zero Trust</option>
+                </select>
+            </div>
+
+            <div class="rules-shell">
+                <div id="rule-list"></div>
+            </div>
+        </div>
     </section>
 
     <!-- PANEL CENTRAL: OPERATIONS + CLI SIMULADA -->
-    <section class="panel">
-        <div class="panel-title">Operations Command Center</div>
-        <div class="panel-subtitle">Evaluación SABSA IG · Simulación CLI</div>
+    <section class="panel panel-operations">
+        <div class="panel-header">
+            <div class="panel-title">Operations Command Center</div>
+            <div class="panel-subtitle">Evaluación SABSA IG · Simulación CLI</div>
+        </div>
 
-        <input id="target-input" class="terminal-input" placeholder="TENANT ID o dominio conceptual...">
+        <div class="panel-stack ops-grid">
+            <div class="ops-inputs">
+                <input id="target-input" class="terminal-input" placeholder="TENANT ID o dominio conceptual...">
 
-        <input id="cli-input" class="terminal-input" placeholder="az ad user list --query ...">
-        <div class="hint">CLI simulada: se valida sintaxis y se genera respuesta conceptual. No se ejecutan comandos reales.</div>
+                <input id="cli-input" class="terminal-input" placeholder="az ad user list --query ...">
+                <div class="hint">CLI simulada: se valida sintaxis y se genera respuesta conceptual. No se ejecutan comandos reales.</div>
 
-        <button class="btn-primary" id="btn-run">Ejecutar Evaluación Arquitectónica</button>
+                <button class="btn-primary" id="btn-run">Ejecutar Evaluación Arquitectónica</button>
+            </div>
 
-        <div class="console" id="console">[SYSTEM] SABSA Engine listo. Ingrese objetivo y escenario.</div>
+            <div class="console-shell">
+                <div class="console" id="console">[SYSTEM] SABSA Engine listo. Ingrese objetivo y escenario.</div>
+            </div>
 
-        <div class="chart-wrapper">
-            <canvas id="radarChart"></canvas>
+            <div class="chart-shell">
+                <div class="chart-wrapper">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- PANEL DERECHO: THREAT MATRIX + REMEDIACIÓN -->
-    <section class="panel">
-        <div class="panel-title">Threat Matrix</div>
-        <div class="panel-subtitle">Atributos SABSA · Severidad dinámica</div>
+    <section class="panel panel-threat">
+        <div class="panel-header">
+            <div class="panel-title">Threat Matrix</div>
+            <div class="panel-subtitle">Atributos SABSA · Severidad dinámica</div>
+        </div>
 
-        <table class="matrix-table">
-            <thead>
-                <tr>
-                    <th>Atributo</th>
-                    <th>Estado</th>
-                    <th>Severidad</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="matrix-body"></tbody>
-        </table>
+        <div class="panel-stack">
+            <div class="matrix-shell">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Atributo</th>
+                            <th>Estado</th>
+                            <th>Severidad</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-body"></tbody>
+                </table>
+            </div>
 
-        <div id="remediation-panel"></div>
+            <div id="remediation-panel"></div>
+        </div>
     </section>
 
 </main>
@@ -429,6 +666,24 @@ const igSelect = document.getElementById('ig-select');
 const igBadge = document.getElementById('ig-badge');
 const cliInput = document.getElementById('cli-input');
 const btnRun = document.getElementById('btn-run');
+const scenarioSelect = document.getElementById('scenario-select');
+const profileSelect = document.getElementById('profile-select');
+const targetInput = document.getElementById('target-input');
+
+function pulseElement(element){
+    element.classList.remove('feedback-flash','is-engaged','is-pressed');
+    void element.offsetWidth;
+    if(element.matches('.btn-primary')){
+        element.classList.add('is-pressed');
+        setTimeout(()=> element.classList.remove('is-pressed'),180);
+        return;
+    }
+
+    element.classList.add('feedback-flash','is-engaged');
+    setTimeout(()=>{
+        element.classList.remove('feedback-flash','is-engaged');
+    },420);
+}
 
 /* --- Reglas --- */
 RULES.forEach(r=>{
@@ -553,7 +808,13 @@ az ad user list --query "[].{id:id,displayName:displayName}" --all
 igSelect.addEventListener('change',()=>{
     const igLevel = igSelect.value;
     igBadge.textContent = IG_LEVELS[igLevel].label;
+    pulseElement(igSelect);
 });
+
+scenarioSelect.addEventListener('change',()=> pulseElement(scenarioSelect));
+profileSelect.addEventListener('change',()=> pulseElement(profileSelect));
+targetInput.addEventListener('change',()=> pulseElement(targetInput));
+cliInput.addEventListener('change',()=> pulseElement(cliInput));
 
 /* --- Validación CLI simulada --- */
 function validateCli(command){
@@ -572,6 +833,7 @@ function validateCli(command){
 
 /* --- Ejecución --- */
 document.getElementById('btn-run').addEventListener('click',()=>{
+    pulseElement(btnRun);
     const target = document.getElementById('target-input').value.trim();
     const scenarioKey = document.getElementById('scenario-select').value;
     const profileKey = document.getElementById('profile-select').value;
