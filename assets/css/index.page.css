@@ -71,6 +71,84 @@ header {
 .hero h1 span { color: var(--azure-blue); }
 .hero p { font-size: 1.25rem; color: var(--text-sub); max-width: 850px; margin: 0 auto; font-weight: 400; }
 
+.pillars-section {
+  max-width: 1400px;
+  margin: 0 auto 7rem;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.pillars-title {
+  font-size: 1.6rem;
+  color: var(--azure-blue);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pillars-subtitle {
+  color: var(--text-sub);
+  font-size: 0.95rem;
+  margin-top: 0.55rem;
+  margin-bottom: 2rem;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.4rem;
+}
+
+.pillar-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 120, 212, 0.28);
+  padding: 1.4rem;
+  border-radius: 12px;
+  box-shadow: 0 0 22px rgba(0, 120, 212, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  text-align: left;
+}
+
+.pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 120, 212, 0.55);
+  box-shadow: 0 0 28px rgba(0, 120, 212, 0.2);
+}
+
+.pillar-card h3 {
+  color: var(--azure-blue);
+  font-size: 1rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.pillar-card p {
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+  line-height: 1.5;
+}
+
+.pillar-btn {
+  display: inline-block;
+  margin-top: 0.95rem;
+  padding: 0.62rem 0.95rem;
+  background: var(--azure-blue);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.79rem;
+  font-weight: 700;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pillar-btn:hover {
+  background: var(--entra-blue-deep);
+  box-shadow: 0 0 20px rgba(0, 120, 212, 0.45);
+}
+
 .solutions-container {
   max-width: 1400px;
   margin: 0 auto 10rem;
@@ -457,6 +535,16 @@ input, textarea {
     padding: 0 1rem;
   }
 
+  .pillars-section {
+    margin: 0 auto 4rem;
+    padding: 0 1rem;
+  }
+
+  .pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
   .section-header {
     margin-bottom: 2.6rem;
   }
@@ -540,6 +628,15 @@ input, textarea {
     padding: 0 1.4rem;
   }
 
+  .pillars-section {
+    margin: 0 auto 5rem;
+    padding: 0 1.4rem;
+  }
+
+  .pillars-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .section-header {
     margin-bottom: 3.5rem;
   }
@@ -586,6 +683,10 @@ input, textarea {
 @media (min-width: 1025px) {
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pillars-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
