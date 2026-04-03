@@ -155,6 +155,31 @@ tokens de corta duración y claves administradas.
 Cuando se separan correctamente, la arquitectura se vuelve más segura, más gobernable y más fácil de automatizar.
 </p>
 
+<h2>Managed Identities: la cuenta recomendada para aplicaciones</h2>
+
+<p>
+En arquitecturas cloud modernas, la mejor cuenta para una aplicación es una Managed Identity.
+Este patrón evita secretos estáticos y delega la autenticación al plano de identidad de la plataforma.
+</p>
+
+<p>Beneficios arquitectónicos:</p>
+
+<ul>
+<li>elimina client secrets persistentes en código y configuración,</li>
+<li>habilita rotación automática de credenciales administradas,</li>
+<li>mejora la trazabilidad de auditoría por identidad real de servicio.</li>
+</ul>
+
+<p>
+Este enfoque materializa una arquitectura <strong>secretless</strong>: la aplicación accede a recursos mediante identidad administrada
+y RBAC de mínimo privilegio, sin almacenar contraseñas o llaves de larga vida.
+</p>
+
+<p>
+En términos de Zero Trust, Managed Identities permite verificación explícita por identidad, contexto y autorización,
+reduciendo la dependencia de perímetros de red y secretos reutilizables.
+</p>
+
 <h2>Conclusión</h2>
 
 <p>

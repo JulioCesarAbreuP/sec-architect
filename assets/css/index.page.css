@@ -1,18 +1,22 @@
 :root {
   --azure-blue: #0078d4;
+  --entra-blue-deep: #005a9e;
   --deep-navy: #0a192f;
   --card-bg: #112240;
   --accent-cyan: #64ffda;
   --text-main: #e6f1ff;
-  --text-sub: #8892b0;
+  --text-sub: #a4b3d3;
   --border-line: rgba(136, 146, 176, 0.1);
+  --risk-low: #107c10;
+  --risk-medium: #b56500;
+  --risk-critical: #ff4d4d;
 }
 
 [data-theme="light"] {
   --deep-navy: #fafafa;
   --card-bg: #ffffff;
   --text-main: #1a1a1a;
-  --text-sub: #666666;
+  --text-sub: #404040;
   --border-line: rgba(0, 0, 0, 0.1);
 }
 
@@ -53,7 +57,7 @@ header {
   color: var(--azure-blue);
 }
 
-.logo { font-weight: 800; font-size: 1.4rem; color: #fff; text-decoration: none; letter-spacing: -0.5px; }
+.logo { font-weight: 800; font-size: 1.4rem; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
 .logo span { color: var(--azure-blue); }
 
 .hero {
@@ -63,7 +67,7 @@ header {
   padding: 0 2rem;
 }
 
-.hero h1 { font-size: clamp(2.8rem, 6vw, 4.2rem); font-weight: 800; margin-bottom: 2rem; line-height: 1.1; color: #fff; }
+.hero h1 { font-size: clamp(2.8rem, 6vw, 4.2rem); font-weight: 800; margin-bottom: 2rem; line-height: 1.1; color: var(--text-main); }
 .hero h1 span { color: var(--azure-blue); }
 .hero p { font-size: 1.25rem; color: var(--text-sub); max-width: 850px; margin: 0 auto; font-weight: 400; }
 
@@ -91,7 +95,7 @@ header {
 
 .section-title-large {
   font-size: 2.4rem;
-  color: #fff;
+  color: var(--text-main);
   font-weight: 700;
 }
 
@@ -129,7 +133,7 @@ header {
 
 .card h3 {
   font-size: 1.7rem;
-  color: #fff;
+  color: var(--text-main);
   margin-bottom: 3rem;
   font-weight: 700;
   text-align: center;
@@ -195,18 +199,25 @@ header {
   backdrop-filter: blur(10px);
 }
 
-.contact-section h2 { margin-bottom: 3rem; text-align: center; font-size: 2.4rem; color: #fff; font-weight: 800; }
+.contact-section h2 { margin-bottom: 3rem; text-align: center; font-size: 2.4rem; color: var(--text-main); font-weight: 800; }
 
 input, textarea {
   width: 100%;
   padding: 1.3rem;
-  background: #020c1b;
-  border: 1px solid #233554;
-  color: #fff;
+  background: rgba(2, 12, 27, 0.72);
+  border: 1px solid #2f466b;
+  color: var(--text-main);
   border-radius: 10px;
   font-family: inherit;
   margin-bottom: 1.8rem;
   font-size: 1rem;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] textarea {
+  background: #ffffff;
+  border-color: #9aa8bf;
+  color: #1a1a1a;
 }
 
 .submit-btn {
@@ -244,7 +255,184 @@ input, textarea {
 }
 
 .form-status.is-error {
-  color: #ff6b57;
+  color: #b56500;
+}
+
+.risk-dashboard {
+  max-width: 1400px;
+  margin: 0 auto 7rem;
+  padding: 0 2rem;
+}
+
+.risk-dashboard-intro {
+  margin: 1rem auto 0;
+  max-width: 80ch;
+  text-align: center;
+  color: var(--text-sub);
+}
+
+.risk-card {
+  background:
+    radial-gradient(circle at top right, rgba(0, 120, 212, 0.2), transparent 45%),
+    linear-gradient(180deg, rgba(17, 34, 64, 0.92) 0%, rgba(13, 27, 50, 0.96) 100%);
+  border: 1px solid rgba(0, 120, 212, 0.32);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 16px 36px rgba(5, 21, 43, 0.35);
+}
+
+[data-theme="light"] .risk-card {
+  background:
+    radial-gradient(circle at top right, rgba(0, 120, 212, 0.14), transparent 45%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border: 1px solid rgba(0, 120, 212, 0.24);
+}
+
+.risk-label {
+  display: block;
+  margin-bottom: 0.65rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.risk-input-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.8rem;
+}
+
+.risk-input {
+  margin-bottom: 0;
+}
+
+.risk-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0 1.25rem;
+  min-height: 52px;
+  background: linear-gradient(120deg, var(--azure-blue), var(--entra-blue-deep));
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.risk-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.risk-hint {
+  margin-top: 0.8rem;
+  margin-bottom: 1.2rem;
+  color: var(--text-sub);
+}
+
+.risk-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.metric {
+  border: 1px solid var(--border-line);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(10, 25, 47, 0.55);
+}
+
+[data-theme="light"] .metric {
+  background: #ffffff;
+}
+
+.metric h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.92rem;
+  color: var(--text-sub);
+}
+
+.metric p {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.72rem;
+  border: 1px solid var(--border-line);
+}
+
+.risk-neutral {
+  color: var(--text-sub);
+}
+
+.risk-low {
+  color: var(--risk-low);
+  border-color: color-mix(in srgb, var(--risk-low) 35%, transparent);
+}
+
+.risk-medium {
+  color: var(--risk-medium);
+  border-color: color-mix(in srgb, var(--risk-medium) 35%, transparent);
+}
+
+.risk-critical {
+  color: var(--risk-critical);
+  border-color: color-mix(in srgb, var(--risk-critical) 40%, transparent);
+}
+
+.mitigation-panel {
+  margin-top: 1.3rem;
+  border: 1px solid color-mix(in srgb, var(--risk-critical) 40%, transparent);
+  border-radius: 12px;
+  padding: 1rem 1rem 0.8rem;
+  background: color-mix(in srgb, var(--risk-critical) 9%, transparent);
+}
+
+.mitigation-panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+  color: var(--risk-critical);
+  font-size: 1.06rem;
+}
+
+.mitigation-panel ol {
+  margin: 0;
+  padding-left: 1.35rem;
+  color: var(--text-main);
+}
+
+.mitigation-panel li {
+  margin-bottom: 0.3rem;
+}
+
+.ps-command-title {
+  margin-top: 0.8rem;
+  margin-bottom: 0.45rem;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.mitigation-panel pre {
+  margin: 0;
+  overflow-x: auto;
+  background: rgba(2, 12, 27, 0.8);
+  border: 1px solid var(--border-line);
+  border-radius: 8px;
+  padding: 0.7rem;
+}
+
+[data-theme="light"] .mitigation-panel pre {
+  background: #f3f7fb;
+}
+
+.mitigation-panel code {
+  color: var(--text-main);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 480px) {
@@ -306,6 +494,27 @@ input, textarea {
     border-radius: 14px;
   }
 
+  .risk-dashboard {
+    margin: 0 auto 4rem;
+    padding: 0 1rem;
+  }
+
+  .risk-card {
+    padding: 1rem;
+  }
+
+  .risk-input-group {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-btn {
+    min-height: 46px;
+  }
+
+  .risk-metrics {
+    grid-template-columns: 1fr;
+  }
+
   .contact-section h2 {
     font-size: 1.55rem;
     margin-bottom: 1.5rem;
@@ -353,6 +562,19 @@ input, textarea {
   .contact-section {
     margin: 0 auto 6.2rem;
     padding: 2.2rem 1.9rem;
+  }
+
+  .risk-dashboard {
+    margin: 0 auto 5rem;
+    padding: 0 1.4rem;
+  }
+
+  .risk-card {
+    padding: 1.5rem;
+  }
+
+  .risk-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .contact-section h2 {

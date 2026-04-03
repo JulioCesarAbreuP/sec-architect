@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://formspree.io https://*.formspree.io; form-action 'self' https://formspree.io https://*.formspree.io; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://formspree.io https://*.formspree.io https://api.pwnedpasswords.com; form-action 'self' https://formspree.io https://*.formspree.io; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -113,6 +113,58 @@
                 Solicitar evaluación de arquitectura 
                 <svg class="cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
+        </div>
+    </section>
+
+    <section class="risk-dashboard" aria-labelledby="riskDashboardTitle">
+        <div class="section-header">
+            <span class="section-tag">Identidad y Riesgo</span>
+            <h2 class="section-title-large" id="riskDashboardTitle">Dashboard de Exposición de Credenciales</h2>
+            <p class="risk-dashboard-intro">
+                Evaluación educativa basada en k-Anonymity, entropía y buenas prácticas de gobierno de identidades.
+            </p>
+        </div>
+
+        <div class="risk-card" role="region" aria-label="Panel de análisis de riesgo de credenciales">
+            <label for="riskPassword" class="risk-label">Contraseña a evaluar</label>
+            <div class="risk-input-group">
+                <input id="riskPassword" class="risk-input" type="password" autocomplete="off" spellcheck="false" placeholder="Ingrese una contraseña para evaluación local y privada" maxlength="128">
+                <button id="analyzeRiskBtn" type="button" class="risk-btn">Evaluar riesgo</button>
+            </div>
+            <p class="risk-hint">
+                El análisis usa un modelo k-Anonymity: solo se envía el prefijo del hash SHA-1 (5 caracteres), nunca el hash completo.
+            </p>
+
+            <div class="risk-metrics" aria-live="polite">
+                <article class="metric">
+                    <h3>Nivel de Riesgo</h3>
+                    <p id="riskLevelBadge" class="risk-badge risk-neutral">Pendiente</p>
+                </article>
+                <article class="metric">
+                    <h3>Coincidencias en Brechas</h3>
+                    <p id="breachCount">N/D</p>
+                </article>
+                <article class="metric">
+                    <h3>Entropía Estimada</h3>
+                    <p id="entropyValue">N/D</p>
+                </article>
+                <article class="metric">
+                    <h3>Tiempo de Crackeo (simulación)</h3>
+                    <p id="crackTimeValue">N/D</p>
+                </article>
+            </div>
+
+            <div id="mitigationPanel" class="mitigation-panel" hidden>
+                <h3>Mitigación Paso a Paso</h3>
+                <ol>
+                    <li>Deshabilitar cuenta comprometida.</li>
+                    <li>Requerir MFA.</li>
+                    <li>Revisar roles RBAC.</li>
+                    <li>Rotar credenciales.</li>
+                </ol>
+                <p class="ps-command-title">Comando PowerShell seguro de contención:</p>
+                <pre><code>Update-AzureADUser -ObjectId &lt;ID&gt; -AccountEnabled $false</code></pre>
+            </div>
         </div>
     </section>
 

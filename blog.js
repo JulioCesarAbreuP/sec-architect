@@ -98,10 +98,10 @@ async function discoverMarkdownFiles() {
       }
     }
   } catch (_error) {
-    // Fallback to best-effort discovery below.
+    // Aplicando ruta de contingencia para mantener descubrimiento de posts si falla el manifiesto.
   }
 
-  // Prefer directory listing when running locally with a server that exposes it.
+  // Validando listado de directorio como fuente secundaria para preservar compatibilidad con posts.json y servidores locales.
   try {
     const response = await fetch(isNestedBlogIndex ? "./" : "blog/");
     if (response.ok) {
@@ -121,7 +121,7 @@ async function discoverMarkdownFiles() {
       }
     }
   } catch (_error) {
-    // Ignore and fallback to manifest below.
+    // Preservando continuidad operativa del blog cuando el servidor no expone index de directorio.
   }
 
   return Array.from(candidates).map(sanitizeFileName).filter(Boolean);

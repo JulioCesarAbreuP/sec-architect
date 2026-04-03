@@ -95,6 +95,7 @@ function sanitizeRenderedHtml(rawHtml) {
       continue;
     }
 
+    // Aplicando sanitizacion para evitar inyeccion en el DOM al renderizar markdown dinamico.
     for (const attrName of element.getAttributeNames()) {
       const attrValue = element.getAttribute(attrName) || "";
       const lowerName = attrName.toLowerCase();
@@ -193,6 +194,7 @@ function buildPostUrl(postFileName) {
 }
 
 function resolveRelativeUrl(href, postDirectory) {
+  // Validando URLs relativas para evitar referencias peligrosas fuera del alcance esperado del blog.
   if (!href || /^(https?:|data:|mailto:|#|\/)/i.test(href)) {
     return href;
   }

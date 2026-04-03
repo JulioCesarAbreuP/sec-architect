@@ -8,7 +8,7 @@
         return saved;
       }
     } catch (_error) {
-      // Ignore localStorage access errors.
+      // Manteniendo degradacion segura cuando el almacenamiento del navegador esta restringido.
     }
     return "dark";
   }
@@ -17,7 +17,7 @@
     try {
       localStorage.setItem(THEME_KEY, theme);
     } catch (_error) {
-      // Ignore localStorage access errors.
+      // Evitando fallos de UX cuando la persistencia local no esta disponible por politica del navegador.
     }
   }
 

@@ -1,35 +1,144 @@
-# 🛡️ SEC_ARCHITECT | Enterprise Resilience Architecture
+# SEC_ARCHITECT | Enterprise Resilience Architecture
 
-Este repositorio contiene la arquitectura de una Landing Page de **Alta Disponibilidad** y **Seguridad Endurecida (Hardening)**, diseñada por un **Cloud Security Architect** para la captación de activos críticos en servicios de consultoría para PYMEs.
+Este repositorio implementa una plataforma editorial y de concienciacion tecnica orientada a arquitectura de seguridad, identidad y resiliencia operacional en entornos cloud.
 
-El proyecto no es una simple web estática; es un caso de estudio sobre **Defensa en Profundidad** aplicada a infraestructuras web modernas.
+No se trata de una pagina estatica convencional: el proyecto modela controles de hardening, sanitizacion y gobernanza de acceso bajo un enfoque de defensa en profundidad.
 
-## 🚀 Pilares de la Arquitectura de Seguridad (Hardening)
+La estructura de este proyecto sigue una progresion contextual -> conceptual -> logica inspirada en marcos de arquitectura como SABSA.
 
-El despliegue sigue estrictos controles de seguridad para mitigar vectores de ataque en infraestructuras críticas:
+## Objetivo Arquitectonico
 
-### 1. Mitigación Avanzada de XSS & Injection
-* **Content Security Policy (CSP) v3:** Implementación de políticas de control de origen para restringir la ejecución de scripts y conexiones salientes (`connect-src`), neutralizando la exfiltración de datos.
-* **Sanitización Dinámica del DOM:** El motor de transporte (Fetch API) integra una capa de limpieza de caracteres maliciosos, evitando que inyecciones de código (HTML/JS) alcancen el backend de correo.
+1. Traducir principios de identidad moderna (identidad, cuenta, credencial) en controles tecnicos verificables.
+2. Exponer un dashboard educativo de riesgo de credenciales sin comprometer privacidad del usuario.
+3. Mantener trazabilidad de mitigaciones alineadas con Zero Trust, RBAC y operaciones seguras.
 
-### 2. Control de Integridad y Red
-* **Subresource Integrity (SRI):** Verificación de hashes en librerías externas (FontAwesome, Google Fonts). Si un nodo de la CDN es comprometido, el navegador bloquea la carga automáticamente.
-* **SSL/TLS Enforcement:** Configuración de `upgrade-insecure-requests` para garantizar que toda comunicación viaje por túneles cifrados.
+## Controles de Seguridad Implementados
 
-### 3. Resiliencia y Anti-Spam (DoS Protection)
-* **Rate Limiting (Client-Side):** Control de inundación mediante *throttling* de 30 segundos entre envíos para prevenir ataques de denegación de servicio (DoS) y agotamiento de cuotas de API.
-* **Honeypot Strategy:** Integración de campos trampa invisibles para humanos que detectan y descartan instantáneamente el tráfico de bots automatizados.
+### 1. Mitigacion Avanzada de XSS e Injection
 
-## ☁️ Alineación con Certificaciones de Industria
+- Content Security Policy (CSP) v3 para restringir origenes de scripts, estilos, fuentes y conexiones.
+- Sanitizacion defensiva de contenido dinamico en el renderizado de blog y post para reducir riesgo de inyeccion en el DOM.
 
-Como especialista en **Arquitectura de Infraestructura Cloud**, este proyecto refleja competencias críticas evaluadas en:
+### 2. Integridad y Transporte Seguro
 
-* **Microsoft Azure (AZ-305 / SC-300 / AZ-104):** Diseño de soluciones resilientes, gobernanza de identidades (Microsoft Entra ID) y configuración de políticas de acceso condicional (Zero Trust).
-* **AWS (Cloud Practitioner):** Conceptos de alta disponibilidad, almacenamiento inmutable y distribución global de contenido.
-* **Cybersecurity Frameworks:** Alineación con **CIS Controls v8** (Gestión de Vulnerabilidades) y **NIST** (Protección y Respuesta).
+- Uso de cabeceras de endurecimiento: X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy.
+- Enforzamiento de HTTPS con upgrade-insecure-requests y bloqueo de mixed content.
 
----
-**Contacto Profesional:**
+### 3. Resiliencia Operativa
+
+- Flujo de contacto robusto con validaciones de estado y degradacion controlada.
+- Motor de blog dinamico compatible con posts.json y resolucion segura de rutas relativas.
+
+## k-Anonymity en la API de contrasenas
+
+El dashboard integra una evaluacion de brechas usando el modelo k-Anonymity sobre hashes SHA-1.
+
+### Como funciona
+
+1. La contrasena se transforma localmente en un hash SHA-1 dentro del navegador.
+2. Se separa el hash en:
+- Prefijo: primeros 5 caracteres.
+- Sufijo: resto del hash.
+3. Solo el prefijo se envia al endpoint de rango.
+4. El servicio responde con multiples sufijos candidatos y conteos de exposicion.
+5. La comparacion final se hace localmente: el hash completo nunca sale del cliente.
+
+### Por que protege la privacidad del hash
+
+- El servidor no recibe la huella completa, por lo tanto no puede reconstruir de forma directa la contrasena evaluada.
+- Cada prefijo corresponde a un conjunto amplio de hashes posibles (anonimato por conjunto), lo que reduce capacidad de correlacion individual.
+- La validacion final en cliente elimina necesidad de transmitir material sensible completo durante el transito.
+
+### Diagrama textual de flujo (k-Anonymity)
+
+```text
+[Usuario ingresa contrasena]
+		  |
+		  v
+[Navegador calcula SHA-1 local]
+		  |
+		  v
+[Divide hash: PREFIJO(5) + SUFIJO(35)]
+		  |
+		  v
+[Envia solo PREFIJO a API /range]
+		  |
+		  v
+[API devuelve lista de SUFIJOS candidatos + conteos]
+		  |
+		  v
+[Cliente compara SUFIJO local contra respuesta]
+		  |
+		  v
+[Dashboard determina nivel de riesgo]
+```
+
+## Dashboard de Riesgo de Credenciales
+
+El dashboard incorpora tres componentes educativos:
+
+1. Exposicion en brechas mediante k-Anonymity.
+2. Entropia estimada en bits.
+3. Simulacion matematica de tiempo de crackeo (sin ejecutar ataques reales).
+
+El color #ff4d4d se reserva exclusivamente para riesgo critico.
+
+## Mitigacion Paso a Paso
+
+Esta seccion se muestra en el dashboard unicamente cuando el riesgo evaluado es ROJO (critico). El objetivo es orientar contencion segura y no destructiva.
+
+1. Deshabilitar cuenta comprometida.
+2. Requerir MFA.
+3. Revisar roles RBAC.
+4. Rotar credenciales.
+
+Comando PowerShell seguro de contencion:
+
+```powershell
+Update-AzureADUser -ObjectId <ID> -AccountEnabled $false
+```
+
+## Amenaza vs Mitigacion
+
+| Amenaza | Herramienta | Mitigacion |
+|--------|-------------|------------|
+| Credential Stuffing | Auditor HIBP (k-Anonymity) | MFA resistente a phishing (SC-300) |
+| Password Reuse | Auditor de brechas | Rotacion + Passwordless |
+| Exposicion de cuentas privilegiadas | Dashboard de riesgo | Revision RBAC + PIM |
+
+## Managed Identities (AZ-104 / SC-300)
+
+En arquitectura moderna, la mejor cuenta para aplicaciones en Azure es una Managed Identity.
+
+### Motivo arquitectonico
+
+- Representa la identidad de la carga de trabajo sin secretos embebidos en codigo.
+- Elimina dependencia de credenciales estaticas de larga vida.
+- Habilita trazabilidad completa de accesos con contexto de identidad real.
+
+### Secretless Architecture
+
+Un enfoque secretless evita almacenar contrasenas, client secrets o llaves privadas en archivos de configuracion, variables de entorno permanentes o repositorios.
+
+Patron recomendado:
+
+1. Aplicacion autenticada con Managed Identity.
+2. Autorizacion por RBAC de minimo privilegio.
+3. Acceso a recursos (Key Vault, Storage, SQL, APIs) sin secretos persistentes en codigo.
+
+### Relacion con Zero Trust
+
+- Verificacion explicita: cada solicitud se valida por identidad y contexto.
+- Minimo privilegio: permisos granulares y revisables.
+- Asumir breach: reduccion del impacto al no exponer secretos reutilizables.
+
+## Alineacion con Certificaciones y Marcos
+
+- Microsoft Azure AZ-104: identidad de cargas de trabajo, RBAC y operacion segura.
+- Microsoft SC-300: gobierno de acceso, MFA y proteccion de identidades.
+- AZ-305: decisiones de arquitectura de seguridad a escala.
+- CIS Controls v8 y NIST: disciplina de proteccion, deteccion y respuesta.
+
+## Contacto Profesional
+
 [LinkedIn - Julio Cesar Abreu](https://www.linkedin.com/in/juliocesarabreup)
-
-*Diseñado para garantizar la continuidad de negocio y la integridad de la información corporativa.*

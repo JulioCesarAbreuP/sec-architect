@@ -86,6 +86,30 @@ Cuando estos tres conceptos se mezclan, aparecen problemas como:
 
 Cuando se separan correctamente, la arquitectura se vuelve más segura, más gobernable y más fácil de automatizar.
 
+## Managed Identities: la cuenta recomendada para aplicaciones
+
+En aplicaciones cloud, la mejor implementacion de cuenta para un workload es una Managed Identity. Este patron evita secretos estaticos y traslada la autenticacion al plano de identidad de la plataforma.
+
+### Por que mejora la arquitectura
+
+- Elimina client secrets persistentes en codigo y archivos de configuracion.
+- Permite rotacion automatica de credenciales administradas por plataforma.
+- Facilita auditoria de acceso por identidad real de servicio.
+
+### Secretless por diseno
+
+Una arquitectura secretless reduce la superficie de exposicion porque no depende de contrasenas reutilizables ni llaves incrustadas.
+
+Flujo recomendado:
+
+1. La aplicacion obtiene token mediante Managed Identity.
+2. El acceso a recursos se controla con RBAC de minimo privilegio.
+3. Key Vault, Storage y APIs aceptan identidad administrada sin secretos en texto plano.
+
+### Relacion con Zero Trust
+
+Managed Identity operationaliza Zero Trust porque toda solicitud se verifica por identidad, contexto y autorizacion explicita, en lugar de confiar en la red o en secretos de larga vida.
+
 ## Conclusión
 
 Identidad, cuenta y credencial no son sinónimos: son capas distintas de un mismo modelo. La identidad define al sujeto, la cuenta lo representa en un sistema y la credencial demuestra que es quien dice ser.
