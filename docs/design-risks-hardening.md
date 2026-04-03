@@ -1,21 +1,59 @@
-# Riesgos de Diseño y Endurecimiento (Conceptual)
+# 🛡️ SEC_ARCHITECT — Security Overview
+Riesgos de diseño, endurecimiento conceptual y alineación con marcos de seguridad
 
-## Riesgos de centralización del Command Center
-- Punto único de fallo funcional y narrativo.
-- Sobrecarga del módulo central con múltiples responsabilidades.
-- Dependencia excesiva de un único flujo de interpretación.
+Este documento resume la postura de seguridad de SEC_ARCHITECT desde una perspectiva **arquitectónica**, **conceptual** y **pedagógica**, alineada con:
 
-## Riesgos de exposición conceptual
-- Confusión entre demo técnica y operación productiva enterprise.
-- Sobreinterpretación de scoring heurístico como evidencia final.
+- **NIST CSF**
+- **CIS Controls v8**
+- **MITRE ATT&CK**
+- **Zero Trust**
+- **RBAC**
 
-## Riesgos de diseño pedagógico
-- Simplificación de escenarios complejos.
-- Riesgo de sesgo didáctico al priorizar claridad sobre fidelidad operativa completa.
+No es un documento de implementación, sino de **criterio profesional**.
 
-## Recomendaciones de endurecimiento
-- Separar explícitamente modo demo y modo enterprise.
-- Firmar y versionar catálogos de reglas y mapeos.
-- Introducir auditoría de cambios con revisión obligatoria.
-- Definir umbrales de calidad para publicar reglas nuevas.
-- Incorporar CI de seguridad y validación de metadatos como gate.
+---
+
+# 1. Principios de seguridad aplicados
+
+SEC_ARCHITECT se construye sobre cuatro principios:
+
+### 🔐 1.1 Zero Trust como baseline
+- No confiar por defecto.
+- Validar cada acceso.
+- Mínimo privilegio.
+- Evaluación continua.
+
+Documentado en: `docs/zero-trust-integration.md`.
+
+---
+
+### 🧩 1.2 RBAC como control de exposición
+Roles definidos:
+
+- Viewer
+- Analyst
+- Architect
+- Admin
+
+Cada rol tiene acceso diferenciado a vistas y capacidades.
+
+Documentado en: `docs/rbac-command-center.md`.
+
+---
+
+### 🧱 1.3 Arquitectura modular
+Cada módulo puede evolucionar sin comprometer el resto:
+
+- Command Center
+- Knowledge-Base
+- Dashboard
+- Zero Trust
+- RBAC
+- Documentación Staff
+
+Documentado en ADR-005.
+
+---
+
+### 🧭 1.4 Transparencia arquitectónica
+Todas las decisiones están documentadas en:
