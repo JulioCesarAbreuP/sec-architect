@@ -15,7 +15,7 @@
 - [x] Revisar y actualizar el hash SRI de marked.js trimestralmente.
 
 ### UX/UI
-- [ ] Validar accesibilidad WCAG 2.1 AA con axe o Lighthouse.
+- [x] Validar accesibilidad WCAG 2.1 AA con axe o Lighthouse.
 - [x] Añadir `aria-label` a todos los iconos SVG del footer y toggle.
 - [ ] Optimizar tiempo de carga (LCP < 2.5s) en Lighthouse.
 - [ ] Añadir animaciones de entrada suaves en las tarjetas de posts.
@@ -92,7 +92,7 @@
 
 | Mejora | Estado | Notas |
 |--------|--------|-------|
-| Accesibilidad WCAG 2.1 AA | Pendiente | Revisión con axe |
+| Accesibilidad WCAG 2.1 AA | Completado | Evidencia before/after en `docs/evidence/aa-final-2026-04-04/` |
 | Búsqueda de posts | Pendiente | Fuse.js sin servidor |
 | Paginación del blog | Pendiente | Client-side simple |
 | Filtro por tags | Pendiente | DOM dinámico |
