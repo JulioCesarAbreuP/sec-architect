@@ -112,7 +112,10 @@ export function calculateCaZeroTrustPosture(policiesInput) {
         privilegedRoleCoverage: 0,
         exposureBreadth: 0,
         reportOnlyCount: 0,
-        disabledCount: 0
+        disabledCount: 0,
+        externalUnprotectedCount: 0,
+        intelPressure: 0,
+        priorityTechnique: "n/a"
       },
       findings: [{ severity: "high", message: "No Conditional Access policies were detected from the tenant feed." }]
     };
@@ -186,8 +189,99 @@ export function calculateCaZeroTrustPosture(policiesInput) {
       privilegedRoleCoverage,
       exposureBreadth,
       reportOnlyCount,
-      disabledCount
+      disabledCount,
+      externalUnprotectedCount: externalUnprotected,
+      intelPressure: 0,
+      priorityTechnique: "n/a"
     },
     findings
+  };
+}
+
+function dedupe(items) {
+  return Array.from(new Set(items));
+}
+
+function getExposedTechniquesFromPosture(posture) {
+  const metrics = posture?.metrics || {};
+  const techniques = [];
+
+  if (Number(metrics.mfaCoverage || 0) < 90) {
+    techniques.push("T1556", "T1078.004");
+  }
+
+  if (Number(metrics.privilegedRoleCoverage || 0) < 100) {
+    techniques.push("T1548", "T1078.004");
+  }
+
+  if (Number(metrics.exposureBreadth || 0) > 60) {
+    techniques.push("T1078.004");
+  }
+
+  if (Number(metrics.reportOnlyCount || 0) > 0) {
+    techniques.push("T1556");
+  }
+
+  if (Number(metrics.disabledCount || 0) > 0) {
+    techniques.push("T1078");
+  }
+
+  if (Number(metrics.externalUnprotectedCount || 0) > 0) {
+    techniques.push("T1078.004", "T1078");
+  }
+
+  return dedupe(techniques);
+}
+
+function getTechniqueWeight(summary, technique) {
+  if (!summary || typeof summary !== "object") return 0;
+  const map = summary.techniqueRisk || {};
+  return clamp(map[technique] || 0, 0, 100);
+}
+
+export function applyThreatIntelToPosture(posture, intelSummary) {
+  if (!posture || !intelSummary) {
+    return posture;
+  }
+
+  const exposedTechniques = getExposedTechniquesFromPosture(posture);
+  if (!exposedTechniques.length) {
+    return {
+      ...posture,
+      metrics: {
+        ...posture.metrics,
+        intelPressure: 0,
+        priorityTechnique: String(intelSummary.topTechnique?.id || "n/a")
+      }
+    };
+  }
+
+  const weights = exposedTechniques.map((technique) => getTechniqueWeight(intelSummary, technique));
+  const averageWeight = weights.reduce((acc, value) => acc + value, 0) / Math.max(1, weights.length);
+  const intelPressure = Math.round(clamp(averageWeight * 0.18, 0, 18));
+  const adjustedScore = Math.round(clamp(Number(posture.score || 0) - intelPressure, 0, 100));
+  const status = adjustedScore >= 80 ? "healthy" : adjustedScore >= 50 ? "degraded" : "critical";
+  const statusLabel = adjustedScore >= 80 ? "Healthy" : adjustedScore >= 50 ? "Degraded" : "Critical";
+  const topTechnique = String(intelSummary.topTechnique?.id || "n/a");
+
+  const adjustedFindings = posture.findings.slice();
+  if (intelPressure > 0) {
+    adjustedFindings.push({
+      severity: intelPressure >= 10 ? "high" : "medium",
+      message: "Threat Intel pressure (-" + intelPressure + " points): active exposure intersects with " + exposedTechniques.join(", ") + "."
+    });
+  }
+
+  return {
+    ...posture,
+    score: adjustedScore,
+    status,
+    statusLabel,
+    findings: adjustedFindings,
+    metrics: {
+      ...posture.metrics,
+      intelPressure,
+      priorityTechnique: topTechnique
+    }
   };
 }

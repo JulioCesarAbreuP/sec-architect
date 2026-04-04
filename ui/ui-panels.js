@@ -16,6 +16,7 @@ export function getPanelRefs() {
     ztPrivilegedProtection: document.getElementById("ztPrivilegedProtection"),
     ztExposure: document.getElementById("ztExposure"),
     ztPolicyStates: document.getElementById("ztPolicyStates"),
+    ztIntelPressure: document.getElementById("ztIntelPressure"),
     ztFindings: document.getElementById("ztFindings"),
     ztLastUpdated: document.getElementById("ztLastUpdated"),
     remediationOutput: document.getElementById("terraformFixOutput"),
