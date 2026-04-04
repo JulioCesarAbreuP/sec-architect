@@ -65,6 +65,7 @@
     sunIcon.appendChild(rays);
     button.appendChild(sunIcon);
     button.title = theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
+    button.setAttribute("aria-label", theme === "dark" ? "Activar modo claro" : "Activar modo oscuro");
     button.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
   }
 
@@ -119,7 +120,8 @@
 
     svg.setAttribute("viewBox", "0 0 24 24");
     svg.classList.add("site-icon", "icon-md");
-    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
 
     path.setAttribute("d", socialIconPath(type));
     svg.appendChild(path);
