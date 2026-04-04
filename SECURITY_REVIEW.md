@@ -226,6 +226,10 @@ Estado actual: `scripts/security-policy-check.ps1` valida la ausencia de etiquet
 
 6. **Añadir Subresource Integrity** a las hojas de estilo de Google Fonts.
 
+Estado actual: los enlaces de Google Fonts en superficies HTML activas incluyen
+`integrity` y `crossorigin="anonymous"`; el checker de seguridad valida esta
+condición en CI para evitar regresiones.
+
 7. **Implementar `require-trusted-types-for 'script'`** en CSP para forzar el uso
    de Trusted Types y eliminar asignaciones directas a `innerHTML`.
 
