@@ -72,6 +72,27 @@ try {
             }
         }
 
+        $markedScripts = [regex]::Matches(
+            $content,
+            '<script\s+[^>]*src="https://cdn\.jsdelivr\.net/npm/marked@[^"]+"[^>]*></script>',
+            [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+        )
+
+        foreach ($script in $markedScripts) {
+            if ($script.Value -notmatch 'integrity\s*=\s*"[^"]+"') {
+                $issues += "[SRI] marked.js CDN script missing integrity: $relative"
+            }
+            if ($script.Value -notmatch 'crossorigin\s*=\s*"anonymous"') {
+                $issues += "[SRI] marked.js CDN script missing crossorigin=anonymous: $relative"
+            }
+            if ($script.Value -notmatch 'referrerpolicy\s*=\s*"no-referrer"') {
+                $issues += "[SRI] marked.js CDN script missing referrerpolicy=no-referrer: $relative"
+            }
+            if ($script.Value -notmatch 'marked@[0-9]+\.[0-9]+\.[0-9]+/marked\.min\.js') {
+                $issues += "[SRI] marked.js CDN script must be pinned to exact semver: $relative"
+            }
+        }
+
         $hasInlineScriptTag = $content -match '<script(?![^>]*\bsrc=)[^>]*>'
         if ($hasInlineScriptTag) {
             $allowedInline = $false

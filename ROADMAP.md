@@ -12,7 +12,7 @@
 - [x] Activar CSP `report-to` con endpoint de reporte (Report URI o equivalente).
 - [x] Mover scripts inline restantes en `blog/index.html` y artículos a JS externos.
 - [x] Añadir SRI a hojas de estilo de Google Fonts.
-- [ ] Revisar y actualizar el hash SRI de marked.js trimestralmente.
+- [x] Revisar y actualizar el hash SRI de marked.js trimestralmente.
 
 ### UX/UI
 - [ ] Validar accesibilidad WCAG 2.1 AA con axe o Lighthouse.

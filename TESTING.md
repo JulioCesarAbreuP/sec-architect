@@ -2,7 +2,7 @@
 
 > Estrategia de pruebas técnicas del sitio estático SEC_ARCHITECT.
 > Cubre seguridad, rendimiento, accesibilidad, compatibilidad y resiliencia.
-> Última actualización: 2026-04-02.
+> Última actualización: 2026-04-04.
 
 ---
 
@@ -119,6 +119,17 @@ document.write("<script>alert(1)<\/script>")
   blog y artículos.
 - Validar que cualquier excepción legacy esté declarada explícitamente en el
   script de política.
+
+### 2.6 Verificación de Dependencia Externa marked.js (SRI)
+
+- Ejecutar `scripts/security-policy-check.ps1`.
+- Confirmar que no existan hallazgos `[SRI] marked.js CDN script missing ...`.
+- Verificar que el script de `marked.js` mantiene:
+  - `integrity` válido,
+  - `crossorigin="anonymous"`,
+  - `referrerpolicy="no-referrer"`,
+  - versión fijada a semver exacto (`marked@x.y.z/marked.min.js`).
+- Registrar revisión trimestral del hash SRI como evidencia de hardening.
 
 ---
 
