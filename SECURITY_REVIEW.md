@@ -7,8 +7,18 @@ Se implementó un módulo de telemetría ligera (`js/telemetry.js`) que:
 - Los eventos se registran en consola y están preparados para envío seguro a un endpoint o Application Insights.
 - El script se incluye con SRI, nonce y Trusted Types, cumpliendo la CSP y sin exponer datos sensibles.
 
-**Seguridad:**
-La telemetría es estrictamente técnica, orientada a resiliencia y experiencia de usuario, sin riesgo para la privacidad ni exposición de información sensible.
+### 7.1 Registro y envío fiable de métricas
+La versión actual implementa:
+- Batching de eventos en buffer interno y envío eficiente usando `navigator.sendBeacon` (preferido) o `fetch` con `keepalive`.
+- Reintentos exponenciales automáticos si el endpoint no responde.
+- Integración transparente con Application Insights si está configurado.
+- El envío se dispara en idle (`requestIdleCallback`) o al cerrar/cambiar de pestaña (`visibilitychange`, `pagehide`).
+
+**Privacidad y seguridad:**
+- Solo se envían métricas técnicas (errores, LCP, FID, CLS, etc.), nunca datos personales, identificadores de usuario ni contenido sensible.
+- El buffer de eventos solo contiene información técnica y se descarta localmente si no hay endpoint.
+- El diseño cumple con Trusted Types, SRI y nonce rotativo, sin sinks inseguros ni riesgo de XSS.
+- El envío es asíncrono y no bloquea el render ni afecta al rendimiento.
 
 Ver detalles en docs/telemetry.md y CHANGELOG.md.
 ### 6.5 Informe de validación (2026-04-04)

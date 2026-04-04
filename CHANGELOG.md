@@ -33,29 +33,15 @@
 
 ## [Unreleased]
 
+
 ### Added
-- `tools/enterprise-command-center.html`: nueva superficie principal del Command Center enterprise.
-- `core/sabsa-engine.js`: motor desacoplado para evaluacion SABSA e inferencia enterprise.
-- `core/mitre-mapper.js`: mapeo local MITRE ATT&CK para Conditional Access y objetos Azure.
-- `core/json-validator.js`: validador JSON-to-MITRE con remediacion Bicep/Terraform.
-- `core/jwt-validator.js`: validador JWT SC-300 con verificacion de MFA y expiracion.
-- `ui/panel-ia.js`, `ui/panel-json.js`, `ui/panel-jwt.js`, `ui/renderer.js`: capa UI modular del nuevo Command Center.
-- `assets/css/enterprise.css`: estilo dark enterprise para la nueva plataforma.
-- `assets/vendor/jwt-decode.esm.js`: helper local ESM para decodificacion JWT.
-- `tests/run-enterprise-smoke.js`: smoke test funcional para flujos JSON, JWT y MITRE.
-- `tests/fixtures/enterprise-ca-policy.no-mfa.json`, `tests/fixtures/enterprise-ca-policy.with-mfa.json`: fixtures de validacion funcional del flujo enterprise.
-- `docs/evidence/enterprise-command-center-validation.md`: evidencia de validacion del cutover enterprise.
-- `docs/ai-trace-schema.md`: contrato versionado (`1.0.0`) para exportacion de trazas IA.
-- `docs/adr/ADR-006-global-namespace-retirement.md`: plan formal de retiro progresivo de `window.SECArchitectAI`.
-- `core/ai/copilot-adapter.module.js`: adaptador ESM con `requestId` y metadatos de correlacion.
-- `core/ai/secarchitect-ai-bridge.module.js`: bridge ESM para compatibilidad controlada con consumidores legacy.
-- `assets/js/sabsa-ig4-command-center.module.js`: wrapper ESM para carga modular del Command Center SABSA.
-- `scripts/validate-ai-trace-schema.ps1`: prueba de contrato del esquema AI Trace.
-- `tests/fixtures/ai-trace-export.valid.json`: fixture versionado para validacion CI.
-- `tests/fixtures/ai-trace-export.invalid.json`: fixture negativo para prueba de rechazo de contrato.
-- `docs/deprecation-sprint-checklist.md`: checklist operativo por sprint para medicion y cierre de deprecacion legacy.
-- `docs/deprecation-evidence-template.md`: plantilla de evidencia auditable para snapshots/export de deprecacion.
-- `docs/evidence/README.md`: estructura y flujo operativo para repositorio de evidencias por sprint.
+- Sistema de batching y envío fiable de métricas en `js/telemetry.js`:
+  - Buffer interno de eventos y envío por lotes usando `navigator.sendBeacon` (preferido) o `fetch` con `keepalive`.
+  - Reintentos exponenciales automáticos si el endpoint no responde.
+  - Integración transparente con Application Insights si está configurado.
+  - Envío disparado en idle (`requestIdleCallback`) o al cerrar/cambiar de pestaña (`visibilitychange`, `pagehide`).
+  - Cumple Trusted Types, SRI y nonce rotativo, sin bloquear el render ni afectar al rendimiento.
+  - Documentación de privacidad y seguridad ampliada en SECURITY_REVIEW.md.
 
 ### Changed
 - `tools.html`, `tools/control-analysis.html`, `tools/knowledge-base.html`, `intelligence-dashboard.html`: el enlace primario de Command Center apunta ahora a la superficie enterprise.
