@@ -79,6 +79,28 @@ Checklist minimo en `tools/enterprise-command-center.html`:
 - [ ] Salidas criticas (`pre`) navegables y anunciables (`tabindex`, `aria-live`).
 - [ ] Respeto a `prefers-reduced-motion` para animaciones criticas.
 
+### 1.6.1 Contraste objetivo por tokens
+
+Tokens relevantes en `assets/css/enterprise.css`:
+
+- `--text`: texto principal de alta prioridad.
+- `--text-soft`: enlaces y texto secundario navegable.
+- `--muted`: texto auxiliar pequeno que debe mantenerse legible en AA.
+- `--accent`, `--healthy`, `--degraded`, `--critical`: estados de alto enfasis.
+- `--surface-0` a `--surface-3`: fondos oscuros estratificados para no perder densidad visual.
+- `--line-soft` y `--line-strong`: bordes perceptibles sin ruido excesivo.
+
+Objetivo operativo:
+
+- Mantener contraste AA en texto pequeno sobre superficies del Command Center.
+- Evitar que el estado visual dependa solo del color: combinar color con texto/etiqueta/estado.
+- Ajustar contraste desde tokens antes que con overrides aislados.
+
+### 1.6.2 Verificacion guiada en 15 minutos
+
+- Evidencia detallada por pantalla: `docs/evidence/enterprise-wcag-aa-15min.md`.
+- Ejecutar la guia completa en teclado y, si se dispone, con NVDA o VoiceOver.
+
 ---
 
 ## 2. Pruebas de CSP

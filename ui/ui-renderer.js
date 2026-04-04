@@ -69,10 +69,10 @@ export function ensureRadarChart(canvasEl) {
           ticks: { display: false },
           grid: { color: "rgba(255,255,255,0.12)" },
           angleLines: { color: "rgba(255,255,255,0.12)" },
-          pointLabels: { color: "#9aa3ad" }
+          pointLabels: { color: "#c5d0da" }
         }
       },
-      plugins: { legend: { labels: { color: "#e0e0e0" } } }
+      plugins: { legend: { labels: { color: "#f4fbff" } } }
     }
   });
 }
