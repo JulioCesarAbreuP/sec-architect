@@ -139,6 +139,10 @@ body.soc-night {
   grid-template-columns: 1fr 2fr;
 }
 
+.graph-row {
+  grid-template-columns: 1fr;
+}
+
 .panel {
   background: var(--card);
   border: 1px solid var(--border);
@@ -262,6 +266,26 @@ pre {
 
 .tone-threat {
   color: #ff9eab;
+}
+
+.tone-check {
+  color: #9fc6e3;
+}
+
+.tone-fail {
+  color: #ff9eab;
+}
+
+.tone-mitre {
+  color: #d4b37f;
+}
+
+.graph-shell {
+  min-height: 220px;
+  border: 1px solid #2a333d;
+  border-radius: 8px;
+  background: #0e1218;
+  padding: 0.4rem;
 }
 
 .markdown-board {

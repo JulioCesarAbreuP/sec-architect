@@ -1,4 +1,7 @@
 import { parseAndValidateIdentity } from "./core/identity-parser.js";
+import { evaluateIdentityRules } from "./core/rules-engine.js";
+import { calculateZeroTrustScore, applyFixImpact } from "./core/scoring-engine.js";
+import { buildAttackGraph } from "./core/graph-engine.js";
 import { runSabsaInferenceLayers } from "./core/sabsa-logic.js";
 import { runBackgroundThreatInference } from "./core/inference-engine.js";
 import { buildDynamicRemediation } from "./core/remediation-engine.js";
@@ -8,12 +11,16 @@ import { decodeJwt, validateSc300Claims } from "./core/jwt-validator.js";
 import { getPanelRefs } from "./ui/ui-panels.js";
 import { appendSocLog, renderJson, renderCode, updateStatus, ensureRadarChart, updateRadar } from "./ui/ui-renderer.js";
 import { loadArchitectureBoard, answerArchitectureQuestion } from "./ui/ui-architecture-board.js";
+import { pushSocLogs, pushSingleLog, clearLogs } from "./ui/ui-logs.js";
+import { renderAttackGraph } from "./ui/ui-graph.js";
+import { renderZeroTrustScore } from "./ui/ui-score.js";
 
 let refs;
 let radarChart;
 let shadowMonitor;
 let docsCache = [];
 let previousRisk = 0;
+let currentScore = 100;
 
 function computeRiskFromTechnique(technique) {
   if (technique === "T1556") return 88;
@@ -23,7 +30,7 @@ function computeRiskFromTechnique(technique) {
 }
 
 function applyThreatState(probability) {
-  const state = updateStatus(refs.status, refs.root, probability);
+  updateStatus(refs.status, refs.root, probability);
   const escalated = Number(probability || 0) >= previousRisk + 8;
   refs.escalationBanner.hidden = !escalated;
   previousRisk = Number(probability || previousRisk);
@@ -32,7 +39,6 @@ function applyThreatState(probability) {
     shadowMonitor.updateRisk(probability);
   }
 
-  return state;
 }
 
 function ensureParserInputState(raw) {
@@ -44,7 +50,7 @@ function ensureParserInputState(raw) {
   } catch {
     refs.jsonInput.classList.add("input-error");
     refs.runBtn.disabled = true;
-    appendSocLog(refs.shadowConsole, "[ERROR] JSON de Identidad No Válido", "threat");
+    pushSingleLog(refs.shadowConsole, "[ERROR] JSON de Identidad No Válido", "threat");
     return false;
   }
 }
@@ -79,8 +85,12 @@ export async function analyzeArchitectureWithAI() {
   }
 
   try {
+    clearLogs(refs.shadowConsole);
     const { payload, objectType } = parseAndValidateIdentity(rawJson);
     refs.parserInfo.textContent = "Tipo detectado: " + objectType;
+
+    const rules = evaluateIdentityRules(payload);
+    pushSocLogs(refs.shadowConsole, rules.logs);
 
     const deterministic = runSabsaInferenceLayers(payload, refs.formatSelect.value);
     const aiAnalysis = await runBackgroundThreatInference(payload, deterministic.deterministicAnalysis);
@@ -88,9 +98,13 @@ export async function analyzeArchitectureWithAI() {
     const deterministicFix = buildDynamicRemediation(payload, deterministic.flags, refs.formatSelect.value, true);
     aiAnalysis.terraform_fix = aiAnalysis.terraform_fix || deterministicFix;
 
+    const score = calculateZeroTrustScore(rules.flags);
+    currentScore = score;
+    renderZeroTrustScore(refs.zeroTrustScore, score);
+
     const merged = {
       object_type: objectType,
-      probability: aiAnalysis.probability,
+      probability: rules.flags.mfaEnabled ? Math.max(12, 100 - score) : Math.max(80, aiAnalysis.probability),
       critical_node: aiAnalysis.critical_node,
       mitre_technique: aiAnalysis.mitre_technique,
       lateral_vector: aiAnalysis.lateral_vector,
@@ -100,6 +114,14 @@ export async function analyzeArchitectureWithAI() {
 
     renderJson(refs.aiOutput, merged);
     renderCode(refs.remediationOutput, merged.terraform_fix);
+
+    refs.aiNarrative.textContent = "Basado en los privilegios de este objeto de identidad, el atacante puede escalar lateralmente en " + (merged.probability >= 80 ? "3" : "5") + " pasos hacia activos criticos. Se recomienda contener rol y aislar superficie de acceso inmediatamente.";
+
+    const graph = buildAttackGraph(payload, rules.flags);
+    renderAttackGraph(refs.attackGraph, graph, (node) => {
+      pushSingleLog(refs.shadowConsole, "[IA-LOG] Nodo seleccionado: " + node.label + " -> probabilidad de compromiso en " + (merged.probability >= 70 ? "3" : "5") + " pasos.", merged.probability >= 70 ? "mitre" : "info");
+    });
+
     updateRadar(radarChart, merged.probability);
     applyThreatState(merged.probability);
 
@@ -113,11 +135,12 @@ export async function analyzeArchitectureWithAI() {
 
     appendSocLog(refs.shadowConsole, "[IA-LOG] Probabilidad de Movimiento Lateral: " + merged.probability + "%", merged.probability >= 70 ? "threat" : "info");
     appendSocLog(refs.shadowConsole, "[IA-LOG] Vector: " + merged.mitre_technique, merged.probability >= 70 ? "threat" : "info");
-    appendSocLog(refs.shadowConsole, "Detecto un patron de permisos excesivos en objetos consecutivos. Recomiendo activar Just-In-Time Access.", "info");
+    appendSocLog(refs.shadowConsole, "Detecto un patron de permisos excesivos en tres objetos consecutivos. Recomiendo activar Just-In-Time Access.", "info");
   } catch (error) {
     refs.parserInfo.textContent = "Tipo detectado: error";
     renderJson(refs.aiOutput, { error: error.message });
-    appendSocLog(refs.shadowConsole, String(error.message), "threat");
+    refs.aiNarrative.textContent = "El analisis no pudo completarse por error sintactico o semantico en el payload de identidad.";
+    pushSingleLog(refs.shadowConsole, String(error.message), "threat");
   }
 }
 
@@ -136,6 +159,8 @@ function wireCopyRemediation() {
     try {
       await navigator.clipboard.writeText(refs.remediationOutput.textContent || "");
       appendSocLog(refs.shadowConsole, "IaC copiado al portapapeles.", "info");
+      currentScore = applyFixImpact(currentScore);
+      renderZeroTrustScore(refs.zeroTrustScore, currentScore);
     } catch {
       appendSocLog(refs.shadowConsole, "No se pudo copiar IaC al portapapeles.", "threat");
     }
@@ -160,8 +185,10 @@ function wireJwtPanel() {
 function wireAttackSimulation() {
   refs.attackBtn.addEventListener("click", async () => {
     const payload = buildAttackSimulation(refs.attackSelect.value);
+    const rules = evaluateIdentityRules(payload);
     const deterministic = runSabsaInferenceLayers(payload, refs.formatSelect.value);
     const risk = computeRiskFromTechnique(deterministic.deterministicAnalysis.mitre_technique);
+    const graph = buildAttackGraph(payload, rules.flags);
 
     const output = {
       technique: refs.attackSelect.value,
@@ -172,8 +199,12 @@ function wireAttackSimulation() {
 
     renderJson(refs.attackOutput, output);
     renderCode(refs.remediationOutput, output.remediation);
+    renderAttackGraph(refs.attackGraph, graph, (node) => {
+      pushSingleLog(refs.shadowConsole, "[SIM-DETAIL] " + node.label + " comprometible en " + (risk >= 75 ? "2" : "4") + " pasos.", risk >= 75 ? "threat" : "info");
+    });
     updateRadar(radarChart, output.impact);
     applyThreatState(output.impact);
+    renderZeroTrustScore(refs.zeroTrustScore, Math.max(0, 100 - output.impact));
 
     appendSocLog(refs.shadowConsole, "[THREAT ENGINE] " + output.attack_path, output.impact >= 75 ? "threat" : "info");
   });
@@ -204,6 +235,7 @@ function wireSocNightMode() {
 async function boot() {
   refs = getPanelRefs();
   radarChart = ensureRadarChart(refs.radarCanvas);
+  renderZeroTrustScore(refs.zeroTrustScore, currentScore);
   await refreshArchitectureBoard();
 
   shadowMonitor = createShadowMonitor((line, risk) => {
