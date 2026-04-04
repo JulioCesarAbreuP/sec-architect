@@ -1,3 +1,15 @@
+## IG4 Compliance & Traceability
+
+- **IG4 Principles:** See [IG4-STANDARD.md](IG4-STANDARD.md) for how determinism, idempotence, reproducibility, and auditability are implemented.
+- **Data Envelope:** See [IG4-DATA-ENVELOPE.md](IG4-DATA-ENVELOPE.md) for the evidence/data contract and audit trail structure.
+
+## Cómo empezar
+
+- Comprender la estructura general del framework y su narrativa de defensa.
+- Recorrer los módulos en orden estratégico: visión, base de conocimiento, inteligencia y laboratorio.
+- Identificar escenarios prioritarios según contexto organizacional.
+- Mapear riesgos y controles a los marcos de referencia del proyecto.
+- Establecer un ciclo de mejora continua con evidencia técnica y aprendizaje operativo.
 # SEC_ARCHITECT
 ### Framework de Arquitectura de Defensa Estructural para PYMEs
 

@@ -1,0 +1,23 @@
+:root {
+    --scc-bg: #050505;
+    --scc-panel: #0a0a0a;
+    --scc-accent: #00ff41; /* Verde Matrix/Terminal puro */
+    --scc-danger: #ff0000;
+    --scc-border: #1a1a1a;
+}
+
+body { background: var(--scc-bg); color: #fff; font-family: 'JetBrains Mono', monospace; }
+
+.scc-panel {
+    border: 1px solid var(--scc-border);
+    background: var(--scc-panel);
+    box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.05);
+}
+
+@keyframes pulse-red {
+    0% { filter: drop-shadow(0 0 2px var(--scc-danger)); }
+    50% { filter: drop-shadow(0 0 10px var(--scc-danger)); }
+    100% { filter: drop-shadow(0 0 2px var(--scc-danger)); }
+}
+
+.node-critical { fill: var(--scc-danger); animation: pulse-red 1.5s infinite; }

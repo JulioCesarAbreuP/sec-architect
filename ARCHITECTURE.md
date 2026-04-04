@@ -1,3 +1,23 @@
+## IG4 Compliance & Data Envelope
+
+- **IG4 Principles:** Este proyecto implementa los principios IG4 (determinismo, idempotencia, reproducibilidad, auditabilidad) — ver [IG4-STANDARD.md](IG4-STANDARD.md).
+- **Data Envelope:** El contrato de evidencia y trazabilidad está definido en [IG4-DATA-ENVELOPE.md](IG4-DATA-ENVELOPE.md).
+# Strategic Command Center (SCC) - Architecture Principles
+
+## 1. Zero-Trust Data Ingestion
+El SCC no confía en la entrada del usuario. Cada payload es validado contra el esquema de Azure ARM antes de entrar en la capa de inferencia.
+
+## 2. Threat Correlation Layer
+Utilizamos un motor de correlación cruzada que vincula configuraciones técnicas (SC-300) con inteligencia de amenazas activa (CISA KEV), transformando un "fallo de cumplimiento" en un "vector de ataque inminente".
+
+## 3. Idempotent Active Defense
+La remediación no es un texto descriptivo; es código IaC (Infrastructure as Code) diseñado para ser aplicado en pipelines de producción bajo estándares de **Site Reliability Engineering (SRE)**.
+
+🏆 Por qué esto es diferente:
+
+- Validación Determinista: Si el JSON está mal, el sistema no "intenta adivinar", arroja un error de ingeniería.
+- Física Real: El grafo de ataque se mueve con inercia y gravedad, permitiendo identificar visualmente el Blast Radius.
+- Conexión Gubernamental: Al usar la API de CISA, tu herramienta tiene "ojos" en lo que está pasando en los servidores de todo el mundo.
 # ARCHITECTURE — SEC_ARCHITECT
 
 > Documento de arquitectura técnica del sitio. Versión controlada en repositorio.
