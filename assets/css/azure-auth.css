@@ -1,0 +1,419 @@
+/* ============================================================
+   azure-auth.css — Azure Auth Test page styles
+   Dark terminal theme aligned with SEC_ARCHITECT design system
+   ============================================================ */
+
+.auth-hero {
+  padding: 3rem 0 2rem;
+  text-align: center;
+}
+
+.auth-hero .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.auth-hero h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.auth-hero p {
+  max-width: 52ch;
+  margin: 0 auto;
+  color: var(--text-muted, #9ca3af);
+}
+
+/* ── Layout ───────────────────────────────────── */
+
+.auth-main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+/* ── Config Card ──────────────────────────────── */
+
+.auth-config-card {
+  background: var(--surface, #111827);
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 12px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-config-card h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.04em;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.config-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.config-field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #9ca3af);
+}
+
+.config-field input {
+  background: var(--bg, #0d1117);
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  color: var(--text, #e5e7eb);
+  font-family: "Plus Jakarta Sans", monospace;
+  font-size: 0.85rem;
+  transition: border-color 0.15s;
+}
+
+.config-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.config-field input::placeholder {
+  color: var(--text-muted, #6b7280);
+  font-size: 0.78rem;
+}
+
+.redirect-info {
+  margin-top: 1rem;
+  padding: 0.7rem 1rem;
+  background: var(--bg, #0d1117);
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.redirect-info strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #9ca3af);
+}
+
+.redirect-info code {
+  color: var(--accent);
+  word-break: break-all;
+}
+
+/* ── Status Bar ───────────────────────────────── */
+
+.auth-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1.25rem;
+  background: var(--surface, #111827);
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-muted, #6b7280);
+  transition: background 0.2s;
+}
+
+#authStatus {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text, #e5e7eb);
+}
+
+#authStatus[data-status-type="success"] + .status-dot,
+.auth-status-bar:has(#authStatus[data-status-type="success"]) .status-dot {
+  background: var(--success, #10b981);
+}
+#authStatus[data-status-type="error"] + .status-dot,
+.auth-status-bar:has(#authStatus[data-status-type="error"]) .status-dot {
+  background: #ef4444;
+}
+#authStatus[data-status-type="loading"] + .status-dot,
+.auth-status-bar:has(#authStatus[data-status-type="loading"]) .status-dot {
+  background: #f59e0b;
+  animation: pulse-dot 1s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Action Buttons ───────────────────────────── */
+
+.auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.auth-btn:hover:not(:disabled) {
+  opacity: 0.87;
+}
+
+.auth-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.auth-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent, #6366f1);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--surface, #1f2937);
+  color: var(--text, #e5e7eb);
+  border: 1px solid var(--border, #374151);
+}
+
+.btn-danger {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+/* ── Results Panel ────────────────────────────── */
+
+.results-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.results-section {
+  background: var(--surface, #111827);
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.results-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.results-section-header h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.count-badge {
+  font-size: 0.75rem;
+  background: var(--accent, #6366f1);
+  color: #fff;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+/* ── CA Policy Cards ──────────────────────────── */
+
+.ca-policy-card {
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: var(--bg, #0d1117);
+}
+
+.ca-policy-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.ca-policy-header h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ca-state-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ca-state-enabled         { background: #065f46; color: #6ee7b7; }
+.ca-state-disabled        { background: #374151; color: #9ca3af; }
+.ca-state-enabledForReportingButNotEnforced { background: #78350f; color: #fcd34d; }
+
+.ca-policy-meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.75rem;
+}
+
+.ca-policy-meta dt {
+  color: var(--text-muted, #9ca3af);
+  font-weight: 600;
+}
+
+.ca-policy-meta dd {
+  margin: 0;
+  font-family: monospace;
+  color: var(--text, #e5e7eb);
+  word-break: break-all;
+}
+
+.ca-json-toggle {
+  background: none;
+  border: 1px solid var(--border, #374151);
+  color: var(--accent, #6366f1);
+  border-radius: 4px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ca-json-toggle:hover {
+  background: var(--surface, #1f2937);
+}
+
+.ca-json-block {
+  margin-top: 0.75rem;
+  padding: 0.85rem;
+  background: #000;
+  border-radius: 6px;
+  font-size: 0.73rem;
+  overflow-x: auto;
+  color: #a3e635;
+  white-space: pre;
+}
+
+/* ── Named Locations ──────────────────────────── */
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  border-bottom: 1px solid var(--border, #1f2937);
+}
+
+.location-row:last-child {
+  border-bottom: none;
+}
+
+.location-name {
+  font-weight: 600;
+}
+
+.location-type {
+  font-size: 0.72rem;
+  color: var(--accent, #6366f1);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+/* ── Empty state ──────────────────────────────── */
+
+.empty-msg {
+  text-align: center;
+  color: var(--text-muted, #9ca3af);
+  font-size: 0.85rem;
+  padding: 1.5rem;
+}
+
+/* ── Setup guide ──────────────────────────────── */
+
+.setup-guide {
+  margin-top: 2rem;
+  background: var(--surface, #111827);
+  border: 1px solid var(--border, #1f2937);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.setup-guide h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.setup-guide ol {
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 2;
+  color: var(--text-muted, #9ca3af);
+}
+
+.setup-guide ol li strong {
+  color: var(--text, #e5e7eb);
+}
+
+.setup-guide code {
+  font-size: 0.8rem;
+  background: var(--bg, #0d1117);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  color: var(--accent, #6366f1);
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    CSP: connect-src extended to allow Microsoft Identity Platform and Graph API.
+    All authentication uses PKCE (no client_secret in browser).
+    Tokens stored in sessionStorage, cleared on tab close.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+  <title>Azure Auth Test | SEC_ARCHITECT</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="../assets/css/azure-auth.css">
+</head>
+<body data-theme="dark">
+
+  <header>
+    <a href="../index.html" class="logo">SEC_<span>ARCHITECT</span></a>
+    <div class="header-right">
+      <a href="../tools.html" class="header-link">Herramientas</a>
+      <a href="../blog.html" class="header-link">Blog</a>
+      <a href="../tools/enterprise-command-center.html" class="header-link">Command Center</a>
+    </div>
+  </header>
+
+  <main class="auth-main">
+
+    <section class="auth-hero">
+      <p class="eyebrow">Azure Auth — PKCE + Microsoft Graph</p>
+      <h1>Azure AD Auth Test</h1>
+      <p>
+        Valida el flujo OAuth 2.0 PKCE contra Microsoft Identity Platform
+        y conecta con Graph API para leer Conditional Access Policies del tenant.
+      </p>
+    </section>
+
+    <!-- ── Config ─────────────────────────────── -->
+
+    <div class="auth-config-card">
+      <h2>Configuración de App Registration</h2>
+
+      <div class="config-grid">
+        <div class="config-field">
+          <label for="clientId">Client ID (Application ID)</label>
+          <input
+            type="text"
+            id="clientId"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            aria-label="Client ID de la App Registration en Azure AD"
+          >
+        </div>
+
+        <div class="config-field">
+          <label for="tenantId">Tenant ID (Directory ID)</label>
+          <input
+            type="text"
+            id="tenantId"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            aria-label="Tenant ID del directorio Azure AD"
+          >
+        </div>
+
+        <div class="config-field full-width">
+          <label for="scopeInput">Scopes</label>
+          <input
+            type="text"
+            id="scopeInput"
+            autocomplete="off"
+            spellcheck="false"
+            value="https://graph.microsoft.com/Policy.Read.All openid profile"
+            aria-label="Scopes OAuth2 requeridos para la sesión"
+          >
+        </div>
+      </div>
+
+      <div class="redirect-info">
+        <strong>Redirect URI (registrar en Azure AD)</strong>
+        <code id="redirectUri">—</code>
+      </div>
+    </div>
+
+    <!-- ── Status + Actions ───────────────────── -->
+
+    <div class="auth-status-bar" role="status" aria-live="polite">
+      <div class="status-dot"></div>
+      <span id="authStatus">Sin autenticar — introduce Client ID y Tenant ID y pulsa Conectar.</span>
+    </div>
+
+    <div class="auth-actions">
+      <button type="button" id="connectBtn" class="auth-btn btn-primary">
+        Conectar con Microsoft
+      </button>
+      <button type="button" id="signOutBtn" class="auth-btn btn-danger" hidden>
+        Cerrar sesión
+      </button>
+      <button type="button" id="fetchCaBtn" class="auth-btn btn-secondary" disabled>
+        Cargar CA Policies
+      </button>
+      <button type="button" id="fetchLocBtn" class="auth-btn btn-secondary" disabled>
+        Cargar Named Locations
+      </button>
+    </div>
+
+    <!-- ── Results ────────────────────────────── -->
+
+    <div class="results-panel" id="resultsPanel" hidden>
+
+      <section class="results-section">
+        <div class="results-section-header">
+          <h2>Conditional Access Policies</h2>
+          <span class="count-badge" id="caPoliciesCount">0</span>
+        </div>
+        <div id="caPoliciesContainer"></div>
+      </section>
+
+      <section class="results-section">
+        <div class="results-section-header">
+          <h2>Named Locations</h2>
+          <span class="count-badge" id="namedLocationsCount">0</span>
+        </div>
+        <div id="namedLocationsContainer"></div>
+      </section>
+
+    </div>
+
+    <!-- ── Setup guide ────────────────────────── -->
+
+    <div class="setup-guide">
+      <h2>Cómo configurar la App Registration</h2>
+      <ol>
+        <li>
+          <strong>Crear App Registration</strong> en
+          <a href="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noopener noreferrer">Entra ID &gt; App registrations</a>
+          con name: <code>sec-architect-local</code>
+        </li>
+        <li>
+          <strong>Redirect URI</strong> → plataforma <code>Single-page application (SPA)</code> →
+          añadir la URI que aparece arriba en el campo "Redirect URI".
+        </li>
+        <li>
+          <strong>API permissions</strong> → Add permission → Microsoft Graph → Delegated →
+          <code>Policy.Read.All</code>, <code>openid</code>, <code>profile</code>
+        </li>
+        <li>
+          <strong>Authentication</strong> → habilitar
+          <code>Access tokens</code> y <code>ID tokens</code> (implicit grant no necesario para PKCE, pero ID token sirve para el UPN).
+        </li>
+        <li>
+          Copiar <strong>Application (client) ID</strong> y <strong>Directory (tenant) ID</strong>
+          desde Overview y pegarlos en el formulario.
+        </li>
+        <li>
+          Pulsar <strong>Conectar con Microsoft</strong> — el flujo PKCE no requiere client secret.
+        </li>
+      </ol>
+    </div>
+
+  </main>
+
+  <footer data-site-footer="true"></footer>
+
+  <script src="../assets/js/site.js" defer></script>
+  <script type="module" src="../assets/js/azure-auth-test.js"></script>
+</body>
+</html>

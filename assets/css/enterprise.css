@@ -334,6 +334,110 @@ pre {
   100% { transform: translateX(0); }
 }
 
+/* ── Azure Connect Panel ───────────────────────────────── */
+
+.azure-auth-row {
+  grid-template-columns: 1fr;
+}
+
+.panel-azure-connect {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.azure-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.azure-auth-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--muted);
+  transition: background 0.2s;
+}
+
+.azure-auth-dot[data-status-type="success"] { background: var(--healthy); }
+.azure-auth-dot[data-status-type="error"]   { background: var(--critical); }
+.azure-auth-dot[data-status-type="loading"] { background: var(--degraded); animation: pulseCritical 1s infinite; }
+
+.azure-config-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.azure-config-row label {
+  min-width: 7rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.azure-config-row input {
+  flex: 1;
+  font-size: 0.78rem;
+}
+
+.azure-redirect-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.azure-redirect-note code {
+  color: var(--accent);
+  word-break: break-all;
+}
+
+.azure-user-line {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.azure-user-line strong {
+  color: var(--accent);
+}
+
+.azure-policy-summary {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.azure-count-badge {
+  background: rgba(125, 227, 244, 0.15);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+#azure-connected-state button {
+  margin-top: 0.4rem;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#azure-connected-state .secondary-btn {
+  margin-top: 0.3rem;
+}
+
+/* ─────────────────────────────────────────────────────── */
+
 @media (max-width: 1100px) {
   .enterprise-grid,
   .second-row,

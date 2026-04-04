@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
   <title>Enterprise AI Command Graph | SEC_ARCHITECT</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="stylesheet" href="../assets/css/enterprise.css">
@@ -91,6 +91,43 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
       <article class="panel panel-graph">
         <h2>Attack Graph</h2>
         <div id="attackGraph" class="graph-shell"></div>
+      </article>
+    </section>
+
+    <section class="enterprise-grid azure-auth-row">
+      <article class="panel panel-azure-connect" id="azureAuthPanel">
+        <h2>Azure Connect — Tenant Live</h2>
+
+        <div class="azure-status-bar">
+          <div class="azure-auth-dot" id="azure-auth-dot" data-status-type="idle"></div>
+          <span id="azure-auth-status">Sin autenticar</span>
+        </div>
+
+        <!-- Connect form (shown when not authenticated) -->
+        <div id="azure-connect-form">
+          <div class="azure-config-row">
+            <label for="azure-client-id">Client ID</label>
+            <input type="text" id="azure-client-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" spellcheck="false" aria-label="App Registration Client ID">
+          </div>
+          <div class="azure-config-row">
+            <label for="azure-tenant-id">Tenant ID</label>
+            <input type="text" id="azure-tenant-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" spellcheck="false" aria-label="Azure AD Tenant ID">
+          </div>
+          <div class="azure-redirect-note">
+            <span>Redirect URI: </span><code id="azure-redirect-uri">—</code>
+          </div>
+          <button type="button" id="azure-connect-btn" class="primary-btn">Conectar con Microsoft</button>
+        </div>
+
+        <!-- Connected state (shown after successful auth) -->
+        <div id="azure-connected-state" hidden>
+          <p class="azure-user-line">Sesión activa: <strong id="azure-auth-user">—</strong></p>
+          <div class="azure-policy-summary">
+            <span>CA Policies: </span><span class="azure-count-badge" id="azure-policy-count">0</span>
+          </div>
+          <button type="button" id="azure-load-policies-btn" class="primary-btn">Cargar CA Policies del Tenant</button>
+          <button type="button" id="azure-disconnect-btn" class="secondary-btn">Desconectar</button>
+        </div>
       </article>
     </section>
 
