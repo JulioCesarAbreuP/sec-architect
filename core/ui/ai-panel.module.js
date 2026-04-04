@@ -322,6 +322,77 @@ function setEntraMode(active) {
   if (!active) { updateEntraRadar("neutral"); }
 }
 
+function evaluateEntraIdentity(parsedId) {
+  var logs = [];
+  var keys = Object.keys(parsedId || {});
+  var principal = String(parsedId.user || parsedId.upn || parsedId.account || parsedId.identity || "unknown");
+  var role = String(parsedId.role || parsedId.directoryRole || parsedId.privilege || "unknown");
+  var mfaRaw = typeof parsedId.mfa === "undefined" ? "" : String(parsedId.mfa).toLowerCase();
+  var policyObj = parsedId.conditionalAccess || parsedId.conditional_access || parsedId.caPolicy || {};
+  var requireMfa = typeof policyObj.requireMfa === "undefined" ? null : !!policyObj.requireMfa;
+  var resource = String(parsedId.resource || parsedId.app || parsedId.workload || "unknown");
+  var accountType = String(parsedId.accountType || parsedId.account_type || "cloud").toLowerCase();
+  var isPrivilegedRole = /(global admin|administrator|privileged|owner|security admin|tenant admin)/i.test(role);
+  var mfaEnabled = /^(enabled|true|on|yes|required)$/i.test(mfaRaw);
+  var mfaMissing = mfaRaw === "" || /^(missing|null|unknown|n\/a)$/i.test(mfaRaw);
+  var mfaDisabled = /^(disabled|false|off|no)$/i.test(mfaRaw);
+  var riskReasons = [];
+  var radarLevel = "neutral";
+
+  logs.push({
+    level: "ok",
+    message: "[CHECK] Validating Identity Object... principal=" + principal + ", role=" + role + ", keys=" + keys.length
+  });
+
+  if (isPrivilegedRole && (mfaMissing || mfaDisabled)) {
+    riskReasons.push("privileged-role-without-mfa");
+    logs.push({
+      level: "error",
+      message: "[FAIL] Conditional Access Policy: MFA missing for " + role + "."
+    });
+  }
+
+  if (requireMfa === false) {
+    riskReasons.push("policy-does-not-require-mfa");
+    logs.push({
+      level: "error",
+      message: "[FAIL] Conditional Access Policy: requireMfa=false for principal " + principal + "."
+    });
+  }
+
+  if (!riskReasons.length && (mfaEnabled || requireMfa === true)) {
+    logs.push({
+      level: "ok",
+      message: "[CHECK] Conditional Access Policy: MFA satisfied for " + principal + "."
+    });
+    radarLevel = "safe";
+  }
+
+  if (riskReasons.length) {
+    radarLevel = "risk";
+  }
+
+  if (isPrivilegedRole || accountType === "cloud" || /azure|entra|o365|m365|cloud/i.test(resource)) {
+    logs.push({
+      level: riskReasons.length ? "error" : "ok",
+      message: "[MITRE] Mapping to T1078.004 (Cloud Accounts). principal=" + principal + ", resource=" + resource
+    });
+  }
+
+  if (radarLevel === "neutral") {
+    logs.push({
+      level: "info",
+      message: "[CHECK] Identity posture is indeterminate: mfa=" + (mfaRaw || "missing") + ", requireMfa=" + (requireMfa === null ? "undefined" : String(requireMfa))
+    });
+  }
+
+  return {
+    radarLevel: radarLevel,
+    status: radarLevel === "risk" ? "warning" : radarLevel === "safe" ? "ok" : "warning",
+    logs: logs
+  };
+}
+
 export function initAIPanel() {
   var container = byId("ai-panel-container");
   var traceStore = loadTraceStore();
@@ -436,6 +507,8 @@ export function initAIPanel() {
 
       if (activeTab === "entra") {
         var parsedId;
+        var evaluation;
+        var i;
         try {
           parsedId = JSON.parse(inputValue);
         } catch (_e) {
@@ -445,16 +518,14 @@ export function initAIPanel() {
           traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
           return;
         }
-        var mfaValue = String(parsedId.mfa || "").toLowerCase();
-        if (mfaValue === "disabled") {
-          updateEntraRadar("risk"); logEntraConsole("[WARN] MFA deshabilitado \u2014 riesgo cr\u00edtico de identidad.", "error");
-        } else if (mfaValue === "enabled") {
-          updateEntraRadar("safe"); logEntraConsole("[OK] MFA habilitado \u2014 postura de identidad endurecida.", "ok");
-        } else {
-          updateEntraRadar("neutral"); logEntraConsole("[INFO] Campo MFA no encontrado \u2014 postura indeterminada.", "info");
+
+        evaluation = evaluateEntraIdentity(parsedId);
+        updateEntraRadar(evaluation.radarLevel);
+        for (i = 0; i < evaluation.logs.length; i += 1) {
+          logEntraConsole(evaluation.logs[i].message, evaluation.logs[i].level);
         }
-        logEntraConsole("[INFO] Payload de Entra ID validado correctamente.", "info");
-        traceStore.unshift({ engine: "entra-id-validator", status: mfaValue === "disabled" ? "warning" : "ok", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+
+        traceStore.unshift({ engine: "entra-id-validator", status: evaluation.status, durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
         traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
         return;
       }
