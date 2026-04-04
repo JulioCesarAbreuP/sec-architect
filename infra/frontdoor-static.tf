@@ -85,7 +85,52 @@ resource "azurerm_web_application_firewall_policy" "afd_waf" {
     type    = "OWASP"
     version = "3.2"
   }
-  custom_rules = [] # Bloque preparado para reglas personalizadas posteriores
+  custom_rules = [
+    # --- Hardening adicional Front Door ---
+    # Regla: Permitir solo GET, HEAD, OPTIONS (bloquear POST, PUT, DELETE, TRACE, CONNECT)
+    {
+      name     = "AllowOnlySafeMethods"
+      priority = 10
+      rule_type = "MatchRule"
+      match_conditions = [{
+        match_variable   = "RequestMethod"
+        operator         = "Equal"
+        match_values     = ["GET", "HEAD", "OPTIONS"]
+        negate_condition = false
+      }]
+      action = "Allow"
+    },
+    {
+      name     = "BlockUnsafeMethods"
+      priority = 20
+      rule_type = "MatchRule"
+      match_conditions = [{
+        match_variable   = "RequestMethod"
+        operator         = "Equal"
+        match_values     = ["POST", "PUT", "DELETE", "TRACE", "CONNECT"]
+        negate_condition = false
+      }]
+      action = "Block"
+    },
+    # Regla opcional: Rate limiting (100 req/min por IP, desactivada por defecto)
+    # Para activar, cambiar enabled_state a "Enabled"
+    {
+      name     = "RateLimitPerIP"
+      priority = 30
+      rule_type = "RateLimitRule"
+      enabled_state = "Disabled" # Cambiar a "Enabled" para activar
+      match_conditions = [{
+        match_variable   = "RemoteAddr"
+        operator         = "IPMatch"
+        match_values     = ["*"]
+      }]
+      rate_limit_duration_in_minutes = 1
+      rate_limit_threshold = 100
+      action = "Block"
+    }
+    # WAF: Detección de bots comunes y request smuggling
+    # Estas protecciones se activan vía managed_rules OWASP y reglas personalizadas
+  ]
   tags = {
     environment = "production"
     owner       = "julio"

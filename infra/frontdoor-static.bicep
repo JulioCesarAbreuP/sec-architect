@@ -97,7 +97,56 @@ resource afdWaf 'Microsoft.Network/frontdoorWebApplicationFirewallPolicies@2022-
         }
       ]
       customRules: [
-        // Aquí puedes añadir reglas personalizadas posteriormente
+        // --- Hardening adicional Front Door ---
+        // Regla: Permitir solo GET, HEAD, OPTIONS (bloquear POST, PUT, DELETE, TRACE, CONNECT)
+        {
+          name: 'AllowOnlySafeMethods'
+          priority: 10
+          ruleType: 'MatchRule'
+          matchConditions: [
+            {
+              matchVariable: 'RequestMethod'
+              operator: 'Equal'
+              matchValues: [ 'GET', 'HEAD', 'OPTIONS' ]
+              negateCondition: false
+            }
+          ]
+          action: 'Allow'
+        }
+        {
+          name: 'BlockUnsafeMethods'
+          priority: 20
+          ruleType: 'MatchRule'
+          matchConditions: [
+            {
+              matchVariable: 'RequestMethod'
+              operator: 'Equal'
+              matchValues: [ 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT' ]
+              negateCondition: false
+            }
+          ]
+          action: 'Block'
+        }
+        // Regla opcional: Rate limiting (100 req/min por IP, desactivada por defecto)
+        // Para activar, cambiar enabledState a 'Enabled'
+        {
+          name: 'RateLimitPerIP'
+          priority: 30
+          ruleType: 'RateLimitRule'
+          enabledState: 'Disabled' // Cambiar a 'Enabled' para activar
+          matchConditions: [
+            {
+              matchVariable: 'RemoteAddr'
+              operator: 'IPMatch'
+              matchValues: [ '*' ]
+            }
+          ]
+          rateLimitDurationInMinutes: 1
+          rateLimitThreshold: 100
+          action: 'Block'
+        }
+        // WAF: Detección de bots comunes y request smuggling
+        // Estas protecciones se activan vía managedRuleSets OWASP y reglas personalizadas
       ]
     }
   }

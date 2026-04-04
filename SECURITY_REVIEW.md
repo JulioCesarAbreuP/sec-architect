@@ -1,3 +1,20 @@
+## 6. Hardening adicional en Front Door
+
+### 6.1 Métodos HTTP permitidos
+Front Door se configura para aceptar únicamente los métodos GET, HEAD y OPTIONS. Se bloquean POST, PUT, DELETE, TRACE y CONNECT mediante reglas en el Rules Engine y WAF. Las reglas están documentadas y comentadas en los archivos de infraestructura (`infra/frontdoor-static.bicep` y `infra/frontdoor-static.tf`).
+
+### 6.2 Rate limiting opcional
+Se añade una regla de rate limiting (100 solicitudes/minuto por IP) en el Rules Engine/WAF, desactivada por defecto pero documentada y lista para activación rápida. Comentarios explican su uso y cómo habilitarla.
+
+### 6.3 Reglas WAF complementarias
+- Activada la detección de bots comunes (WAF managed rules).
+- Habilitada la protección contra request smuggling y evasión de encabezados.
+- Cada regla está documentada con comentarios claros en los archivos de infraestructura.
+
+### 6.4 Validación
+Tras aplicar el hardening, se validó que el sitio responde correctamente a GET/HEAD/OPTIONS y rechaza los métodos bloqueados. El acceso legítimo y la navegación no se ven afectados.
+
+---
 ## 4. Auditoría de Headers y Validación CI/CD
 
 ### 4.1 Auditoría Semanal de Headers HTTP

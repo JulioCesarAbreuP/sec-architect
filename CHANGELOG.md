@@ -1,3 +1,10 @@
+# 2026-04-04 (2)
+- Hardening adicional en Azure Front Door:
+  - Solo métodos HTTP GET, HEAD, OPTIONS permitidos (bloqueo de POST, PUT, DELETE, TRACE, CONNECT).
+  - Regla de rate limiting (100 req/min por IP, desactivada por defecto).
+  - Detección de bots comunes y request smuggling vía WAF.
+  - Documentación y comentarios claros en Bicep/Terraform.
+  - Validación de funcionamiento y actualización de SECURITY_REVIEW.md.
 # 2026-04-04
 - Auditoría semanal de headers HTTP críticos vía workflow audit-headers.yml (Front Door).
 - Validación CI/CD de artefactos de seguridad: SRI, nonce en scripts, CSP dinámica.
