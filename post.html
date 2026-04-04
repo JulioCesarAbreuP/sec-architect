@@ -18,13 +18,15 @@
   <div class="reading-progress" aria-hidden="true">
     <div id="readingProgressBar" class="reading-progress-bar" role="progressbar" aria-label="Progreso de lectura" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
   </div>
-  <main class="container">
-    <header class="topbar">
-      <a class="link" href="blog.html">Volver al blog</a>
-      <a class="link" href="index.html">Inicio</a>
+  <main class="container" role="main">
+    <header class="topbar" role="banner">
+      <nav aria-label="Navegación principal">
+        <a class="link" href="blog.html">Volver al blog</a>
+        <a class="link" href="index.html">Inicio</a>
+      </nav>
     </header>
 
-    <div id="postMeta"></div>
+    <div id="postMeta" role="contentinfo"></div>
     <h1 id="postTitle">Cargando...</h1>
 
     <article id="postContent" aria-live="polite"></article>
