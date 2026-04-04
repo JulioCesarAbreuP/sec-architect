@@ -101,6 +101,7 @@ Objetivo operativo:
 
 - Evidencia detallada por pantalla: `docs/evidence/enterprise-wcag-aa-15min.md`.
 - Ejecucion registrada: `docs/evidence/enterprise-aa-execution-2026-04-04.md`.
+- Informe final consolidado (before/after + capturas + foco/rol/aria): `docs/evidence/aa-final-2026-04-04/aa-final-report.md`.
 - Ejecutar la guia completa en teclado y, si se dispone, con NVDA o VoiceOver.
 
 ---

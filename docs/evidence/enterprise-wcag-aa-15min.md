@@ -168,3 +168,59 @@ La pasada se considera satisfactoria cuando:
 - Esta guia no sustituye una medicion automatizada de contraste por pixel.
 - El canvas del radar requiere etiqueta accesible porque su contenido no es semantico por defecto.
 - Si no hay NVDA o VoiceOver disponibles, registrar la pasada como validacion de teclado y foco, dejando pendiente la capa AT.
+
+---
+
+## 6. Ejecucion Final Registrada (2026-04-04)
+
+### 6.1 Timestamps de ejecucion
+
+- Browser pass (real Chrome + teclado): `2026-04-04T17:14:39Z`
+- Lighthouse before desktop: `2026-04-04T17:14:46.866Z`
+- Lighthouse after desktop: `2026-04-04T17:15:00.338Z`
+- Lighthouse before mobile: `2026-04-04T17:15:24.110Z`
+- Lighthouse after mobile: `2026-04-04T17:15:38.140Z`
+
+### 6.2 Comparativa Lighthouse Accessibility (before/after)
+
+| Entorno | Before | After | Delta | Hallazgo Before | Hallazgo After |
+|---|---:|---:|---:|---|---|
+| Desktop | 96 | 100 | +4 | `aria-prohibited-attr` | none |
+| Mobile | 96 | 100 | +4 | `aria-prohibited-attr` | none |
+
+### 6.3 Capturas por pantalla
+
+- [01-header](aa-final-2026-04-04/browser-pass/screens/01-header.png)
+- [02-parser](aa-final-2026-04-04/browser-pass/screens/02-parser.png)
+- [03-zero-trust](aa-final-2026-04-04/browser-pass/screens/03-zero-trust.png)
+- [04-threat-intel](aa-final-2026-04-04/browser-pass/screens/04-threat-intel.png)
+- [05-architecture-board](aa-final-2026-04-04/browser-pass/screens/05-architecture-board.png)
+
+### 6.4 Notas foco / rol / aria (pasada real por teclado)
+
+Muestra de secuencia registrada (after):
+
+| Step | Tag | Id | Role | Aria label |
+|---:|---|---|---|---|
+| 1 | `pre` | `ztFindings` | — | Hallazgos del motor Zero Trust |
+| 2 | `pre` | `tiTopTechniques` | — | Tecnicas principales detectadas |
+| 3 | `pre` | `tiConfidenceTrend` | — | Tendencia de confianza de inteligencia |
+| 4 | `pre` | `tiTimeline` | — | Linea temporal de eventos de inteligencia |
+| 5 | `div` | `attackGraph` | `group` | — |
+| 6 | `input` | `azure-client-id` | — | App Registration Client ID |
+| 7 | `input` | `azure-tenant-id` | — | Azure AD Tenant ID |
+| 8 | `button` | `azure-connect-btn` | — | — |
+| 9 | `div` | `shadowConsole` | `log` | — |
+| 10 | `input` | `architectureQuestion` | — | — |
+| 11 | `button` | `askArchitectureBtn` | — | — |
+| 12 | `button` | `refreshArchitectureBtn` | — | — |
+
+### 6.5 NVDA / VoiceOver
+
+- VoiceOver: no aplica en Windows.
+- NVDA: se intentó instalar 2 veces via `winget`, fallando por timeout de descarga (`InternetOpenUrl() failed`, `0x80072ee2`).
+- Resultado: se ejecutó pasada real en navegador con teclado y validacion ARIA/roles con Lighthouse before/after.
+
+### 6.6 Informe consolidado
+
+- [Informe final AA](aa-final-2026-04-04/aa-final-report.md)
