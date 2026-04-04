@@ -52,10 +52,25 @@ function generateState() {
 }
 
 // ---------------------------------------------------------------------------
-// Auth URL construction
+// Auth URL construction — uses URL constructor for safe origin enforcement
 // ---------------------------------------------------------------------------
 
+var GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function assertGuid(value, label) {
+  if (!GUID_RE.test(String(value || ""))) {
+    throw new Error(label + " must be a valid GUID.");
+  }
+}
+
 function buildAuthUrl(config, challenge, state) {
+  // Validate both IDs before constructing any URL — prevents injection
+  assertGuid(config.clientId, "clientId");
+  assertGuid(config.tenantId, "tenantId");
+
+  var base = new URL("https://login.microsoftonline.com");
+  base.pathname = "/" + config.tenantId + "/oauth2/v2.0/authorize";
+
   var params = new URLSearchParams({
     client_id:             config.clientId,
     response_type:         "code",
@@ -68,7 +83,8 @@ function buildAuthUrl(config, challenge, state) {
     prompt:                "select_account"
   });
 
-  return "https://login.microsoftonline.com/" + config.tenantId + "/oauth2/v2.0/authorize?" + params.toString();
+  base.search = params.toString();
+  return base.toString();
 }
 
 // ---------------------------------------------------------------------------
@@ -83,7 +99,14 @@ export async function startAuthFlow(config) {
   sessionStorage.setItem(SK_VERIFIER, verifier);
   sessionStorage.setItem(SK_STATE, state);
 
-  window.location.href = buildAuthUrl(config, challenge, state);
+  var target = buildAuthUrl(config, challenge, state);
+
+  // Final protocol guard — blocks any javascript: or data: redirect
+  if (new URL(target).protocol !== "https:") {
+    throw new Error("Auth redirect target must use HTTPS.");
+  }
+
+  window.location.href = target;
 }
 
 // ---------------------------------------------------------------------------
@@ -145,6 +168,12 @@ export async function handleAuthCallback(config) {
 // ---------------------------------------------------------------------------
 
 async function exchangeCodeForToken(code, verifier, config) {
+  assertGuid(config.clientId, "clientId");
+  assertGuid(config.tenantId, "tenantId");
+
+  var tokenEndpoint = new URL("https://login.microsoftonline.com");
+  tokenEndpoint.pathname = "/" + config.tenantId + "/oauth2/v2.0/token";
+
   var body = new URLSearchParams({
     grant_type:    "authorization_code",
     client_id:     config.clientId,
@@ -154,14 +183,11 @@ async function exchangeCodeForToken(code, verifier, config) {
     scope:         config.scope
   });
 
-  var response = await fetch(
-    "https://login.microsoftonline.com/" + config.tenantId + "/oauth2/v2.0/token",
-    {
-      method:  "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body:    body.toString()
-    }
-  );
+  var response = await fetch(tokenEndpoint.toString(), {
+    method:  "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body:    body.toString()
+  });
 
   if (!response.ok) {
     var err = await response.json().catch(function () { return {}; });
