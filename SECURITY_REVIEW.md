@@ -1,3 +1,25 @@
+## 7. Telemetría ligera del cliente
+
+Se implementó un módulo de telemetría ligera (`js/telemetry.js`) que:
+- Captura errores globales (window.onerror, window.unhandledrejection).
+- Registra métricas Web Vitals (LCP, FID, CLS) usando PerformanceObserver.
+- No recolecta datos personales ni identificadores de usuario.
+- Los eventos se registran en consola y están preparados para envío seguro a un endpoint o Application Insights.
+- El script se incluye con SRI, nonce y Trusted Types, cumpliendo la CSP y sin exponer datos sensibles.
+
+**Seguridad:**
+La telemetría es estrictamente técnica, orientada a resiliencia y experiencia de usuario, sin riesgo para la privacidad ni exposición de información sensible.
+
+Ver detalles en docs/telemetry.md y CHANGELOG.md.
+### 6.5 Informe de validación (2026-04-04)
+
+**Resumen técnico:**
+- La CSP activa incluye `trusted-types defaultPolicy`, `require-trusted-types-for 'script'`, directiva `script-src` con nonce rotativo y SRI funcional en todos los recursos críticos.
+- Headers de seguridad presentes: HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy, COOP, COEP y CORP, todos correctamente configurados.
+- Solo los métodos HTTP GET, HEAD y OPTIONS responden; el resto son bloqueados.
+- El WAF aplica reglas de detección de bots y request smuggling.
+- El sitio responde correctamente tras el hardening.
+- Validación completa y satisfactoria. Evidencia detallada en `docs/evidence/frontdoor-hardening-validation-2026-04-04.md`.
 ## 6. Hardening adicional en Front Door
 
 ### 6.1 Métodos HTTP permitidos

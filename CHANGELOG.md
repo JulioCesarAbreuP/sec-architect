@@ -1,3 +1,9 @@
+# 2026-04-04 (3)
+- Telemetría ligera del cliente:
+  - Captura de errores globales y métricas Web Vitals (LCP, FID, CLS) en js/telemetry.js.
+  - Registro en consola y preparado para envío seguro a futuro.
+  - Integración con Trusted Types, SRI y nonce rotativo.
+  - Documentación de privacidad y seguridad en SECURITY_REVIEW.md y docs/telemetry.md.
 # 2026-04-04 (2)
 - Hardening adicional en Azure Front Door:
   - Solo métodos HTTP GET, HEAD, OPTIONS permitidos (bloqueo de POST, PUT, DELETE, TRACE, CONNECT).

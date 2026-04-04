@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content; require-trusted-types-for 'script'; trusted-types defaultPolicy; report-uri https://juliocesarabreup.github.io/sec-architect/csp-report; report-to sec-architect-csp;" />
+  <!-- CSP: Nonce rotativo inyectado automáticamente en CI/CD -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-f8HFunh+6PPJh5FB1DObJQ==' https:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content; require-trusted-types-for 'script'; trusted-types defaultPolicy; report-uri https://juliocesarabreup.github.io/sec-architect/csp-report; report-to sec-architect-csp;" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
@@ -48,7 +49,15 @@
 
   <footer data-site-footer="true"></footer>
 
-  <script src="blog.js" defer></script>
+  <!-- Script inline protegido con nonce rotativo -->
+  <script src="blog.js" defer nonce="f8HFunh+6PPJh5FB1DObJQ=="></script>
+  <!-- Telemetría ligera: errores y métricas web vitals -->
+  <script src="js/telemetry.js" defer nonce="f8HFunh+6PPJh5FB1DObJQ==" integrity="sha384-PLACEHOLDER" crossorigin="anonymous"></script>
+  <!-- Si existen scripts inline, agregar el atributo nonce automáticamente -->
+  <script nonce="f8HFunh+6PPJh5FB1DObJQ==">
+    // Ejemplo de script inline protegido por nonce
+    // window.addEventListener('DOMContentLoaded', () => { /* ... */ });
+  </script>
   <!-- SRI: Protegido, hash generado automáticamente en CI -->
   <script src="assets/js/site.js" defer integrity="sha384-f1Ms5vbFnCQ4q0riShOHGW2ck/xD7xJ6aaePRv0SExwA8NppVKEVCbvT00B51vCX" crossorigin="anonymous"></script>
 </body>
