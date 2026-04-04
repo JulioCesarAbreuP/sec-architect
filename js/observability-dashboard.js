@@ -1,3 +1,88 @@
+      // --- Predictive Observability Panel ---
+      (function(){
+        if (!window.Predictive) return;
+        var trendsEl = document.getElementById('predictive-trends');
+        var anomaliesEl = document.getElementById('predictive-anomalies');
+        var predictionEl = document.getElementById('predictive-prediction');
+        function renderPredictive() {
+          if (!trendsEl || !anomaliesEl || !predictionEl) return;
+          var sig = window.Predictive.getPredictiveSignals();
+          // Tendencias
+          trendsEl.innerHTML = '<b>Tendencias:</b> ' + (sig.trends.map(function(t){return t.type+': '+t.trend;}).join(', ')||'N/A');
+          // Anomalías
+          anomaliesEl.innerHTML = '<b>Anomalías:</b> ' + (sig.anomalies.map(function(a){return a.type+'@'+a.idx+': '+a.value;}).join(', ')||'Ninguna');
+          // Predicción
+          predictionEl.innerHTML = '<b>Predicción de degradación:</b> <span style="color:'+(sig.prediction==='DEGRADED'?'#fa0':sig.prediction==='CRITICAL'?'#e00':'#080')+'">'+(sig.prediction||'N/A')+'</span>';
+          // Visualización simple
+          if (trendsEl && sig.trends.length) {
+            var canvas = document.createElement('canvas');
+            canvas.width = 200; canvas.height = 40;
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0,200,40);
+            ctx.strokeStyle = '#08c'; ctx.beginPath();
+            sig.trends.forEach(function(t,i){
+              var x = i*40+10, y = 30-t.trend/10;
+              if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            });
+            ctx.stroke();
+            trendsEl.appendChild(canvas);
+          }
+        }
+        renderPredictive();
+      })();
+
+      // --- Capacity and Load Panel ---
+      (function(){
+        if (!window.Capacity) return;
+        var currEl = document.getElementById('capacity-current');
+        var trendEl = document.getElementById('capacity-trend');
+        var riskEl = document.getElementById('capacity-risk');
+        function renderCapacity() {
+          if (!currEl || !trendEl || !riskEl) return;
+          var m = window.Capacity.getCapacityMetrics();
+          currEl.innerHTML = '<b>Carga actual:</b> <span style="color:'+(m.loadScore>80?'#e00':m.loadScore>60?'#fa0':'#080')+'">'+m.loadScore+'</span>';
+          // Visualización simple
+          if (trendEl && m.trend.length) {
+            var canvas = document.createElement('canvas');
+            canvas.width = 200; canvas.height = 40;
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0,200,40);
+            ctx.strokeStyle = '#0a0'; ctx.beginPath();
+            m.trend.forEach(function(val,i){
+              var x = i*10+10, y = 30-val/2;
+              if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            });
+            ctx.stroke();
+            trendEl.appendChild(canvas);
+          }
+          riskEl.innerHTML = '<b>Riesgo de saturación:</b> <span style="color:'+(m.saturationRisk==='HIGH'?'#e00':m.saturationRisk==='MEDIUM'?'#fa0':'#080')+'">'+m.saturationRisk+'</span>';
+        }
+        renderCapacity();
+      })();
+
+      // --- Consolidated State Report ---
+      (function(){
+        if (!window.StateReport) return;
+        var btn = document.getElementById('generate-report-btn');
+        var modal = document.getElementById('report-modal');
+        var content = document.getElementById('report-content');
+        var copyBtn = document.getElementById('copy-report-btn');
+        var closeBtn = document.getElementById('close-report-btn');
+        if (!btn || !modal || !content) return;
+        btn.addEventListener('click', function(){
+          var report = window.StateReport.generateStateReport();
+          content.textContent = JSON.stringify(report, null, 2);
+          modal.style.display = '';
+        });
+        if (closeBtn) closeBtn.addEventListener('click', function(){ modal.style.display = 'none'; });
+        if (copyBtn) copyBtn.addEventListener('click', function(){
+          try {
+            navigator.clipboard.writeText(content.textContent);
+            copyBtn.textContent = 'Copiado!';
+            setTimeout(function(){copyBtn.textContent='Copiar informe al portapapeles';},1500);
+          } catch(e){}
+        });
+      })();
       // --- Unified Timeline Integration ---
       (function(){
         if (!window.Timeline) return;

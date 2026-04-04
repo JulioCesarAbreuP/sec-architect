@@ -1,3 +1,6 @@
+## 18. Observabilidad predictiva y panel de capacidad
+
+El módulo predictivo (predictive.js) analiza tendencias y anomalías usando heurísticas simples (sin ML, sin datos personales ni sensibles). El panel de capacidad (capacity.js) mide carga y riesgo de saturación sin exponer detalles del dispositivo ni identificadores únicos. El informe consolidado (report.js) solo incluye señales, métricas y eventos agregados, nunca datos personales ni sensibles. Todas las visualizaciones y exportaciones cumplen CSP y Trusted Types.
 ## 17. Línea temporal unificada de eventos
 
 El módulo timeline.js unifica eventos de cliente, métricas, health checks, alertas y logs de infraestructura en una estructura normalizada y defensiva:

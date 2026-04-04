@@ -1,5 +1,10 @@
 ## [Unreleased]
 ### Added
+- Predictive observability module (predictive.js)
+- Capacity and load panel (capacity.js)
+- Consolidated state report (report.js)
+## [Unreleased]
+### Added
 - Unified timeline module (timeline.js)
 - Dashboard integration for unified timeline
 - Filtering, real-time updates, paginación y protección de privacidad
