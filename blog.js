@@ -1,6 +1,7 @@
 const postsList = document.getElementById("postsList");
 const postsPagination = document.getElementById("postsPagination");
 const postsTagFilters = document.getElementById("postsTagFilters");
+const blogSearchInput = document.getElementById("blogSearchInput");
 const isNestedBlogIndex = /\/blog\/(?:index\.html)?$/i.test(window.location.pathname);
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_MARKDOWN_FILES = 200;
@@ -381,11 +382,9 @@ function animateFeaturedPost() {
   animatePostEntries([featured]);
 }
 
-async function initBlog() {
-  if (!postsList) {
-    return;
-  }
 
+async function initBlog() {
+  if (!postsList) return;
   renderEmptyState("Buscando artículos...");
 
   const files = await discoverMarkdownFiles();
@@ -405,33 +404,65 @@ async function initBlog() {
     return;
   }
 
-  const state = {
-    activeTag: ""
-  };
+  let fuse = null;
+  let searchResults = null;
+  const state = { activeTag: "", search: "" };
 
-  const updateView = () => {
-    const filteredPosts = state.activeTag
-      ? posts.filter((post) => Array.isArray(post.tags) && post.tags.includes(state.activeTag))
-      : posts;
+  function getFilteredPosts() {
+    let filtered = posts;
+    if (state.activeTag) {
+      filtered = filtered.filter((post) => Array.isArray(post.tags) && post.tags.includes(state.activeTag));
+    }
+    if (state.search && fuse) {
+      const fuseResults = fuse.search(state.search);
+      filtered = fuseResults.map(r => r.item).filter(post => !state.activeTag || (Array.isArray(post.tags) && post.tags.includes(state.activeTag)));
+    }
+    return filtered;
+  }
 
+  function updateView() {
+    const filteredPosts = getFilteredPosts();
     if (filteredPosts.length === 0) {
       postsList.textContent = "";
       const item = document.createElement("li");
       item.className = "empty-state";
-      item.textContent = "No hay artículos para el tag seleccionado.";
+      item.textContent = state.search ? "No hay artículos que coincidan con la búsqueda." : "No hay artículos para el tag seleccionado.";
       postsList.appendChild(item);
-      if (postsPagination) {
-        postsPagination.textContent = "";
-      }
+      if (postsPagination) postsPagination.textContent = "";
     } else {
       renderPaginatedPosts(filteredPosts);
     }
-
     renderTagFilters(posts, state.activeTag, (tag) => {
       state.activeTag = tag;
       updateView();
     });
-  };
+  }
+
+  // Inicializar Fuse.js para búsqueda
+  function setupFuse() {
+    if (typeof Fuse !== "function") return;
+    fuse = new Fuse(posts, {
+      keys: ["title", "tags", "file"],
+      threshold: 0.36,
+      ignoreLocation: true,
+      minMatchCharLength: 2,
+    });
+  }
+
+  if (window.Fuse) setupFuse();
+  else {
+    const script = document.createElement("script");
+    script.src = "assets/vendor/fuse.min.js";
+    script.onload = setupFuse;
+    document.head.appendChild(script);
+  }
+
+  if (blogSearchInput) {
+    blogSearchInput.addEventListener("input", (e) => {
+      state.search = e.target.value.trim();
+      updateView();
+    });
+  }
 
   updateView();
 }
