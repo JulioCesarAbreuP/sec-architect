@@ -1,7 +1,7 @@
 # SECURITY_REVIEW — SEC_ARCHITECT
 
 > Análisis técnico exhaustivo de seguridad del sitio estático SEC_ARCHITECT.
-> Última revisión: 2026-04-02 (pasada final). Revisado contra OWASP Top 10, CIS Controls v8 y NIST 800-53.
+> Última revisión: 2026-04-04 (pasada final). Revisado contra OWASP Top 10, CIS Controls v8 y NIST 800-53.
 
 ---
 
@@ -119,6 +119,11 @@ al ser renderizado por marked.js e inyectado en el DOM con `innerHTML`.
 **Recomendación**: Añadir SRI al script de DOMPurify en próximo hardening para cerrar
 el vector de supply chain de dependencias CDN.
 
+Estado adicional: el control de `marked.js` en CDN se valida en CI mediante
+`scripts/security-policy-check.ps1`, exigiendo `integrity`,
+`crossorigin="anonymous"`, `referrerpolicy="no-referrer"` y pinning a semver
+exacto (`marked@x.y.z/marked.min.js`) para sostener la revisión trimestral de SRI.
+
 ### 3.2 Vector de Riesgo: Path Traversal en Parámetro ?post=
 
 **Descripción**: El parámetro `?post=nombre.md` se usa para construir la URL de fetch.
@@ -235,6 +240,10 @@ condición en CI para evitar regresiones.
 
 8. **Revisar y documentar** el inventario de dependencias externas semestralmente
    (aligned con CIS Control 2).
+
+Control aplicado: la revisión trimestral del hash SRI de `marked.js` quedó
+operativizada en CI con validaciones automáticas para evitar drift de versión o
+pérdida de atributos de integridad.
 
 ---
 
