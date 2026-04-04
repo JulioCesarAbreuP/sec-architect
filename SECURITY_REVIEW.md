@@ -1,3 +1,13 @@
+## 16. Modelo de resiliencia y degradación controlada
+
+El panel de resiliencia (`js/resilience.js`) evalúa métricas de healthcheck, alertas locales, logs de infraestructura y la línea temporal unificada para determinar el estado del sistema:
+- Estados: NORMAL, DEGRADED, CRITICAL.
+- Señales: fallos consecutivos, latencia alta, picos de 5xx, eventos WAF, alertas críticas, correlación cliente-infra.
+- El estado y señales se almacenan solo en sessionStorage y nunca se exponen fuera del navegador.
+- La degradación controlada reduce la frecuencia de health checks y pausa métricas no esenciales en el cliente.
+- El usuario es avisado solo localmente y puede seguir usando el dashboard de forma segura.
+- No se exponen datos personales ni información interna sensible.
+- El diseño cumple Trusted Types, SRI, nonce rotativo y CSP estricta.
 ## 15. Panel de resiliencia y degradación controlada (modular)
 
 El panel de resiliencia (`js/resilience.js`) detecta degradación combinando señales de healthcheck, alertas locales, logs de infraestructura y la línea temporal unificada:

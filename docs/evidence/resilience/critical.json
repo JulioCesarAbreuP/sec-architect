@@ -1,0 +1,10 @@
+{
+  "state": "CRITICAL",
+  "signals": [
+    "Más de 5 fallos consecutivos en healthcheck",
+    "Más de 20 eventos WAF en 1 min",
+    "3 alertas critical en 2 min",
+    "Error cliente + 5xx + WAF: correlación crítica"
+  ],
+  "lastChange": "2026-04-04T10:10:00Z"
+}

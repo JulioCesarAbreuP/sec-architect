@@ -1,6 +1,7 @@
 // js/resilience.js
 // Panel de resiliencia y degradación controlada
 
+
 (function () {
   if (window.trustedTypes && window.trustedTypes.createPolicy) {
     window.trustedTypes.createPolicy('resiliencePolicy', {
@@ -15,37 +16,61 @@
 
   function evaluateResilienceState({ healthMetrics = [], localAlerts = [], infraEvents = [], timeline = [] }) {
     const signals = [];
-    // Health: 3+ fallos seguidos
-    const last3 = healthMetrics.slice(-3);
-    if (last3.length === 3 && last3.every(e => e.ok === false)) {
-      signals.push('3+ health checks fallidos');
-    }
-    // Health: latencia alta
-    if (healthMetrics.slice(-3).every(e => typeof e.latency === 'number' && e.latency > 1500)) {
-      signals.push('Latencia >1500ms en health checks');
-    }
-    // Infra: 3+ 5xx recientes
-    const err5xx = infraEvents.filter(e => e.metadata && /^5\\d\\d$/.test(String(e.metadata.statusCode)));
-    if (err5xx.length >= 3) signals.push('3+ respuestas 5xx en Front Door');
-    // WAF repetido
+    // --- Health: fallos consecutivos, latencia, disponibilidad ---
+    const last5 = healthMetrics.slice(-5);
+    const failSeq = last5.filter(e => e.ok === false).length;
+    const avgLatency = last5.filter(e => typeof e.latency === 'number').reduce((a,b) => a+b.latency,0) / (last5.filter(e => typeof e.latency === 'number').length||1);
+    const avail = last5.filter(e => e.ok).length / (last5.length||1);
+    if (failSeq > 5) signals.push('Más de 5 fallos consecutivos en healthcheck');
+    else if (failSeq > 3) signals.push('Más de 3 fallos consecutivos en healthcheck');
+    if (avgLatency > 1500) signals.push('Latencia media >1500ms');
+    if (avail < 0.7) signals.push('Disponibilidad <70% en healthcheck');
+
+    // --- Infraestructura: 5xx, WAF, throttling ---
     const now = Date.now();
-    const recentWaf = infraEvents.filter(e => e.source === 'waf' && now - (e.timestamp || 0) < 180000);
-    if (recentWaf.length >= 3) signals.push('3+ eventos WAF en 3 min');
-    // Alertas críticas
-    const critAlerts = localAlerts.filter(e => e.severity === 'critical');
-    if (critAlerts.length >= 2) signals.push('2+ alertas críticas recientes');
-    // Timeline: correlación de eventos críticos
-    const timelineCritical = (timeline||[]).filter(e => e.type === 'error' || (e.details && e.details.severity === 'critical'));
-    if (timelineCritical.length >= 5) signals.push('5+ eventos críticos recientes en timeline');
-    // Estado
+    const lastMinWaf = infraEvents.filter(e => e.source === 'waf' && now - (e.timestamp || 0) < 60000);
+    if (lastMinWaf.length > 20) signals.push('Más de 20 eventos WAF en 1 min');
+    else if (lastMinWaf.length > 10) signals.push('Más de 10 eventos WAF en 1 min');
+    const fd5xx = infraEvents.filter(e => e.source === 'frontdoor' && e.metadata && /^5\d\d$/.test(String(e.metadata.statusCode)));
+    const fdTotal = infraEvents.filter(e => e.source === 'frontdoor').length;
+    if (fdTotal > 0 && (fd5xx.length / fdTotal) > 0.05) signals.push('Más de 5% de 5xx en Front Door');
+    // Throttling/anomalías (placeholder)
+    const throttling = infraEvents.filter(e => e.metadata && /throttl/i.test(JSON.stringify(e.metadata)));
+    if (throttling.length > 0) signals.push('Eventos de throttling detectados');
+
+    // --- Alertas locales ---
+    const now2 = Date.now();
+    const critAlerts = localAlerts.filter(e => e.severity === 'critical' && now2 - (e.ts || 0) < 120000);
+    const warnAlerts = localAlerts.filter(e => e.severity === 'warning' && now2 - (e.ts || 0) < 120000);
+    if (critAlerts.length >= 3) signals.push('3 alertas critical en 2 min');
+    if (warnAlerts.length >= 5) signals.push('5 alertas warning en 2 min');
+
+    // --- Correlación cliente-infra ---
+    const clientErrors = (timeline||[]).filter(e => e.type === 'error');
+    const infra5xx = fd5xx.length;
+    const wafCount = lastMinWaf.length;
+    if (clientErrors.length && infra5xx && wafCount) signals.push('Error cliente + 5xx + WAF: correlación crítica');
+
+    // --- Estado final ---
     let state = 'NORMAL';
-    if (signals.length === 0) {
-      state = 'NORMAL';
-    } else if (signals.length <= 2) {
-      state = 'DEGRADED';
-    } else {
+    if (
+      signals.some(s => s.includes('correlación crítica')) ||
+      signals.some(s => s.includes('Más de 5 fallos')) ||
+      signals.some(s => s.includes('Más de 20 eventos WAF')) ||
+      signals.some(s => s.includes('3 alertas critical'))
+    ) {
       state = 'CRITICAL';
+    } else if (
+      signals.some(s => s.includes('Más de 3 fallos')) ||
+      signals.some(s => s.includes('Latencia media')) ||
+      signals.some(s => s.includes('Más de 10 eventos WAF')) ||
+      signals.some(s => s.includes('5 alertas warning')) ||
+      signals.some(s => s.includes('Más de 5% de 5xx')) ||
+      signals.some(s => s.includes('Disponibilidad <70%'))
+    ) {
+      state = 'DEGRADED';
     }
+
     // Cambio de estado
     if (state !== lastState) {
       lastChange = Date.now();
@@ -78,7 +103,7 @@
     if (state === 'DEGRADED') {
       window.HEALTHCHECK_INTERVAL_OVERRIDE = 120000; // x2
       window.DASHBOARD_MINIMAL = true;
-      window.DASHBOARD_PAUSE_METRICS = false;
+      window.DASHBOARD_PAUSE_METRICS = true;
       hideCriticalBanner();
     } else if (state === 'CRITICAL') {
       window.HEALTHCHECK_INTERVAL_OVERRIDE = 300000; // x5

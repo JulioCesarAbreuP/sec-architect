@@ -1,0 +1,9 @@
+{
+  "state": "DEGRADED",
+  "signals": [
+    "Más de 3 fallos consecutivos en healthcheck",
+    "Latencia media >1500ms",
+    "Más de 10 eventos WAF en 1 min"
+  ],
+  "lastChange": "2026-04-04T10:05:00Z"
+}
