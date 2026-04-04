@@ -169,10 +169,21 @@ input {
   min-height: 140px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #0f131a;
+  background: #1e1e1e;
   color: var(--text);
   padding: 0.65rem;
   resize: vertical;
+  line-height: 1.45;
+  tab-size: 2;
+}
+
+.code-input::placeholder {
+  color: #7d8a99;
+}
+
+.code-input.input-error {
+  border-color: rgba(255, 107, 122, 0.7);
+  box-shadow: 0 0 0 2px rgba(255, 107, 122, 0.16);
 }
 
 button,

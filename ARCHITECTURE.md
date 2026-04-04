@@ -423,3 +423,37 @@ La resiliencia de la capa de contenido se garantiza mediante:
 > progresión natural desde la capa contextual (¿por qué existe el sitio y qué protege?)
 > hasta la física (¿cómo se sirven los archivos y con qué controles técnicos concretos?).
 > Cada decisión de diseño es trazable a un riesgo o un principio de seguridad definido.
+
+---
+
+## 13. Enterprise SABSA IG4 Command Graph
+
+La superficie enterprise del Command Center adopta un patron no-chat, orientado a parser y motor
+de inferencia para Azure Entra ID.
+
+### 13.1 Flujo principal
+
+1. **Entra ID Parser**
+  - Entrada obligatoria: JSON valido.
+  - Validacion de estructura: Service Principal o Conditional Access Policy.
+2. **Threat Inference Engine (background)**
+  - Prompt interno oculto para inferencia de ataque.
+  - Salida estricta: `probability`, `critical_node`, `mitre_technique`, `attack_path`, `terraform_fix`.
+3. **Motor multicapas (SABSA IG4)**
+  - Capa 1: sintactica.
+  - Capa 2: semantica.
+  - Capa 3: grafo `User -> Role -> Resource -> Exposure -> Attack Path`.
+  - Capa 4: inferencia probabilistica.
+  - Capa 5: remediacion contextual IaC.
+4. **Operational Memory**
+  - Estado persistente de ultimo analisis, riesgo previo y tendencia.
+5. **Shadow Monitor**
+  - Eventos sinteticos cada 30s, frecuencia adaptativa por riesgo.
+
+### 13.2 Modulos Staff obligatorios
+
+- `core/enterprise/mitre-engine.js`
+- `core/enterprise/sabsa-logic.js`
+- `ui/enterprise/ui-controller.js`
+
+`main.js` queda restringido a bootstrap y no contiene logica de dominio.

@@ -31,8 +31,8 @@
 
     <section class="enterprise-grid">
       <article class="panel panel-json" id="panel-json">
-        <h2>Panel JSON</h2>
-        <textarea id="graphJsonInput" class="code-input" placeholder='Pega JSON de Azure Entra ID. Ejemplo: {"user":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","mfa":"disabled"}'></textarea>
+        <h2>Entra ID Parser</h2>
+        <textarea id="graphJsonInput" class="code-input" placeholder='Ejemplo JSON Entra ID (Service Principal): {"servicePrincipal":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","permissions":["Contributor","Storage Blob Data Owner"],"mfa":"disabled"}'></textarea>
         <div class="panel-actions">
           <select id="remediationFormat">
             <option value="terraform">Terraform</option>
