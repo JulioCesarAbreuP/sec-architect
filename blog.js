@@ -3,6 +3,7 @@ const isNestedBlogIndex = /\/blog\/(?:index\.html)?$/i.test(window.location.path
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_MARKDOWN_FILES = 200;
 const MAX_POST_BYTES = 500000;
+const prefersReducedMotion = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function resolveBlogPath(fileName) {
   return isNestedBlogIndex ? fileName : `blog/${fileName}`;
@@ -190,9 +191,10 @@ function renderEmptyState(message) {
 function renderPosts(posts) {
   postsList.textContent = "";
 
-  for (const post of posts) {
+  posts.forEach((post, index) => {
     const item = document.createElement("li");
-    item.className = "post-item";
+    item.className = "post-item post-enter";
+    item.style.setProperty("--stagger-index", String(index));
 
     const link = document.createElement("a");
     link.className = "post-link";
@@ -211,7 +213,39 @@ function renderPosts(posts) {
 
     item.appendChild(link);
     postsList.appendChild(item);
+  });
+
+  animatePostEntries(postsList.querySelectorAll(".post-enter"));
+}
+
+function animatePostEntries(elements) {
+  if (!elements || elements.length === 0) {
+    return;
   }
+
+  if (prefersReducedMotion) {
+    elements.forEach((element) => {
+      element.classList.add("is-visible");
+    });
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    elements.forEach((element) => {
+      element.classList.add("is-visible");
+    });
+  });
+}
+
+function animateFeaturedPost() {
+  const featured = document.querySelector("article.post-item");
+  if (!featured) {
+    return;
+  }
+
+  featured.classList.add("post-enter");
+  featured.style.setProperty("--stagger-index", "0");
+  animatePostEntries([featured]);
 }
 
 async function initBlog() {
@@ -240,6 +274,8 @@ async function initBlog() {
 
   renderPosts(posts);
 }
+
+animateFeaturedPost();
 
 initBlog().catch(() => {
   renderEmptyState("No fue posible generar el blog automáticamente. Verifica Live Server y la carpeta /blog.");
