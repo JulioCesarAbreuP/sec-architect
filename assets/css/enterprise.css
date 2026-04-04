@@ -5,12 +5,23 @@
   --card: #161b22;
   --border: #30363d;
   --text: #e0e0e0;
-  --muted: #9aa3ad;
-  --healthy: #66c18c;
-  --degraded: #eabf67;
-  --critical: #ff6b7a;
-  --accent: #7de3f4;
+  --muted: #b1bcc8;
+  --healthy: #8ed9ab;
+  --degraded: #ffd089;
+  --critical: #ff9aa7;
+  --accent: #98ecff;
   --focus: #9fe9ff;
+  --surface-0: #07090d;
+  --surface-1: #0f1318;
+  --surface-2: #10151b;
+  --surface-3: #10151c;
+  --line-strong: #3a4652;
+  --line-soft: #2a333d;
+  --text-soft: #c5d0da;
+  --placeholder: #a9b5c1;
+  --tone-info: #b5cddd;
+  --tone-check: #b6dcf7;
+  --tone-mitre: #f0c893;
 }
 
 * {
@@ -81,8 +92,15 @@ body.soc-night {
 }
 
 .header-nav a {
-  color: #bac4ce;
+  color: var(--text-soft);
   text-decoration: none;
+}
+
+.header-nav a:hover,
+.header-nav a:focus-visible,
+.brand:hover,
+.brand:focus-visible {
+  color: #f4fbff;
 }
 
 .soc-toggle {
@@ -93,6 +111,12 @@ body.soc-night {
   padding: 0.35rem 0.7rem;
   font-size: 0.75rem;
   cursor: pointer;
+}
+
+.soc-toggle[aria-pressed="true"] {
+  background: rgba(152, 236, 255, 0.18);
+  border-color: rgba(152, 236, 255, 0.5);
+  color: #e8fbff;
 }
 
 .layout-main {
@@ -203,7 +227,7 @@ input {
   min-height: 140px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #1e1e1e;
+  background: #1a1f27;
   color: var(--text);
   padding: 0.65rem;
   resize: vertical;
@@ -212,7 +236,7 @@ input {
 }
 
 .code-input::placeholder {
-  color: #7d8a99;
+  color: var(--placeholder);
 }
 
 .code-input.input-error {
@@ -225,7 +249,7 @@ select,
 input {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #10151c;
+  background: var(--surface-3);
   color: var(--text);
   padding: 0.45rem 0.65rem;
 }
@@ -253,6 +277,10 @@ input {
   color: var(--accent);
 }
 
+.secondary-btn {
+  color: var(--text-soft);
+}
+
 pre {
   margin: 0;
   white-space: pre-wrap;
@@ -260,8 +288,8 @@ pre {
   font-size: 0.81rem;
   max-height: 280px;
   overflow: auto;
-  background: #0f1318;
-  border: 1px solid #232c35;
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
   padding: 0.65rem;
 }
@@ -290,8 +318,8 @@ textarea:focus-visible,
 .shadow-console {
   height: 280px;
   overflow: auto;
-  background: #07090d;
-  border: 1px solid #1f2831;
+  background: var(--surface-0);
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
   padding: 0.6rem;
 }
@@ -302,37 +330,37 @@ textarea:focus-visible,
 }
 
 .tone-info {
-  color: #9db4c6;
+  color: var(--tone-info);
 }
 
 .tone-threat {
-  color: #ff9eab;
+  color: #ffb4be;
 }
 
 .tone-check {
-  color: #9fc6e3;
+  color: var(--tone-check);
 }
 
 .tone-fail {
-  color: #ff9eab;
+  color: #ffb4be;
 }
 
 .tone-mitre {
-  color: #d4b37f;
+  color: var(--tone-mitre);
 }
 
 .graph-shell {
   min-height: 220px;
-  border: 1px solid #2a333d;
+  border: 1px solid var(--line-soft);
   border-radius: 8px;
-  background: #0e1218;
+  background: #0f141b;
   padding: 0.4rem;
 }
 
 .markdown-board {
-  border: 1px solid #2a333d;
+  border: 1px solid var(--line-soft);
   border-radius: 8px;
-  background: #10151b;
+  background: var(--surface-2);
   padding: 0.75rem;
   max-height: 360px;
   overflow: auto;
@@ -408,7 +436,7 @@ textarea:focus-visible,
   justify-content: space-between;
   align-items: baseline;
   gap: 0.6rem;
-  border: 1px solid #2a333d;
+  border: 1px solid var(--line-soft);
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
   background: rgba(125, 227, 244, 0.05);
@@ -434,9 +462,9 @@ textarea:focus-visible,
 }
 
 .zt-metric {
-  border: 1px solid #2a333d;
+  border: 1px solid var(--line-soft);
   border-radius: 8px;
-  background: #10151b;
+  background: var(--surface-2);
   padding: 0.55rem 0.6rem;
   display: grid;
   gap: 0.3rem;
@@ -448,7 +476,7 @@ textarea:focus-visible,
 }
 
 .zt-metric strong {
-  color: #d4ebf2;
+  color: #e8f9ff;
   font-size: 0.95rem;
 }
 
@@ -462,14 +490,14 @@ textarea:focus-visible,
   justify-content: space-between;
   align-items: baseline;
   gap: 0.6rem;
-  border: 1px solid #2a333d;
+  border: 1px solid var(--line-soft);
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
   background: rgba(234, 191, 103, 0.08);
 }
 
 .ti-status {
-  color: #f5d9a1;
+  color: #ffe2a9;
   font-weight: 700;
   font-size: 0.92rem;
 }
@@ -487,9 +515,9 @@ textarea:focus-visible,
 }
 
 .ti-metric {
-  border: 1px solid #2a333d;
+  border: 1px solid var(--line-soft);
   border-radius: 8px;
-  background: #10151b;
+  background: var(--surface-2);
   padding: 0.55rem 0.6rem;
   display: grid;
   gap: 0.3rem;
@@ -501,7 +529,7 @@ textarea:focus-visible,
 }
 
 .ti-metric strong {
-  color: #f0dfbb;
+  color: #fff0cc;
   font-size: 0.95rem;
 }
 
