@@ -1,7 +1,10 @@
 import { analyzeRisk } from "../ai/risk-analyzer.module.js";
 import { mapControl } from "../ai/control-mapper.module.js";
 import { explainArchitecture } from "../ai/architecture-explainer.module.js";
-import { evaluateEntraIdentity } from "../enterprise/entra-id-rules.js";
+import { parseIdentityJson, validateIdentityObject } from "../identity-validator.js";
+import { evaluateEntraRules } from "../rules-engine.js";
+import { generateEntraTerraformFix } from "../remediation-engine.js";
+import { paintEntraRadar, renderEntraConsole, renderEntraRemediationPanel, copyTextToClipboard } from "../../ui/renderer.js";
 
 var TRACE_STORAGE_KEY = "sec_architect_ai_trace_v1";
 var MAX_TRACE_ITEMS = 8;
@@ -274,115 +277,6 @@ function resolveHandler(activeTab) {
   return mapControl;
 }
 
-function updateEntraRadar(level) {
-  var fill   = byId("entra-arc-fill");
-  var needle = byId("entra-needle");
-  var label  = byId("entra-radar-label");
-  if (!fill || !needle || !label) { return; }
-  if (level === "safe") {
-    fill.setAttribute("stroke", "#4ade80"); fill.setAttribute("stroke-dashoffset", "0");
-    needle.setAttribute("x2", "20"); needle.setAttribute("y2", "90"); needle.setAttribute("stroke", "#4ade80");
-    label.textContent = "MFA ENABLED \u2014 HARDENED"; label.className = "entra-radar-label entra-label-ok";
-  } else if (level === "risk") {
-    fill.setAttribute("stroke", "#f87171"); fill.setAttribute("stroke-dashoffset", "0");
-    needle.setAttribute("x2", "140"); needle.setAttribute("y2", "90"); needle.setAttribute("stroke", "#f87171");
-    label.textContent = "MFA DISABLED \u2014 CRITICAL RISK"; label.className = "entra-radar-label entra-label-crit";
-  } else {
-    fill.setAttribute("stroke", "#7e96ad"); fill.setAttribute("stroke-dashoffset", "102");
-    needle.setAttribute("x2", "80"); needle.setAttribute("y2", "30"); needle.setAttribute("stroke", "#7e96ad");
-    label.textContent = "AWAITING PAYLOAD"; label.className = "entra-radar-label";
-  }
-}
-
-function logEntraConsole(message, level) {
-  var list = byId("entra-console");
-  if (!list) { return; }
-  var li = document.createElement("li");
-  li.className = "entra-console-line entra-console-" + (level || "info");
-  var ts = new Date().toLocaleTimeString("es-ES", { hour12: false });
-  li.textContent = "[" + ts + "] " + message;
-  list.insertBefore(li, list.firstChild);
-  while (list.children.length > 10) { list.removeChild(list.lastChild); }
-}
-
-function renderEntraRemediation(evaluation) {
-  var codeEl = byId("entra-remediation-code");
-  var copyBtn = byId("entra-copy-fix");
-  var scoreEl = byId("entra-risk-score");
-  var fixText = evaluation && evaluation.remediation && evaluation.remediation.hasFix
-    ? evaluation.remediation.terraform
-    : "# No remediation generated.\n# Identity object passed or has indeterminate posture.";
-
-  if (codeEl) {
-    codeEl.textContent = fixText;
-  }
-
-  if (copyBtn) {
-    copyBtn.disabled = !(evaluation && evaluation.remediation && evaluation.remediation.hasFix);
-    copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
-  }
-
-  if (scoreEl) {
-    if (evaluation && typeof evaluation.riskScore === "number") {
-      scoreEl.textContent = "Risk Score: " + evaluation.riskScore + "/100";
-      scoreEl.className = "entra-risk-score " + (evaluation.radarLevel === "risk" ? "is-risk" : evaluation.radarLevel === "safe" ? "is-safe" : "is-neutral");
-    } else {
-      scoreEl.textContent = "Risk Score: N/A";
-      scoreEl.className = "entra-risk-score is-neutral";
-    }
-  }
-}
-
-function copyFixToClipboard() {
-  var codeEl = byId("entra-remediation-code");
-  var copyBtn = byId("entra-copy-fix");
-  var text = String((codeEl && codeEl.textContent) || "").trim();
-  if (!text || text.indexOf("No remediation generated") !== -1) {
-    return;
-  }
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function () {
-      if (copyBtn) {
-        copyBtn.textContent = "[COPIED]";
-        window.setTimeout(function () {
-          copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
-        }, 1200);
-      }
-    }).catch(function () {
-      if (copyBtn) {
-        copyBtn.textContent = "[COPY BLOCKED]";
-        window.setTimeout(function () {
-          copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
-        }, 1200);
-      }
-    });
-    return;
-  }
-
-  try {
-    var temp = document.createElement("textarea");
-    temp.value = text;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    temp.remove();
-    if (copyBtn) {
-      copyBtn.textContent = "[COPIED]";
-      window.setTimeout(function () {
-        copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
-      }, 1200);
-    }
-  } catch (_error) {
-    if (copyBtn) {
-      copyBtn.textContent = "[COPY BLOCKED]";
-      window.setTimeout(function () {
-        copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
-      }, 1200);
-    }
-  }
-}
-
 function setEntraMode(active) {
   var entraEngine = byId("entra-engine");
   var runBtnEl    = byId("ai-run");
@@ -399,8 +293,9 @@ function setEntraMode(active) {
   }
   if (runBtnEl) { runBtnEl.textContent = active ? "Analyze Payload" : "Ejecutar IA"; }
   if (!active) {
-    updateEntraRadar("neutral");
-    renderEntraRemediation(null);
+    paintEntraRadar(document, "neutral");
+    renderEntraConsole(document, []);
+    renderEntraRemediationPanel(document, null);
   }
 }
 
@@ -502,7 +397,21 @@ export function initAIPanel() {
 
   if (copyFixBtn) {
     copyFixBtn.onclick = function () {
-      copyFixToClipboard();
+      var codeEl = byId("entra-remediation-code");
+      var text = String((codeEl && codeEl.textContent) || "").trim();
+      copyTextToClipboard(text)
+        .then(function (copied) {
+          copyFixBtn.textContent = copied ? "[COPIED]" : "[COPY BLOCKED]";
+          window.setTimeout(function () {
+            copyFixBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+          }, 1200);
+        })
+        .catch(function () {
+          copyFixBtn.textContent = "[COPY BLOCKED]";
+          window.setTimeout(function () {
+            copyFixBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+          }, 1200);
+        });
     };
   }
 
@@ -532,25 +441,42 @@ export function initAIPanel() {
       }
 
       if (activeTab === "entra") {
-        var parsedId;
-        var evaluation;
-        var i;
-        try {
-          parsedId = JSON.parse(inputValue);
-        } catch (_e) {
-          logEntraConsole("[ERROR] JSON de Identidad No V\u00e1lido", "error");
-          updateEntraRadar("neutral");
+        var parsedJson = parseIdentityJson(inputValue);
+        if (!parsedJson.ok) {
+          paintEntraRadar(document, "neutral");
+          renderEntraConsole(document, [{ level: "error", message: parsedJson.message || "[ERROR] JSON de Identidad No V\u00e1lido" }]);
+          renderEntraRemediationPanel(document, null);
           traceStore.unshift({ engine: "entra-id-validator", status: "error", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
           traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
           return;
         }
 
-        evaluation = evaluateEntraIdentity(parsedId);
-        updateEntraRadar(evaluation.radarLevel);
-        for (i = 0; i < evaluation.logs.length; i += 1) {
-          logEntraConsole(evaluation.logs[i].message, evaluation.logs[i].level);
+        var validation = validateIdentityObject(parsedJson.value);
+        if (!validation.ok) {
+          paintEntraRadar(document, "neutral");
+          renderEntraConsole(document, (validation.errors || []).map(function (err) {
+            return { level: "error", message: "[ERROR] " + err };
+          }));
+          renderEntraRemediationPanel(document, null);
+          traceStore.unshift({ engine: "entra-id-validator", status: "error", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+          traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
+          return;
         }
-        renderEntraRemediation(evaluation);
+
+        var evaluation = evaluateEntraRules(validation.value);
+        var warningLogs = (validation.warnings || []).map(function (warn) {
+          return { level: "info", message: "[CHECK] " + warn };
+        });
+        var terraformFix = generateEntraTerraformFix(validation.value, evaluation);
+
+        paintEntraRadar(document, evaluation.radarLevel);
+        renderEntraConsole(document, warningLogs.concat(evaluation.logs || []));
+        renderEntraRemediationPanel(document, {
+          hasFix: Boolean(terraformFix),
+          terraformFix: terraformFix,
+          riskScore: evaluation.riskScore,
+          radarLevel: evaluation.radarLevel
+        });
 
         traceStore.unshift({ engine: "entra-id-validator", status: evaluation.status, durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
         traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
