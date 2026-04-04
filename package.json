@@ -8,6 +8,7 @@
     "test:entra:dom": "node tests/run-entra-dom-integration.js",
     "test:entra": "npm run test:entra:rules && npm run test:entra:dom",
     "test:auth": "node tests/run-auth-smoke.js",
-    "test:smoke": "npm run test:enterprise && npm run test:entra && npm run test:auth"
+    "test:zero-trust": "node tests/run-zero-trust-smoke.js",
+    "test:smoke": "npm run test:enterprise && npm run test:entra && npm run test:auth && npm run test:zero-trust"
   }
 }

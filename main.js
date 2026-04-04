@@ -1,6 +1,6 @@
 import { parseAndValidateIdentity } from "./core/identity-parser.js";
 import { evaluateIdentityRules } from "./core/rules-engine.js";
-import { calculateZeroTrustScore, applyFixImpact } from "./core/scoring-engine.js";
+import { calculateZeroTrustScore, applyFixImpact, calculateCaZeroTrustPosture } from "./core/scoring-engine.js";
 import { buildAttackGraph } from "./core/graph-engine.js";
 import { runSabsaInferenceLayers } from "./core/sabsa-logic.js";
 import { runBackgroundThreatInference } from "./core/inference-engine.js";
@@ -14,7 +14,7 @@ import { appendSocLog, renderJson, renderCode, updateStatus, ensureRadarChart, u
 import { loadArchitectureBoard, answerArchitectureQuestion } from "./ui/ui-architecture-board.js";
 import { pushSocLogs, pushSingleLog, clearLogs } from "./ui/ui-logs.js";
 import { renderAttackGraph } from "./ui/ui-graph.js";
-import { renderZeroTrustScore } from "./ui/ui-score.js";
+import { renderZeroTrustScore, renderZeroTrustPanel } from "./ui/ui-score.js";
 
 let refs;
 let radarChart;
@@ -22,6 +22,7 @@ let shadowMonitor;
 let docsCache = [];
 let previousRisk = 0;
 let currentScore = 100;
+let latestCaPolicies = [];
 
 function computeRiskFromTechnique(technique) {
   if (technique === "T1556") return 88;
@@ -40,6 +41,20 @@ function applyThreatState(probability) {
     shadowMonitor.updateRisk(probability);
   }
 
+}
+
+function updateZeroTrustFromPolicies(policies, source = "manual") {
+  latestCaPolicies = Array.isArray(policies) ? policies : [];
+  const posture = calculateCaZeroTrustPosture(latestCaPolicies);
+  currentScore = posture.score;
+  renderZeroTrustScore(refs.zeroTrustScore, posture.score);
+  renderZeroTrustPanel(refs, posture);
+
+  appendSocLog(
+    refs.shadowConsole,
+    "[ZERO-TRUST] Score " + posture.score + "/100 from " + posture.metrics.policyCount + " CA policies (source=" + source + ")",
+    posture.score >= 80 ? "info" : "threat"
+  );
 }
 
 function ensureParserInputState(raw) {
@@ -90,6 +105,10 @@ export async function analyzeArchitectureWithAI() {
     const { payload, objectType } = parseAndValidateIdentity(rawJson);
     refs.parserInfo.textContent = "Tipo detectado: " + objectType;
 
+    if (objectType === "Conditional Access Policy") {
+      updateZeroTrustFromPolicies([payload], "parser");
+    }
+
     const rules = evaluateIdentityRules(payload);
     pushSocLogs(refs.shadowConsole, rules.logs);
 
@@ -99,9 +118,14 @@ export async function analyzeArchitectureWithAI() {
     const deterministicFix = buildDynamicRemediation(payload, deterministic.flags, refs.formatSelect.value, true);
     aiAnalysis.terraform_fix = aiAnalysis.terraform_fix || deterministicFix;
 
-    const score = calculateZeroTrustScore(rules.flags);
-    currentScore = score;
-    renderZeroTrustScore(refs.zeroTrustScore, score);
+    const score = objectType === "Conditional Access Policy"
+      ? currentScore
+      : calculateZeroTrustScore(rules.flags);
+
+    if (objectType !== "Conditional Access Policy") {
+      currentScore = score;
+      renderZeroTrustScore(refs.zeroTrustScore, score);
+    }
 
     const merged = {
       object_type: objectType,
@@ -237,6 +261,7 @@ async function boot() {
   refs = getPanelRefs();
   radarChart = ensureRadarChart(refs.radarCanvas);
   renderZeroTrustScore(refs.zeroTrustScore, currentScore);
+  renderZeroTrustPanel(refs, calculateCaZeroTrustPosture([]));
   await refreshArchitectureBoard();
 
   shadowMonitor = createShadowMonitor((line, risk) => {
@@ -255,6 +280,11 @@ async function boot() {
     (line, type) => appendSocLog(refs.shadowConsole, line, type),
     () => analyzeArchitectureWithAI()
   );
+
+  window.addEventListener("sa:ca-policies-loaded", (event) => {
+    const policies = Array.isArray(event?.detail?.policies) ? event.detail.policies : [];
+    updateZeroTrustFromPolicies(policies, "graph");
+  });
 
   window.analyzeArchitectureWithAI = analyzeArchitectureWithAI;
 }

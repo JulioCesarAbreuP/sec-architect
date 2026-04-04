@@ -340,6 +340,64 @@ pre {
   grid-template-columns: 1fr;
 }
 
+.zero-trust-row {
+  grid-template-columns: 1fr;
+}
+
+.panel-zero-trust {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.zt-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  border: 1px solid #2a333d;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  background: rgba(125, 227, 244, 0.05);
+}
+
+.zt-score {
+  font-size: 1.35rem;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.zt-updated {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.zt-metrics-grid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.zt-metric {
+  border: 1px solid #2a333d;
+  border-radius: 8px;
+  background: #10151b;
+  padding: 0.55rem 0.6rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.zt-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.zt-metric strong {
+  color: #d4ebf2;
+  font-size: 0.95rem;
+}
+
 .panel-azure-connect {
   display: grid;
   grid-template-columns: 1fr;
@@ -443,6 +501,10 @@ pre {
   .second-row,
   .third-row {
     grid-template-columns: 1fr;
+  }
+
+  .zt-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .radar-shell {
