@@ -30,6 +30,14 @@ function byId(id) {
   return document.getElementById(id);
 }
 
+function emitPoliciesLoaded(policies) {
+  window.dispatchEvent(new CustomEvent("sa:ca-policies-loaded", {
+    detail: {
+      policies: Array.isArray(policies) ? policies : []
+    }
+  }));
+}
+
 function setAuthStatus(type, message) {
   var dot   = byId("azure-auth-dot");
   var label = byId("azure-auth-status");
@@ -155,6 +163,8 @@ async function handleLoadPolicies(appendLog, runAnalysis) {
       appendLog("[GRAPH] " + count + " CA Policies cargadas desde tenant vía Microsoft Graph", "info");
     }
 
+    emitPoliciesLoaded(policies && policies.value ? policies.value : []);
+
     // Auto-populate Entra ID Parser with the first policy and trigger analysis
     if (count > 0) {
       var firstPolicy   = policies.value[0];
@@ -191,6 +201,8 @@ function handleDisconnect(appendLog) {
   var badge = byId("azure-policy-count");
   if (badge) { badge.textContent = "0"; }
 
+  emitPoliciesLoaded([]);
+
   if (appendLog) { appendLog("[AZURE-AUTH] Sesión cerrada.", "info"); }
 }
 
@@ -218,6 +230,9 @@ export async function initAzureAuthPanel(appendLog, runAnalysis) {
   }
 
   syncAuthUI();
+
+  // Ensure listeners receive a known initial state.
+  emitPoliciesLoaded([]);
 
   // Wire buttons
   var connectBtn      = byId("azure-connect-btn");

@@ -87,6 +87,37 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
       </article>
     </section>
 
+    <section class="enterprise-grid zero-trust-row">
+      <article class="panel panel-zero-trust" id="zeroTrustPanel">
+        <h2>Zero-Trust Score Engine</h2>
+        <div class="zt-topline">
+          <div id="zeroTrustPanelScore" class="zt-score">100 / 100</div>
+          <div id="ztLastUpdated" class="zt-updated">Updated: waiting for CA policies</div>
+        </div>
+
+        <div class="zt-metrics-grid">
+          <div class="zt-metric">
+            <span class="zt-label">MFA Coverage</span>
+            <strong id="ztMfaCoverage">0%</strong>
+          </div>
+          <div class="zt-metric">
+            <span class="zt-label">Privileged Role Protection</span>
+            <strong id="ztPrivilegedProtection">0%</strong>
+          </div>
+          <div class="zt-metric">
+            <span class="zt-label">Exposure Breadth</span>
+            <strong id="ztExposure">0%</strong>
+          </div>
+          <div class="zt-metric">
+            <span class="zt-label">Policy States</span>
+            <strong id="ztPolicyStates">0 report-only / 0 disabled</strong>
+          </div>
+        </div>
+
+        <pre id="ztFindings">No findings yet. Connect to Azure and load CA policies.</pre>
+      </article>
+    </section>
+
     <section class="enterprise-grid graph-row">
       <article class="panel panel-graph">
         <h2>Attack Graph</h2>
