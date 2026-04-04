@@ -57,6 +57,21 @@ try {
             $issues += "[LINK] javascript: URL found: $relative"
         }
 
+        $googleFontsLinks = [regex]::Matches(
+            $content,
+            '<link\s+[^>]*href="https://fonts\.googleapis\.com/[^\"]+"[^>]*>',
+            [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+        )
+
+        foreach ($link in $googleFontsLinks) {
+            if ($link.Value -notmatch 'integrity\s*=\s*"[^"]+"') {
+                $issues += "[SRI] Google Fonts link missing integrity: $relative"
+            }
+            if ($link.Value -notmatch 'crossorigin\s*=\s*"anonymous"') {
+                $issues += "[SRI] Google Fonts link missing crossorigin=anonymous: $relative"
+            }
+        }
+
         $hasInlineScriptTag = $content -match '<script(?![^>]*\bsrc=)[^>]*>'
         if ($hasInlineScriptTag) {
             $allowedInline = $false
