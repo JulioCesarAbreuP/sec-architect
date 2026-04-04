@@ -258,6 +258,32 @@ export default function () {
 ### 8.2 Checklist de Compatibilidad
 
 - [ ] Layout correcto en todos los navegadores objetivo.
+
+---
+
+## 9. Prueba de Contrato AI Trace Schema
+
+### 9.1 Objetivo
+
+Validar en CI que el esquema de exportacion de trazas IA mantiene contrato estable y campos obligatorios para auditoria.
+
+### 9.2 Script
+
+```powershell
+./scripts/validate-ai-trace-schema.ps1
+./scripts/validate-ai-trace-schema.ps1 -FilePath tests/fixtures/ai-trace-export.invalid.json -Expect invalid
+```
+
+### 9.3 Fixture de validacion
+
+- Archivo base: `tests/fixtures/ai-trace-export.valid.json`
+- Fixture negativo: `tests/fixtures/ai-trace-export.invalid.json`
+- Contrato de referencia: `docs/ai-trace-schema.md`
+
+### 9.4 Resultado esperado
+
+- Salida `AI trace schema validation passed.`
+- Exit code `0`.
 - [ ] Toggle de tema funciona (localStorage disponible).
 - [ ] Footer con iconos SVG visible.
 - [ ] Blog dinámico carga correctamente (fetch + JSON parsing).

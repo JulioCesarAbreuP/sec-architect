@@ -212,6 +212,31 @@
     };
   }
 
+  async function analyzeRisk(input, options) {
+    var pack = buildSecArchitectAnalysisJsonTemplate(input, options);
+    var adapter = w.SECArchitectAI && w.SECArchitectAI.invokeCopilot;
+
+    if (typeof adapter === "function") {
+      return adapter(pack.prompt, {
+        engine: "risk-analyzer",
+        mode: pack.mode,
+        input: pack.input
+      });
+    }
+
+    if (w.copilot && typeof w.copilot.invoke === "function") {
+      return w.copilot.invoke(pack.prompt);
+    }
+
+    return {
+      ok: false,
+      source: "local-fallback",
+      reason: "window.copilot.invoke no disponible en este entorno.",
+      prompt: pack.prompt,
+      sections: FULL_ANALYSIS_BLOCKS.slice()
+    };
+  }
+
   function getRiskAnalyzerSections() {
     return DEFAULT_SECTIONS.slice();
   }
@@ -228,4 +253,5 @@
   w.SECArchitectAI.buildSecArchitectAnalysisJsonTemplate = buildSecArchitectAnalysisJsonTemplate;
   w.SECArchitectAI.getRiskAnalyzerSections = getRiskAnalyzerSections;
   w.SECArchitectAI.getFullAnalysisBlocks = getFullAnalysisBlocks;
+  w.SECArchitectAI.analyzeRisk = analyzeRisk;
 })(window);

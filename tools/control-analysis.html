@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+  <title>Control Analysis Engine | SEC_ARCHITECT</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="../assets/css/control-analysis.page.css">
+  <link rel="stylesheet" href="../assets/css/ai-panel.css">
+</head>
+<body data-theme="dark">
+  <header>
+    <a href="../index.html" class="logo">SEC_<span>ARCHITECT</span></a>
+    <div class="header-right">
+      <a href="../tools.html" class="header-link">Herramientas</a>
+      <a href="../blog.html" class="header-link">Blog</a>
+      <a href="../sabsa-ig4-command-center.html" class="header-link">Command Center</a>
+    </div>
+  </header>
+
+  <main class="control-analysis-main">
+    <section class="analysis-hero">
+      <p class="eyebrow">Prompt Unificado SEC_ARCHITECT</p>
+      <h1>Motor de Analisis de Controles</h1>
+      <p>
+        Evalua un control textual y devuelve un analisis estructurado con dominio, tipo,
+        mapeo NIST/CIS/MITRE, Zero Trust, riesgo residual y acciones priorizadas.
+      </p>
+    </section>
+
+    <section class="analysis-workbench">
+      <article class="input-panel">
+        <label for="controlInput">Control a analizar</label>
+        <textarea id="controlInput" rows="6" placeholder="Ejemplo: Aplicar MFA resistente a phishing para cuentas con privilegios y monitorear intentos anomalos."></textarea>
+        <div class="panel-actions">
+          <button type="button" id="analyzeControlBtn" class="primary-btn">Analizar control</button>
+          <button type="button" id="clearControlBtn" class="secondary-btn">Limpiar</button>
+        </div>
+        <p class="status-line">Estado: <strong id="analysisStatus">Pendiente de analisis</strong></p>
+      </article>
+
+      <article class="result-panel">
+        <h2>Resultado estructurado</h2>
+        <div class="metrics-grid">
+          <div class="metric-card"><span>Dominio</span><strong id="domainValue">-</strong></div>
+          <div class="metric-card"><span>Tipo de control</span><strong id="typeValue">-</strong></div>
+          <div class="metric-card"><span>Riesgo residual</span><strong id="riskValue">-</strong></div>
+        </div>
+
+        <section class="result-block">
+          <h3>Resumen tecnico</h3>
+          <p id="summaryValue">-</p>
+        </section>
+
+        <section class="mapping-grid">
+          <article>
+            <h3>NIST CSF</h3>
+            <ul id="nistList"></ul>
+          </article>
+          <article>
+            <h3>CIS Controls v8</h3>
+            <ul id="cisList"></ul>
+          </article>
+          <article>
+            <h3>MITRE ATT&CK</h3>
+            <ul id="mitreList"></ul>
+          </article>
+          <article>
+            <h3>Zero Trust</h3>
+            <ul id="zeroTrustList"></ul>
+          </article>
+        </section>
+
+        <section class="result-block">
+          <h3>Resumen ejecutivo</h3>
+          <p id="executiveValue">-</p>
+        </section>
+
+        <section class="result-block">
+          <h3>Acciones priorizadas</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Prioridad</th>
+                  <th>Accion</th>
+                  <th>Responsable</th>
+                  <th>Evidencia esperada</th>
+                </tr>
+              </thead>
+              <tbody id="recommendationBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="result-block">
+          <h3>Salida JSON</h3>
+          <pre id="rawJson">{}</pre>
+        </section>
+      </article>
+    </section>
+
+    <section class="analysis-workbench">
+      <article class="result-panel">
+        <h2>Panel Unificado de Motores IA</h2>
+        <div id="ai-panel-container"></div>
+      </article>
+    </section>
+  </main>
+
+  <footer data-site-footer="true"></footer>
+
+  <script src="../assets/js/site.js" defer></script>
+  <script src="../core/ai/unified-control-analyzer.js" defer></script>
+  <script src="../core/ui/control-analysis.presenter.js" defer></script>
+  <script type="module" src="../core/ui/ai-panel.module.js"></script>
+</body>
+</html>

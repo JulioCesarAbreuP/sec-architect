@@ -8,6 +8,30 @@
 
 ## [Unreleased]
 
+### Added
+- `docs/ai-trace-schema.md`: contrato versionado (`1.0.0`) para exportacion de trazas IA.
+- `docs/adr/ADR-006-global-namespace-retirement.md`: plan formal de retiro progresivo de `window.SECArchitectAI`.
+- `core/ai/copilot-adapter.module.js`: adaptador ESM con `requestId` y metadatos de correlacion.
+- `core/ai/secarchitect-ai-bridge.module.js`: bridge ESM para compatibilidad controlada con consumidores legacy.
+- `assets/js/sabsa-ig4-command-center.module.js`: wrapper ESM para carga modular del Command Center SABSA.
+- `scripts/validate-ai-trace-schema.ps1`: prueba de contrato del esquema AI Trace.
+- `tests/fixtures/ai-trace-export.valid.json`: fixture versionado para validacion CI.
+- `tests/fixtures/ai-trace-export.invalid.json`: fixture negativo para prueba de rechazo de contrato.
+- `docs/deprecation-sprint-checklist.md`: checklist operativo por sprint para medicion y cierre de deprecacion legacy.
+- `docs/deprecation-evidence-template.md`: plantilla de evidencia auditable para snapshots/export de deprecacion.
+- `docs/evidence/README.md`: estructura y flujo operativo para repositorio de evidencias por sprint.
+
+### Changed
+- `tools/control-analysis.html`: mantiene panel IA en modo ESM con motores modulares.
+- `sabsa-ig4-command-center.html`: migrado a carga IA por ESM (sin scripts AI clasicos directos).
+- `core/ui/ai-panel.module.js`: valida esquema de exportacion antes de generar JSON y conserva correlacion `requestId` por traza.
+- `.github/workflows/security-ci.yml`: agrega job `ai-trace-schema-validation`.
+- `scripts/validate-ai-trace-schema.ps1`: soporta modo `-Expect invalid` para pruebas negativas.
+- `core/ai/secarchitect-ai-bridge.module.js`: agrega warnings de deprecacion y metricas de uso residual por pagina.
+- `core/ai/secarchitect-ai-bridge.module.js`: expone reporte runtime (`getDeprecationUsageSnapshot`, `exportDeprecationUsageJson`, `clearDeprecationUsage`).
+- `docs/adr/ADR-006-global-namespace-retirement.md`: formaliza umbral de salida (`0` usos por `2` sprints consecutivos).
+- `.github/pull_request_template.md`: agrega gates de evidencia para cambios de bridge global y migracion ESM.
+
 ### Planned
 - Integración de DOMPurify como sanitizador de producción.
 - CSP `report-to` con endpoint de monitorización.
