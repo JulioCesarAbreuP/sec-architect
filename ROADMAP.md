@@ -9,7 +9,7 @@
 
 ### Seguridad
 - [x] Integrar DOMPurify en `markdown.js` como sanitizador de producción.
-- [ ] Activar CSP `report-to` con endpoint de reporte (Report URI o equivalente).
+- [x] Activar CSP `report-to` con endpoint de reporte (Report URI o equivalente).
 - [ ] Mover scripts inline restantes en `blog/index.html` y artículos a JS externos.
 - [ ] Añadir SRI a hojas de estilo de Google Fonts.
 - [ ] Revisar y actualizar el hash SRI de marked.js trimestralmente.

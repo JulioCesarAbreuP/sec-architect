@@ -42,6 +42,14 @@ try {
             $issues += "[CSP] unsafe-inline found in script-src: $relative"
         }
 
+        if ($csp -notmatch 'report-uri\s+') {
+            $issues += "[CSP] Missing report-uri directive: $relative"
+        }
+
+        if ($csp -notmatch 'report-to\s+') {
+            $issues += "[CSP] Missing report-to directive: $relative"
+        }
+
         if ($content -match 'href\s*=\s*"\s*javascript:') {
             $issues += "[LINK] javascript: URL found: $relative"
         }

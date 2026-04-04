@@ -60,6 +60,10 @@ Esto implica que directivas como `frame-ancestors` y `report-uri`/`report-to`
 Mitigación futura: desplegar detrás de Azure Front Door o Cloudflare con
 cabeceras HTTP reales en la respuesta.
 
+Estado actual: se activaron directivas `report-uri` y `report-to` en las CSP
+de superficies HTML principales para estandarizar política y preparar el
+cutover a cabeceras HTTP reales en reverse proxy.
+
 ---
 
 ## 2. Evaluación de Cabeceras de Seguridad

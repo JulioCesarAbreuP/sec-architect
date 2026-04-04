@@ -106,6 +106,12 @@ document.write("<script>alert(1)<\/script>")
 
 **Resultado esperado**: error de CSP en consola; sin ejecución.
 
+### 2.4 Verificación de Directivas de Reporte CSP
+
+- Ejecutar `scripts/security-policy-check.ps1` sobre el repositorio.
+- Confirmar que no existan hallazgos de `Missing report-uri directive` ni
+  `Missing report-to directive` en páginas HTML con CSP.
+
 ---
 
 ## 3. Pruebas de Sanitización del Blog
