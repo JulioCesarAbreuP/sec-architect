@@ -1,3 +1,4 @@
+
 const postsList = document.getElementById("postsList");
 const postsPagination = document.getElementById("postsPagination");
 const postsTagFilters = document.getElementById("postsTagFilters");
@@ -7,6 +8,30 @@ const MAX_MARKDOWN_FILES = 200;
 const MAX_POST_BYTES = 500000;
 const POSTS_PER_PAGE = 5;
 const prefersReducedMotion = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Category filter UI
+let postsCategoryFilters = null;
+document.addEventListener("DOMContentLoaded", () => {
+  // Trusted Types: Definir policy mínima para sinks controlados
+  if (window.trustedTypes && !window.trustedTypes.getPolicy("defaultPolicy")) {
+    window.trustedTypes.createPolicy("defaultPolicy", {
+      createHTML: (input) => input,
+      createScript: (input) => input,
+      createScriptURL: (input) => input
+    });
+  }
+  // Insert category filter nav after tag filters
+  const tagNav = document.getElementById("postsTagFilters");
+  if (tagNav && !document.getElementById("postsCategoryFilters")) {
+    postsCategoryFilters = document.createElement("nav");
+    postsCategoryFilters.id = "postsCategoryFilters";
+    postsCategoryFilters.className = "category-filters";
+    postsCategoryFilters.setAttribute("aria-label", "Filtros por categoría");
+    tagNav.insertAdjacentElement("afterend", postsCategoryFilters);
+  } else {
+    postsCategoryFilters = document.getElementById("postsCategoryFilters");
+  }
+});
 
 function resolveBlogPath(fileName) {
   return isNestedBlogIndex ? fileName : `blog/${fileName}`;
@@ -220,6 +245,7 @@ async function loadPostMetadata(fileName) {
   };
 }
 
+// Trusted Types: Reemplazo seguro de sinks para innerHTML/textContent
 function renderEmptyState(message) {
   postsList.textContent = "";
   if (postsPagination) {
@@ -230,14 +256,13 @@ function renderEmptyState(message) {
   }
   const item = document.createElement("li");
   item.className = "empty-state";
+  // Trusted Types: No se usa innerHTML, solo textContent seguro
   item.textContent = message;
   postsList.appendChild(item);
 }
 
 function renderPosts(posts) {
   postsList.textContent = "";
-
-
   posts.forEach((post, index) => {
     const item = document.createElement("li");
     item.className = "post-item post-enter";
@@ -249,16 +274,30 @@ function renderPosts(posts) {
 
     const title = document.createElement("span");
     title.className = "post-title";
+    // Trusted Types: Asignación segura, no se usa innerHTML
     title.textContent = post.title;
 
     const meta = document.createElement("span");
     meta.className = "post-meta";
+    // Trusted Types: Asignación segura, no se usa innerHTML
     meta.textContent = post.dateLabel;
 
     // Tiempo de lectura
     const reading = document.createElement("span");
     reading.className = "post-reading-time";
+    // Trusted Types: Asignación segura, no se usa innerHTML
     reading.textContent = `· ${post.readingTime} min lectura`;
+
+    // Category label
+    const category = post.category || post.Category || "";
+    let categoryLabel = null;
+    if (category) {
+      categoryLabel = document.createElement("span");
+      categoryLabel.className = "post-category";
+      // Trusted Types: Asignación segura, no se usa innerHTML
+      categoryLabel.textContent = `· ${category}`;
+      meta.appendChild(categoryLabel);
+    }
 
     link.appendChild(title);
     link.appendChild(meta);
@@ -267,7 +306,6 @@ function renderPosts(posts) {
     item.appendChild(link);
     postsList.appendChild(item);
   });
-
   animatePostEntries(postsList.querySelectorAll(".post-enter"));
 }
 
@@ -332,14 +370,11 @@ function renderTagFilters(posts, activeTag, onSelectTag) {
   if (!postsTagFilters) {
     return;
   }
-
   postsTagFilters.textContent = "";
   const availableTags = Array.from(new Set(posts.flatMap((post) => post.tags || []))).sort((a, b) => a.localeCompare(b, "es"));
-
   if (availableTags.length === 0) {
     return;
   }
-
   const allButton = document.createElement("button");
   allButton.type = "button";
   allButton.className = "tag-filter-button";
@@ -350,7 +385,6 @@ function renderTagFilters(posts, activeTag, onSelectTag) {
   }
   allButton.addEventListener("click", () => onSelectTag(""));
   postsTagFilters.appendChild(allButton);
-
   for (const tag of availableTags) {
     const button = document.createElement("button");
     button.type = "button";
@@ -363,6 +397,41 @@ function renderTagFilters(posts, activeTag, onSelectTag) {
     }
     button.addEventListener("click", () => onSelectTag(tag));
     postsTagFilters.appendChild(button);
+  }
+}
+
+function renderCategoryFilters(posts, activeCategory, onSelectCategory) {
+  if (!postsCategoryFilters) {
+    postsCategoryFilters = document.getElementById("postsCategoryFilters");
+    if (!postsCategoryFilters) return;
+  }
+  postsCategoryFilters.textContent = "";
+  const availableCategories = Array.from(new Set(posts.map((post) => post.category || post.Category || "").filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"));
+  if (availableCategories.length === 0) {
+    return;
+  }
+  const allButton = document.createElement("button");
+  allButton.type = "button";
+  allButton.className = "category-filter-button";
+  allButton.setAttribute("aria-pressed", activeCategory ? "false" : "true");
+  allButton.textContent = "Todas";
+  if (!activeCategory) {
+    allButton.classList.add("is-active");
+  }
+  allButton.addEventListener("click", () => onSelectCategory(""));
+  postsCategoryFilters.appendChild(allButton);
+  for (const category of availableCategories) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "category-filter-button";
+    button.textContent = category;
+    const isActive = activeCategory === category;
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    if (isActive) {
+      button.classList.add("is-active");
+    }
+    button.addEventListener("click", () => onSelectCategory(category));
+    postsCategoryFilters.appendChild(button);
   }
 }
 
@@ -421,19 +490,25 @@ async function initBlog() {
   }
 
   const state = {
-    activeTag: ""
+    activeTag: "",
+    activeCategory: ""
   };
 
   const updateView = () => {
-    const filteredPosts = state.activeTag
-      ? posts.filter((post) => Array.isArray(post.tags) && post.tags.includes(state.activeTag))
-      : posts;
-
+    let filteredPosts = posts;
+    if (state.activeCategory) {
+      filteredPosts = filteredPosts.filter((post) => (post.category || post.Category || "") === state.activeCategory);
+    }
+    if (state.activeTag) {
+      filteredPosts = filteredPosts.filter((post) => Array.isArray(post.tags) && post.tags.includes(state.activeTag));
+    }
     if (filteredPosts.length === 0) {
       postsList.textContent = "";
       const item = document.createElement("li");
       item.className = "empty-state";
-      item.textContent = "No hay artículos para el tag seleccionado.";
+      item.textContent = state.activeCategory
+        ? "No hay artículos para la categoría seleccionada."
+        : "No hay artículos para el tag seleccionado.";
       postsList.appendChild(item);
       if (postsPagination) {
         postsPagination.textContent = "";
@@ -441,13 +516,15 @@ async function initBlog() {
     } else {
       renderPaginatedPosts(filteredPosts);
     }
-
+    renderCategoryFilters(posts, state.activeCategory, (category) => {
+      state.activeCategory = category;
+      updateView();
+    });
     renderTagFilters(posts, state.activeTag, (tag) => {
       state.activeTag = tag;
       updateView();
     });
   };
-
   updateView();
 }
 

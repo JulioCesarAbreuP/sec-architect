@@ -17,3 +17,28 @@ updates:
     labels:
       - "dependencies"
       - "security"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "fix(deps)"
+      include: "scope"
+    ignore:
+      - dependency-name: "marked"
+        versions: ["*"] # Solo actualizar manualmente dependencias críticas de renderizado markdown
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "juliocesarabreup"
+    assignees:
+      - "juliocesarabreup"
+    allow:
+      - dependency-type: "all"
+    security-updates: true

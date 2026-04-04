@@ -1,0 +1,30 @@
+# GitHub Actions workflow: Dependabot/renovate alerts
+# Ejecuta escaneo de dependencias y reporta vulnerabilidades en cada push a main
+
+name: Dependabot Alerts
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1' # Cada lunes a las 03:00 UTC
+  push:
+    branches:
+      - main
+
+jobs:
+  dependabot-alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: |
+          npm install --ignore-scripts
+          npm audit --audit-level=moderate --json > audit-report.json || true
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json

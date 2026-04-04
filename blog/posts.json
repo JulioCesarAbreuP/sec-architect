@@ -1,5 +1,35 @@
 [
-  "identidad-vs-cuenta.md",
-  "identidad-y-cuenta.md",
-  "sabsa-ig4-command-center.md"
+  {
+    "filename": "identidad-vs-cuenta.md",
+    "title": "Identidad vs. cuenta vs. credencial",
+    "date": "2026-04-02",
+    "tags": [
+      "identidad",
+      "arquitectura",
+      "zero trust"
+    ],
+    "category": "Identidad"
+  },
+  {
+    "filename": "identidad-y-cuenta.md",
+    "title": "Identidad y Cuenta: Fundamentos Arquitectónicos",
+    "date": "2026-04-01",
+    "tags": [
+      "identidad",
+      "entra id",
+      "acceso"
+    ],
+    "category": "Identidad"
+  },
+  {
+    "filename": "sabsa-ig4-command-center.md",
+    "title": "SABSA IG4 Command Center: Arquitectura, Doctrina y Diseño",
+    "date": "2026-04-03",
+    "tags": [
+      "sabsa",
+      "gobernanza",
+      "riesgo"
+    ],
+    "category": "Gobernanza"
+  }
 ]

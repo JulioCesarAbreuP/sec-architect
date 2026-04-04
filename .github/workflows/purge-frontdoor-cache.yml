@@ -1,0 +1,30 @@
+# GitHub Actions: Purga automática de caché de Azure Front Door tras deploy
+# Requiere secrets: AZURE_CREDENTIALS, AZURE_SUBSCRIPTION_ID, RESOURCE_GROUP, FRONTDOOR_NAME
+
+name: Purge Azure Front Door Cache
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, staging]
+
+jobs:
+  purge-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Purge Front Door cache
+        uses: azure/CLI@v2
+        with:
+          azcliversion: 2.53.0
+          inlineScript: |
+            az afd endpoint purge \
+              --resource-group rg-sec-architect-prod \
+              --profile-name afd-sec-architect-prod \
+              --endpoint-name afd-sec-architect-prod-endpoint \
+              --content-paths '/blog/*' '/api/*'

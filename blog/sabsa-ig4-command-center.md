@@ -2,6 +2,7 @@
 title: SABSA IG4 Command Center: Arquitectura, Doctrina y Diseño
 date: 2026-04-03
 tags: sabsa, gobernanza, riesgo
+category: Gobernanza
 ---
 
 <!DOCTYPE html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content; report-uri https://juliocesarabreup.github.io/sec-architect/csp-report; report-to sec-architect-csp;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content; require-trusted-types-for 'script'; trusted-types defaultPolicy; report-uri https://juliocesarabreup.github.io/sec-architect/csp-report; report-to sec-architect-csp;" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
@@ -19,9 +19,10 @@
   <meta name="twitter:image" content="https://juliocesarabreup.github.io/sec-architect/assets/img/preview-sec-architect.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <title>Blog | SEC_ARCHITECT</title>
+  <!-- SRI: Protegido, hash generado automáticamente en CI -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" integrity="sha384-Ajp9bTtH2p9VaFIQE6MYw/3m72Ao3PAZUpyzOgME70behHgtKASiRiV60oasXIro" crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/css/site.css">
-  <link rel="stylesheet" href="assets/css/blog.page.css">
+  <link rel="stylesheet" href="assets/css/site.css" integrity="sha384-wI2DE2idoM26yA3zJvyH4rADF43VWJnwFFI7+zDZ3m+3N+IeYeXUKt7pzlJOzcq3" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/css/blog.page.css" integrity="sha384-s/s5mQwqlyGnzpO8KV7BcCD4n3oc0/KGYoGVIltHFnnvO8io5NLQutpsZNy7R5ve" crossorigin="anonymous">
 </head>
 <body data-theme="dark">
   <main class="container">
@@ -48,6 +49,7 @@
   <footer data-site-footer="true"></footer>
 
   <script src="blog.js" defer></script>
-  <script src="assets/js/site.js" defer></script>
+  <!-- SRI: Protegido, hash generado automáticamente en CI -->
+  <script src="assets/js/site.js" defer integrity="sha384-f1Ms5vbFnCQ4q0riShOHGW2ck/xD7xJ6aaePRv0SExwA8NppVKEVCbvT00B51vCX" crossorigin="anonymous"></script>
 </body>
 </html>

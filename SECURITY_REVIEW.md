@@ -247,6 +247,22 @@ pérdida de atributos de integridad.
 
 ---
 
+## 6. Auditoría de Seguridad Automatizada
+
+Actualmente, la auditoría automatizada de seguridad en este repositorio se realiza mediante:
+
+- **OWASP ZAP**: Escaneo activo automatizado sobre el entorno publicado tras Azure Front Door. El workflow `.github/workflows/zap-scan.yml` ejecuta ZAP en cada push a `main` y bajo demanda, subiendo el reporte como artefacto.
+- **npm audit**: Auditoría de dependencias automatizada vía workflow `.github/workflows/dependabot-audit.yml`.
+- **Dependabot**: Configurado para GitHub Actions y Docker, abre PRs de seguridad semanalmente.
+
+### Nikto
+
+La integración de **Nikto** queda documentada como opción futura opcional para ampliar la cobertura de escaneo activo. No se implementa en este ciclo para mantener el pipeline ligero y estable. Si se requiere, puede añadirse un workflow dedicado siguiendo las mejores prácticas de CI/CD.
+
+**Recomendación:** Priorizar ZAP como escáner activo principal y mantener la automatización enfocada en herramientas soportadas y mantenidas por la comunidad y GitHub Actions.
+
+---
+
 ## 9. Hallazgos y Correcciones Concretas (Pasada Final)
 
 ### 9.1 Hallazgos confirmados
@@ -316,3 +332,16 @@ pérdida de atributos de integridad.
 > Este análisis sigue un enfoque de trazabilidad de controles inspirado en marcos
 > como SABSA, donde cada control técnico implementado es trazable a un riesgo de
 > negocio identificado y a un objetivo de seguridad definido.
+
+---
+
+## Subresource Integrity (SRI) y Automatización
+
+- Todos los recursos externos críticos (JS/CSS/CDN) están protegidos con SRI (SHA-384) y `crossorigin="anonymous"`.
+- Los hashes SRI se generan automáticamente en CI mediante el script `scripts/generate-sri-hashes.cjs`.
+- El script calcula los hashes de recursos locales y remotos, y los inyecta en las plantillas HTML.
+- Cualquier cambio en los recursos requiere regenerar los hashes y actualizar los atributos `integrity`.
+- El flujo asegura que solo recursos íntegros y no alterados sean ejecutados/cargados por el navegador.
+- Comentarios en las plantillas indican qué recursos están protegidos y cómo se actualizan los hashes.
+
+**Recomendación:** Mantener el script en el pipeline y validar que ningún recurso externo se sirva sin SRI.
