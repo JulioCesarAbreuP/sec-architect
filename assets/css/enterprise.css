@@ -10,6 +10,7 @@
   --degraded: #eabf67;
   --critical: #ff6b7a;
   --accent: #7de3f4;
+  --focus: #9fe9ff;
 }
 
 * {
@@ -26,6 +27,35 @@ body {
 
 body.soc-night {
   background: radial-gradient(circle at top right, rgba(14, 31, 57, 0.6), transparent 40%), #080b10;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3rem;
+  z-index: 1000;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(159, 233, 255, 0.8);
+  background: #0f1720;
+  color: #d8f6ff;
+  text-decoration: none;
+}
+
+.skip-link:focus-visible {
+  top: 0.75rem;
 }
 
 .layout-header {
@@ -51,7 +81,7 @@ body.soc-night {
 }
 
 .header-nav a {
-  color: var(--muted);
+  color: #bac4ce;
   text-decoration: none;
 }
 
@@ -236,6 +266,17 @@ pre {
   padding: 0.65rem;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(125, 227, 244, 0.2);
+}
+
 .memory-note {
   margin-top: 0.65rem;
   color: var(--muted);
@@ -332,6 +373,15 @@ pre {
   50% { transform: translateX(-2px); }
   75% { transform: translateX(1px); }
   100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── Azure Connect Panel ───────────────────────────────── */

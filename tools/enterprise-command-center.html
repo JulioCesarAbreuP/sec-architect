@@ -9,12 +9,13 @@
   <link rel="stylesheet" href="../assets/css/enterprise.css">
 </head>
 <body>
+  <a class="skip-link" href="#enterpriseRoot">Saltar al contenido principal</a>
   <header class="layout-header">
     <a href="../index.html" class="brand">SEC_ARCHITECT</a>
     <nav class="header-nav">
       <a href="../tools.html">Herramientas</a>
       <a href="../sabsa-ig4-command-center.html">SABSA Legacy (deprecated)</a>
-      <button id="socNightMode" class="soc-toggle" type="button">SOC Night Mode</button>
+      <button id="socNightMode" class="soc-toggle" type="button" aria-pressed="false" aria-label="Activar SOC Night Mode">SOC Night Mode</button>
     </nav>
   </header>
 
@@ -24,7 +25,7 @@
         <h1>Enterprise AI Command Graph</h1>
         <p class="hero-subtitle">Inference Engine multinivel con memoria operacional, shadow monitor y auto-remediacion contextual.</p>
       </div>
-      <span id="command-status" class="status-badge status-healthy">HEALTHY</span>
+      <span id="command-status" class="status-badge status-healthy" role="status" aria-live="polite" aria-atomic="true">HEALTHY</span>
     </section>
 
     <section id="threatEscalationBanner" class="threat-banner" aria-live="polite" hidden>Threat Escalation Detected</section>
@@ -32,11 +33,13 @@
     <section class="enterprise-grid">
       <article class="panel panel-json" id="panel-json">
         <h2>Entra ID Parser</h2>
+        <label class="visually-hidden" for="graphJsonInput">Payload JSON de identidad para analisis</label>
         <textarea id="graphJsonInput" class="code-input" placeholder='Ejemplo Service Principal: {"servicePrincipal":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","permissions":["Contributor","Storage Blob Data Owner"],"mfa":"disabled"}
 
 Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls":["mfa"]},"conditions":{"users":{"includeRoles":["62e90394-69f5-4237-9190-012177145e10"]}}}'></textarea>
         <p id="parserObjectType" class="memory-note">Tipo detectado: pendiente</p>
         <div class="panel-actions">
+          <label class="visually-hidden" for="remediationFormat">Formato de remediacion</label>
           <select id="remediationFormat">
             <option value="terraform">Terraform</option>
             <option value="bicep">Bicep</option>
@@ -48,34 +51,36 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
       <article class="panel panel-ia" id="panel-ia">
         <h2>AI Attack Path Analysis</h2>
         <p id="aiNarrative" class="memory-note">La IA analizara el payload en segundo plano y mostrara inferencia tecnica.</p>
-        <pre id="aiAnalysisOutput">Sin analisis.</pre>
+        <pre id="aiAnalysisOutput" tabindex="0" aria-live="polite" aria-label="Salida de analisis de ataque">Sin analisis.</pre>
         <p id="operationalMemoryNarrative" class="memory-note">Memoria operacional esperando primera corrida.</p>
       </article>
 
       <article class="panel panel-jwt" id="panel-jwt">
         <h2>Panel JWT</h2>
+        <label class="visually-hidden" for="jwtInput">Token JWT para validacion</label>
         <textarea id="jwtInput" class="code-input" placeholder="Pega JWT para evaluar salud operacional de identidad."></textarea>
         <button id="validateJwtBtn" class="secondary-btn" type="button">Validate JWT</button>
-        <pre id="jwtOutput">Sin validacion.</pre>
+        <pre id="jwtOutput" tabindex="0" aria-live="polite" aria-label="Resultado de validacion JWT">Sin validacion.</pre>
       </article>
     </section>
 
     <section class="enterprise-grid second-row">
       <article class="panel panel-radar">
         <h2>Graph Risk Radar</h2>
-        <div class="radar-shell"><canvas id="riskRadar"></canvas></div>
+        <div class="radar-shell"><canvas id="riskRadar" role="img" aria-label="Radar de riesgo con probabilidad, exposicion, identidad, remediacion y estabilidad"></canvas></div>
         <p id="zeroTrustScore" class="memory-note">Zero-Trust Score: 100 / 100 (Healthy)</p>
       </article>
 
       <article class="panel panel-remediation" id="remediationPanel">
         <h2>Auto-Remediation</h2>
-        <pre id="terraformFixOutput">Sin remediacion.</pre>
+        <pre id="terraformFixOutput" tabindex="0" aria-live="polite" aria-label="Salida de remediacion automatica">Sin remediacion.</pre>
         <button id="copyFixBtn" class="secondary-btn" type="button">[COPY FIX TO CLIPBOARD]</button>
       </article>
 
       <article class="panel panel-attack-sim" id="attackSimulationPanel">
         <h2>Attack Simulation</h2>
         <div class="panel-actions">
+          <label class="visually-hidden" for="attackTechniqueSelect">Tecnica MITRE para simulacion</label>
           <select id="attackTechniqueSelect">
             <option value="T1078">T1078</option>
             <option value="T1556">T1556</option>
@@ -83,7 +88,7 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
           </select>
           <button id="runSimulationBtn" class="secondary-btn" type="button">Run Simulation</button>
         </div>
-        <pre id="attackSimulationOutput">Sin simulacion.</pre>
+        <pre id="attackSimulationOutput" tabindex="0" aria-live="polite" aria-label="Resultado de simulacion de ataque">Sin simulacion.</pre>
       </article>
     </section>
 
@@ -118,7 +123,7 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
           </div>
         </div>
 
-        <pre id="ztFindings">No findings yet. Connect to Azure and load CA policies.</pre>
+        <pre id="ztFindings" tabindex="0" aria-live="polite" aria-label="Hallazgos del motor Zero Trust">No findings yet. Connect to Azure and load CA policies.</pre>
       </article>
     </section>
 
@@ -148,23 +153,23 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
         <div class="ti-columns">
           <div class="ti-column">
             <h3>Main Techniques</h3>
-            <pre id="tiTopTechniques">No techniques yet.</pre>
+            <pre id="tiTopTechniques" tabindex="0" aria-live="polite" aria-label="Tecnicas principales detectadas">No techniques yet.</pre>
           </div>
           <div class="ti-column">
             <h3>Confidence Trend</h3>
-            <pre id="tiConfidenceTrend">No trend data yet.</pre>
+            <pre id="tiConfidenceTrend" tabindex="0" aria-live="polite" aria-label="Tendencia de confianza de inteligencia">No trend data yet.</pre>
           </div>
         </div>
 
         <h3>Temporal View</h3>
-        <pre id="tiTimeline">No timeline events yet.</pre>
+        <pre id="tiTimeline" tabindex="0" aria-live="polite" aria-label="Linea temporal de eventos de inteligencia">No timeline events yet.</pre>
       </article>
     </section>
 
     <section class="enterprise-grid graph-row">
       <article class="panel panel-graph">
         <h2>Attack Graph</h2>
-        <div id="attackGraph" class="graph-shell"></div>
+        <div id="attackGraph" class="graph-shell" tabindex="0" aria-label="Grafo de ataque generado por inferencia"></div>
       </article>
     </section>
 
@@ -208,12 +213,13 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
     <section class="enterprise-grid third-row">
       <article class="panel panel-monitor">
         <h2>Shadow Monitor</h2>
-        <div id="shadowConsole" class="shadow-console"></div>
+        <div id="shadowConsole" class="shadow-console" role="log" aria-live="polite" aria-relevant="additions text" tabindex="0"></div>
       </article>
 
       <article class="panel panel-architecture-board" id="architectureBoardPanel">
         <h2>Architecture Board</h2>
         <div class="panel-actions">
+          <label class="visually-hidden" for="architectureQuestion">Pregunta para el Architecture Board</label>
           <input id="architectureQuestion" class="question-input" type="text" placeholder="¿Por que tomamos esta decision arquitectonica?">
           <button id="askArchitectureBtn" class="secondary-btn" type="button">Ask ADR</button>
           <button id="refreshArchitectureBtn" class="secondary-btn" type="button">Refresh Docs</button>

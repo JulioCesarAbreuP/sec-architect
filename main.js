@@ -333,8 +333,17 @@ function wireArchitectureBoard() {
 }
 
 function wireSocNightMode() {
+  const syncSocNightModeA11y = () => {
+    const isNight = document.body.classList.contains("soc-night");
+    refs.socNightModeBtn.setAttribute("aria-pressed", isNight ? "true" : "false");
+    refs.socNightModeBtn.setAttribute("aria-label", isNight ? "Desactivar SOC Night Mode" : "Activar SOC Night Mode");
+  };
+
+  syncSocNightModeA11y();
+
   refs.socNightModeBtn.addEventListener("click", () => {
     document.body.classList.toggle("soc-night");
+    syncSocNightModeA11y();
   });
 }
 

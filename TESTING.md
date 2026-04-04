@@ -63,6 +63,22 @@ Cobertura actual:
 - Generacion de remediacion Bicep y Terraform.
 - Decodificacion JWT y validacion SC-300 con MFA y expiracion.
 
+## 1.6 Auditoria WCAG 2.1 AA — Enterprise Command Center
+
+Objetivo: mantener densidad de informacion del panel sin degradar operatividad para teclado y lector de pantalla.
+
+Checklist minimo en `tools/enterprise-command-center.html`:
+
+- [ ] Navegacion por teclado completa (Tab/Shift+Tab) sin bloqueo.
+- [ ] `Skip link` funcional hacia `#enterpriseRoot`.
+- [ ] Foco visible en botones, links, inputs, selects, textareas y paneles navegables.
+- [ ] `SOC Night Mode` con `aria-pressed` y etiqueta dinamica coherente.
+- [ ] Estados de comando (`HEALTHY/DEGRADED/CRITICAL`) anunciables por AT (`role=status`, `aria-live`).
+- [ ] Consola operativa con semantica de log (`role=log`, `aria-live`).
+- [ ] Campos criticos con nombre accesible (label visible o programatico).
+- [ ] Salidas criticas (`pre`) navegables y anunciables (`tabindex`, `aria-live`).
+- [ ] Respeto a `prefers-reduced-motion` para animaciones criticas.
+
 ---
 
 ## 2. Pruebas de CSP
