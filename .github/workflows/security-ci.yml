@@ -58,6 +58,23 @@ jobs:
         shell: pwsh
         run: ./scripts/validate-ai-trace-schema.ps1 -FilePath tests/fixtures/ai-trace-export.invalid.json -Expect invalid
 
+  enterprise-functional-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run enterprise smoke tests
+        run: npm run test:enterprise
+
   codeql-analysis:
     runs-on: ubuntu-latest
     timeout-minutes: 20

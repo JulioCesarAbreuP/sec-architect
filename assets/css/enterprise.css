@@ -19,6 +19,19 @@ body {
   font-family: "JetBrains Mono", "Roboto Mono", monospace;
 }
 
+.platform-note {
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(232, 196, 110, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(232, 196, 110, 0.08) 0%, rgba(22, 27, 34, 0.9) 100%);
+  color: var(--text);
+}
+
+.platform-note p {
+  margin: 0;
+}
+
 .layout-header {
   max-width: 1300px;
   margin: 0 auto;

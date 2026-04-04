@@ -9,6 +9,17 @@
 ## [Unreleased]
 
 ### Added
+- `tools/enterprise-command-center.html`: nueva superficie principal del Command Center enterprise.
+- `core/sabsa-engine.js`: motor desacoplado para evaluacion SABSA e inferencia enterprise.
+- `core/mitre-mapper.js`: mapeo local MITRE ATT&CK para Conditional Access y objetos Azure.
+- `core/json-validator.js`: validador JSON-to-MITRE con remediacion Bicep/Terraform.
+- `core/jwt-validator.js`: validador JWT SC-300 con verificacion de MFA y expiracion.
+- `ui/panel-ia.js`, `ui/panel-json.js`, `ui/panel-jwt.js`, `ui/renderer.js`: capa UI modular del nuevo Command Center.
+- `assets/css/enterprise.css`: estilo dark enterprise para la nueva plataforma.
+- `assets/vendor/jwt-decode.esm.js`: helper local ESM para decodificacion JWT.
+- `tests/run-enterprise-smoke.js`: smoke test funcional para flujos JSON, JWT y MITRE.
+- `tests/fixtures/enterprise-ca-policy.no-mfa.json`, `tests/fixtures/enterprise-ca-policy.with-mfa.json`: fixtures de validacion funcional del flujo enterprise.
+- `docs/evidence/enterprise-command-center-validation.md`: evidencia de validacion del cutover enterprise.
 - `docs/ai-trace-schema.md`: contrato versionado (`1.0.0`) para exportacion de trazas IA.
 - `docs/adr/ADR-006-global-namespace-retirement.md`: plan formal de retiro progresivo de `window.SECArchitectAI`.
 - `core/ai/copilot-adapter.module.js`: adaptador ESM con `requestId` y metadatos de correlacion.
@@ -22,6 +33,13 @@
 - `docs/evidence/README.md`: estructura y flujo operativo para repositorio de evidencias por sprint.
 
 ### Changed
+- `tools.html`, `tools/control-analysis.html`, `tools/knowledge-base.html`, `intelligence-dashboard.html`: el enlace primario de Command Center apunta ahora a la superficie enterprise.
+- `sections/strategic-command-center.html`: prioriza apertura del Enterprise Command Center y relega SABSA a legacy.
+- `sabsa-ig4-command-center.html`: se marca como modulo deprecado para compatibilidad historica.
+- `readme.md`: actualiza el entrypoint principal del Command Center.
+- `.github/workflows/security-ci.yml`: agrega job `enterprise-functional-smoke` con Node 22.
+- `TESTING.md`: documenta el smoke test del Enterprise Command Center.
+- `assets/vendor/jwt-decode.esm.js`: agrega compatibilidad de runtime para entornos sin `atob` nativo.
 - `tools/control-analysis.html`: mantiene panel IA en modo ESM con motores modulares.
 - `sabsa-ig4-command-center.html`: migrado a carga IA por ESM (sin scripts AI clasicos directos).
 - `core/ui/ai-panel.module.js`: valida esquema de exportacion antes de generar JSON y conserva correlacion `requestId` por traza.

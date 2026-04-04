@@ -48,6 +48,21 @@ lhci autorun --collect.url=http://127.0.0.1:5500/blog.html
 lhci autorun --collect.url="http://127.0.0.1:5500/post.html?post=test.md"
 ```
 
+## 1.5 Pruebas Smoke del Enterprise Command Center
+
+Existe un smoke test sin dependencias externas para validar el flujo modular nuevo:
+
+```bash
+npm run test:enterprise
+```
+
+Cobertura actual:
+
+- Parsing y validacion de politicas JSON.
+- Deteccion MITRE para Conditional Access y objetos Azure.
+- Generacion de remediacion Bicep y Terraform.
+- Decodificacion JWT y validacion SC-300 con MFA y expiracion.
+
 ---
 
 ## 2. Pruebas de CSP

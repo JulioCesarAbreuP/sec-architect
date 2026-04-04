@@ -9,6 +9,8 @@ export function jwtDecode(token) {
     .replace(/-/g, "+")
     .replace(/_/g, "/");
 
-  const decoded = atob(payload);
+  const decoded = typeof atob === "function"
+    ? atob(payload)
+    : Buffer.from(payload, "base64").toString("binary");
   return JSON.parse(decoded);
 }

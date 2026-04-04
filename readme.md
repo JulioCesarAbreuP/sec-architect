@@ -19,7 +19,7 @@ SEC_ARCHITECT cierra la brecha entre estrategia, implementación y comprensión 
 ## Módulos principales
 
 ### 1) Command Center
-Superficie estratégica para modelar escenarios, niveles de riesgo y decisiones de mitigación.
+Superficie estratégica para modelar escenarios, niveles de riesgo y decisiones de mitigación. La entrada principal actual es Enterprise Command Center; SABSA IG4 permanece como legado de referencia.
 
 ### 2) Knowledge-Base (NSA, CISA, MITRE, NIST, ISO)
 Base estructurada de reglas defensivas con mapeo a estándares y contexto operativo.
@@ -79,7 +79,8 @@ SEC_ARCHITECT existe para demostrar que la seguridad puede ser rigurosa sin ser 
 
 - Inicio: [index.html](index.html)
 - Herramientas: [tools.html](tools.html)
-- Command Center: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
+- Command Center: [tools/enterprise-command-center.html](tools/enterprise-command-center.html)
+- Command Center legacy: [sabsa-ig4-command-center.html](sabsa-ig4-command-center.html)
 - Knowledge-Base: [tools/knowledge-base.html](tools/knowledge-base.html)
 - Intelligence Dashboard: [intelligence-dashboard.html](intelligence-dashboard.html)
 - Azure-Labs: [azure-labs/README.md](azure-labs/README.md)
