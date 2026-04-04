@@ -1,3 +1,70 @@
+/* --- PRINT MODE OPTIMIZATION --- */
+@media print {
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    padding: 0 !important;
+    font-size: 12pt !important;
+  }
+  .reading-progress,
+  .reading-progress-bar,
+  .topbar,
+  footer[data-site-footer],
+  .link,
+  #postMeta:empty {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+  }
+  .container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #postTitle {
+    color: #111 !important;
+    font-size: 1.7em !important;
+    margin: 0 0 0.5em 0 !important;
+    page-break-after: avoid;
+  }
+  #postMeta {
+    color: #444 !important;
+    font-size: 0.95em !important;
+    margin-bottom: 1em !important;
+  }
+  article {
+    background: none !important;
+    border: none !important;
+    color: #111 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    font-size: 1em !important;
+    line-height: 1.6 !important;
+    overflow: visible !important;
+    page-break-inside: avoid;
+  }
+  article h1, article h2, article h3 {
+    color: #111 !important;
+    page-break-after: avoid;
+  }
+  article img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  article a {
+    color: #0078d4 !important;
+    text-decoration: underline !important;
+    border: none !important;
+  }
+  .state {
+    display: none !important;
+  }
+}
 :root {
   --azure-blue: #0078d4;
   --deep-navy: #0a192f;
