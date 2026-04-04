@@ -100,17 +100,20 @@ Cache-Control: no-cache (para HTML); max-age=31536000, immutable (para assets ve
 al ser renderizado por marked.js e inyectado en el DOM con `innerHTML`.
 
 **Mitigación implementada**:
-- Sanitizador de allowlist en `markdown.js` que filtra etiquetas y atributos.
-- Solo se permiten etiquetas de contenido semántico (no `<script>`, `<style>`,
-  `<iframe>`, `<object>`, `<embed>`, `<form>`, `<input>`).
-- URLs en `href` y `src` validadas contra expresión regular que bloquea
-  `javascript:`, `data:`, `vbscript:`.
+- Sanitización primaria con DOMPurify en `markdown.js` con configuración estricta.
+- `FORBID_TAGS` para bloquear `svg`, `math`, `style`, `script`, `iframe`, `object`,
+   `embed` y `form`.
+- `FORBID_ATTR` para bloquear atributos peligrosos (`onerror`, `onload`, `style`) y
+   `ALLOW_DATA_ATTR=false`.
+- Validación de URL permitida (`https`, `mailto`, rutas relativas, hash y `data:image/*`)
+   en `ALLOWED_URI_REGEXP`.
+- Fallback defensivo al sanitizador legacy de allowlist si DOMPurify no está disponible.
 
-**Riesgo residual**: Si el allowlist no cubre todos los vectores (p.ej., atributos
-de eventos como `onload`, `onerror` en `<img>`), podría existir un vector de XSS.
+**Riesgo residual**: Dependencia de tercero (CDN jsDelivr) para cargar DOMPurify en
+`post.html`; se mantiene fallback local de sanitización para continuidad funcional.
 
-**Recomendación**: Integrar DOMPurify como sanitizador de nivel de producción,
-que mantiene una allowlist probada y actualizada continuamente.
+**Recomendación**: Añadir SRI al script de DOMPurify en próximo hardening para cerrar
+el vector de supply chain de dependencias CDN.
 
 ### 3.2 Vector de Riesgo: Path Traversal en Parámetro ?post=
 
@@ -175,13 +178,13 @@ a nivel de etiqueta.
 
 | ID | Riesgo | Componente | Probabilidad | Impacto | Severidad | Estado |
 |----|--------|------------|--------------|---------|-----------|--------|
-| R01 | XSS via contenido Markdown | `markdown.js` | Media | Alto | Alto | Mitigado (allowlist) |
+| R01 | XSS via contenido Markdown | `markdown.js` | Media | Alto | Alto | Mitigado (DOMPurify + fallback) |
 | R02 | Path traversal en ?post= | `markdown.js` | Baja | Medio | Medio | Mitigado (regex) |
 | R03 | Supply chain CDN (marked.js) | `post.html` | Baja | Alto | Medio | Mitigado (SRI) |
 | R04 | Datos de formulario en tercero | Formspree | Media | Medio | Medio | Aceptado + monitoreado |
 | R05 | CSP frame-ancestors inefectiva | Todas las páginas | Media | Medio | Medio | Pendiente (Front Door) |
 | R06 | Scripts inline residuales | `blog/index.html` | Baja | Medio | Bajo | Mitigado (migrado a JS externo) |
-| R07 | SVG malicioso en posts futuros | `markdown.js` | Baja | Alto | Medio | Pendiente (DOMPurify) |
+| R07 | SVG malicioso en posts futuros | `markdown.js` | Baja | Alto | Medio | Mitigado (FORBID_TAGS en DOMPurify) |
 | R08 | Fuga de datos via Referrer | Todas las páginas | Baja | Bajo | Bajo | Mitigado (Referrer-Policy) |
 | R09 | MIME sniffing | Todas las páginas | Baja | Bajo | Bajo | Mitigado (nosniff meta) |
 | R10 | Abuse del formulario | `index.html` | Media | Bajo | Bajo | Mitigado (honeypot) |
@@ -193,8 +196,8 @@ a nivel de etiqueta.
 
 ### Prioridad Alta
 
-1. **Integrar DOMPurify** en `markdown.js` como sustituto del sanitizador artesanal.
-   DOMPurify cuenta con mantenimiento activo y cobertura de vectores documentados.
+1. **Añadir SRI al script de DOMPurify** en `post.html` para completar la cadena
+   de integridad de dependencias CDN en el renderizador de Markdown.
 
 2. **Migrar a cabeceras HTTP reales** desplegando detrás de Azure Front Door,
    Cloudflare o Netlify Headers para hacer efectivas `frame-ancestors`,

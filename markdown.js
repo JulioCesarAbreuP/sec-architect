@@ -22,7 +22,7 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function sanitizeRenderedHtml(rawHtml) {
+  function sanitizeRenderedHtmlLegacy(rawHtml) {
   const template = document.createElement("template");
   template.innerHTML = rawHtml;
 
@@ -142,6 +142,37 @@ function sanitizeRenderedHtml(rawHtml) {
   }
 
   return template.innerHTML;
+}
+
+function sanitizeRenderedHtml(rawHtml) {
+  if (window.DOMPurify && typeof window.DOMPurify.sanitize === "function") {
+    const purified = window.DOMPurify.sanitize(String(rawHtml || ""), {
+      USE_PROFILES: { html: true },
+      FORBID_TAGS: ["svg", "math", "style", "script", "iframe", "object", "embed", "form"],
+      FORBID_ATTR: ["style", "onerror", "onload"],
+      ALLOW_DATA_ATTR: false,
+      ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto):|[#/]|\.{1,2}\/|data:image\/(?:png|jpe?g|gif|webp|avif);)/i
+    });
+
+    const template = document.createElement("template");
+    template.innerHTML = purified;
+
+    for (const anchor of template.content.querySelectorAll("a")) {
+      const href = anchor.getAttribute("href") || "";
+      if (/^https?:\/\//i.test(href)) {
+        anchor.setAttribute("target", "_blank");
+        anchor.setAttribute("rel", "noopener noreferrer");
+      } else {
+        anchor.removeAttribute("target");
+        anchor.removeAttribute("rel");
+      }
+    }
+
+    return template.innerHTML;
+  }
+
+  // Fallback defensivo para mantener disponibilidad si DOMPurify no está cargado.
+  return sanitizeRenderedHtmlLegacy(rawHtml);
 }
 
 function parseFrontMatter(markdownText) {
