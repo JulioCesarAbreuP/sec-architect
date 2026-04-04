@@ -1,29 +1,30 @@
-# ADR-001: Command Center como núcleo del framework
+# ADR-001: Decoupled Logic for SABSA-MITRE Engine
 
-## Contexto
-SEC_ARCHITECT integra evaluación doctrinal, priorización de riesgo, visualización de hallazgos y narrativa de remediación en un entorno modular.
+## Context
 
-## Problema
-Sin un punto central de correlación, los módulos se perciben como piezas aisladas con baja trazabilidad y menor capacidad de decisión operativa.
+El Command Center requiere separar logica de negocio, deteccion MITRE, validacion de artefactos,
+presentacion UI y orquestacion para evitar acoplamiento y reducir deuda tecnica.
 
-## Opciones consideradas
-1. Centro único de orquestación (Command Center).
-2. Paneles independientes por dominio, sin núcleo central.
-3. Navegación lineal documental sin módulo operativo.
+## Decision
 
-## Decisión
-Adoptar el Command Center como núcleo funcional y narrativo del framework.
+Adoptar arquitectura modular ES6 con responsabilidades estrictas:
 
-## Justificación
-Permite consolidar en un único flujo: entrada de contexto, evaluación SABSA IG, mapeo MITRE ATT&CK, matriz de amenazas y recomendación prioritaria.
+- `core/sabsa-engine.js`: scoring SABSA e inferencia de riesgo.
+- `core/mitre-mapper.js`: mapeo y deteccion MITRE ATT&CK.
+- `core/json-validator.js`: validacion de policies JSON y remediacion.
+- `core/jwt-validator.js`: validacion JWT con foco SC-300.
+- `ui/*.js`: render y paneles sin logica de negocio.
+- `main.js`: orquestador de flujos.
 
-## Consecuencias
-### Positivas
-- Coherencia de arquitectura y operación.
-- Mejor lectura ejecutiva y técnica del riesgo.
-- Mayor valor demostrativo para arquitectura de seguridad.
+## Consequences
 
-### Negativas
-- Riesgo de centralización excesiva.
-- Mayor criticidad del módulo para la experiencia global.
-- Exige mayor disciplina de calidad y pruebas sobre el núcleo.
+Positivas:
+
+- Testabilidad por modulo.
+- Menor impacto cruzado entre paneles.
+- Escalabilidad enterprise del Command Center.
+
+Negativas:
+
+- Mayor cantidad de contratos entre modulos.
+- Mayor disciplina requerida para evolucion de interfaces.

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
+  <title>Enterprise Command Center | SEC_ARCHITECT</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../assets/css/enterprise.css">
+</head>
+<body>
+  <header class="layout-header">
+    <a href="../index.html" class="brand">SEC_ARCHITECT</a>
+    <nav class="header-nav">
+      <a href="../tools.html">Herramientas</a>
+      <a href="../sabsa-ig4-command-center.html">SABSA Legacy</a>
+    </nav>
+  </header>
+
+  <main class="layout-main">
+    <section class="status-row">
+      <h1>Enterprise Command Center</h1>
+      <span id="command-status" class="status-badge">OPERATIONAL</span>
+    </section>
+
+    <section class="grid-panels">
+      <div id="panel-ia"></div>
+      <div id="panel-json"></div>
+      <div id="panel-jwt"></div>
+    </section>
+
+    <section class="grid-results">
+      <article id="result-ia" class="result-box"><h3>Panel IA</h3><pre>Sin ejecucion.</pre></article>
+      <article id="result-json" class="result-box"><h3>Panel JSON</h3><pre>Sin ejecucion.</pre></article>
+      <article id="result-jwt" class="result-box"><h3>Panel JWT</h3><pre>Sin ejecucion.</pre></article>
+      <article id="result-mitre" class="result-box"><h3>MITRE Findings</h3><pre>Sin hallazgos.</pre></article>
+    </section>
+  </main>
+
+  <script type="module" src="../main.js"></script>
+</body>
+</html>
