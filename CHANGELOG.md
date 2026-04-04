@@ -1,3 +1,15 @@
+# 2026-04-04
+- Auditoría semanal de headers HTTP críticos vía workflow audit-headers.yml (Front Door).
+- Validación CI/CD de artefactos de seguridad: SRI, nonce en scripts, CSP dinámica.
+- Documentación del flujo de auditoría y validación en SECURITY_REVIEW.md.
+
+# 2024-04-04
+- Implementación de nonces rotativos automatizados:
+  - Generación segura de nonce en cada build (scripts/generate-nonce.cjs).
+  - Inyección automática en CSP y todos los <script> inline/externos.
+  - Validación y documentación en SECURITY_REVIEW.md.
+  - Mitigación robusta de XSS por inline script.
+
 # CHANGELOG — SEC_ARCHITECT
 
 > Registro de cambios del proyecto SEC_ARCHITECT.

@@ -1,3 +1,19 @@
+  security-artifacts-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validar SRI, nonce y CSP
+        run: node scripts/validate-security-artifacts.cjs
 name: security-ci
 
 on:

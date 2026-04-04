@@ -1,7 +1,73 @@
+## 4. Auditoría de Headers y Validación CI/CD
+
+### 4.1 Auditoría Semanal de Headers HTTP
+
+Se implementó un workflow (`.github/workflows/audit-headers.yml`) que, semanalmente, realiza una petición GET al sitio detrás de Azure Front Door y valida la presencia y valores de las siguientes cabeceras críticas:
+
+- Content-Security-Policy (incluyendo nonce dinámico)
+- Strict-Transport-Security
+- X-Frame-Options
+- Referrer-Policy
+- Permissions-Policy
+- Cross-Origin-Resource-Policy
+- Cross-Origin-Opener-Policy
+- Cross-Origin-Embedder-Policy
+
+Si alguna cabecera falta o la CSP no contiene un nonce válido, el workflow falla y notifica al equipo.
+
+### 4.2 Validación de Artefactos de Seguridad en CI
+
+En cada push a main, se ejecuta un script Node.js (`scripts/validate-security-artifacts.cjs`) que valida:
+
+- Que los hashes SRI coinciden con los archivos generados.
+- Que el nonce está presente en todos los scripts inline y externos.
+- Que no existen scripts inline sin nonce.
+- Que la CSP generada es válida y contiene el nonce actual.
+
+Esto garantiza que el build estático cumple los controles de integridad y protección anti-XSS antes de desplegarse.
+
+---
 # SECURITY_REVIEW — SEC_ARCHITECT
 
 > Análisis técnico exhaustivo de seguridad del sitio estático SEC_ARCHITECT.
 > Última revisión: 2026-04-04 (pasada final). Revisado contra OWASP Top 10, CIS Controls v8 y NIST 800-53.
+
+---
+
+
+## 0. Protección con Nonces Rotativos (Automatizada)
+
+### 0.1 Descripción y Objetivo
+
+Se implementó un flujo automatizado de generación e inyección de nonces rotativos para proteger todos los scripts inline y externos en las páginas principales. El nonce se genera en cada build mediante un script Node.js seguro (`scripts/generate-nonce.cjs`), se almacena en `nonce.txt` y se inyecta automáticamente en:
+
+- La directiva `script-src` de la CSP (`<meta http-equiv="Content-Security-Policy">`), como `'nonce-<valor>'`.
+- Todos los tags `<script>` inline y externos relevantes, mediante el atributo `nonce`.
+
+Esto mitiga ataques XSS incluso si un atacante logra inyectar scripts inline, ya que solo los scripts con el nonce válido del build pueden ejecutarse.
+
+### 0.2 Flujo Automatizado
+
+1. **Generación**: `scripts/generate-nonce.cjs` crea un nonce seguro (base64) y lo guarda en `nonce.txt`.
+2. **Inyección**: El pipeline de build/CI actualiza automáticamente la CSP y todos los `<script>` con el nonce actual.
+3. **Validación**: Se verifica que no existan scripts inline sin nonce y que la CSP incluya el valor correcto.
+4. **Documentación**: Este proceso está documentado y versionado en el repositorio.
+
+### 0.3 Ejemplo de CSP y Script
+
+```html
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-<valor>' ...">
+<script nonce="<valor>">/* código inline protegido */</script>
+<script src="..." nonce="<valor>"></script>
+```
+
+### 0.4 Estado y Recomendaciones
+
+- ✅ Nonce rotativo activo en `index.html`, `blog.html` y plantillas principales.
+- ✅ Todos los scripts inline y externos relevantes protegidos con nonce.
+- ✅ Validación automatizada en CI.
+- 🔒 Mitigación robusta de XSS por inline script.
+- ⚠️ Limite: La protección depende de la correcta inyección del nonce en cada build.
 
 ---
 

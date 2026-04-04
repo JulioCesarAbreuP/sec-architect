@@ -1,0 +1,52 @@
+name: Auditoría de Headers HTTP
+
+on:
+  schedule:
+    - cron: '0 4 * * 1' # Lunes 04:00 UTC semanal
+  workflow_dispatch:
+
+jobs:
+  audit-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar dependencias
+        run: |
+          sudo apt-get update && sudo apt-get install -y curl jq
+
+      - name: Realizar petición GET a Front Door
+        env:
+          TARGET_URL: https://sec-architect-frontdoor.azurefd.net/
+        run: |
+          curl -s -D headers.txt "$TARGET_URL" -o /dev/null
+          cat headers.txt
+
+      - name: Validar cabeceras críticas
+        run: |
+          required_headers=(
+            'Content-Security-Policy'
+            'Strict-Transport-Security'
+            'X-Frame-Options'
+            'Referrer-Policy'
+            'Permissions-Policy'
+            'Cross-Origin-Resource-Policy'
+            'Cross-Origin-Opener-Policy'
+            'Cross-Origin-Embedder-Policy'
+          )
+          missing=0
+          for h in "${required_headers[@]}"; do
+            if ! grep -i "^$h:" headers.txt; then
+              echo "❌ FALTA CABECERA: $h"; missing=1
+            fi
+          done
+          if [ $missing -eq 1 ]; then
+            echo 'Faltan cabeceras críticas.'; exit 1
+          fi
+
+      - name: Validar nonce en CSP
+        run: |
+          csp=$(grep -i '^Content-Security-Policy:' headers.txt | cut -d: -f2-)
+          if [[ "$csp" =~ "nonce-" ]]; then
+            echo "✅ Nonce presente en CSP"
+          else
+            echo "❌ Falta nonce en CSP"; exit 1
+          fi
