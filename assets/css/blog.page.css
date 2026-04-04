@@ -213,6 +213,29 @@ body {
   gap: 0.7rem;
 }
 
+.search-bar-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.2rem;
+}
+
+.blog-search-input {
+  width: 100%;
+  max-width: 340px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-line);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: "JetBrains Mono", monospace;
+  background: var(--card-bg);
+  color: var(--text-main);
+  transition: border-color 0.2s;
+}
+.blog-search-input:focus {
+  outline: 2px solid var(--azure-blue);
+  border-color: var(--azure-blue);
+}
+
 .pagination-button {
   border: 1px solid var(--border-line);
   background: var(--card-bg);

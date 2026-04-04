@@ -43,11 +43,15 @@
 
     <ul id="postsList" class="posts" aria-live="polite"></ul>
     <nav id="postsPagination" class="posts-pagination" aria-label="Paginacion de articulos"></nav>
+    <div class="search-bar-container">
+      <input id="blogSearchInput" class="blog-search-input" type="search" placeholder="Buscar artículos..." aria-label="Buscar artículos" autocomplete="off" />
+    </div>
   </main>
 
   <footer data-site-footer="true"></footer>
 
-  <script src="blog.js" defer></script>
-  <script src="assets/js/site.js" defer></script>
+   <script src="assets/vendor/fuse.min.js" defer></script>
+   <script src="blog.js" defer></script>
+   <script src="assets/js/site.js" defer></script>
 </body>
 </html>
