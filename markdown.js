@@ -1,6 +1,7 @@
 const postTitleElement = document.getElementById("postTitle");
 const postMetaElement = document.getElementById("postMeta");
 const postContentElement = document.getElementById("postContent");
+const readingProgressBar = document.getElementById("readingProgressBar");
 const POST_FETCH_TIMEOUT_MS = 8000;
 const MAX_MARKDOWN_LENGTH = 500000;
 
@@ -305,6 +306,53 @@ function fetchWithTimeout(url, options, timeoutMs) {
   });
 }
 
+function setReadingProgress(value) {
+  if (!readingProgressBar) {
+    return;
+  }
+
+  const normalized = Math.max(0, Math.min(100, value));
+  readingProgressBar.style.width = `${normalized}%`;
+  readingProgressBar.setAttribute("aria-valuenow", String(Math.round(normalized)));
+}
+
+function calculateReadingProgress() {
+  const documentRoot = document.documentElement;
+  const totalScrollable = documentRoot.scrollHeight - documentRoot.clientHeight;
+
+  if (totalScrollable <= 0) {
+    return 100;
+  }
+
+  return (documentRoot.scrollTop / totalScrollable) * 100;
+}
+
+function initReadingProgress() {
+  if (!readingProgressBar) {
+    return;
+  }
+
+  let frameRequested = false;
+
+  const update = () => {
+    frameRequested = false;
+    setReadingProgress(calculateReadingProgress());
+  };
+
+  const onScroll = () => {
+    if (frameRequested) {
+      return;
+    }
+
+    frameRequested = true;
+    window.requestAnimationFrame(update);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  update();
+}
+
 async function initPost() {
   const params = new URLSearchParams(window.location.search);
   const postParam = sanitizePostParam(params.get("post"));
@@ -342,6 +390,7 @@ async function initPost() {
   configureMarked("blog");
   const rendered = marked.parse(parsed.content);
   postContentElement.innerHTML = sanitizeRenderedHtml(rendered);
+  initReadingProgress();
 }
 
 initPost();

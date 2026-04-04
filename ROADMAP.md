@@ -39,7 +39,7 @@
 - [ ] Integrar Dependabot o Renovate para alertas de dependencias.
 
 ### UX/UI
-- [ ] Añadir barra de progreso de lectura en posts individuales.
+- [x] Añadir barra de progreso de lectura en posts individuales.
 - [ ] Implementar búsqueda de posts client-side (Fuse.js o similar).
 - [ ] Añadir modo de impresión optimizado para artículos.
 - [ ] Responsive design completo para dispositivos <375px.
