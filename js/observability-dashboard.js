@@ -215,11 +215,76 @@
     if (pctSpan) pctSpan.textContent = pct;
   }
 
+  // --- Correlación de eventos cliente ↔ infraestructura ---
+  async function renderCorrelation() {
+    // Cargar métricas cliente (sessionStorage/localStorage)
+    const clientMetrics = (function() {
+      const safeParse = (json) => { try { return JSON.parse(json); } catch { return []; } };
+      const local = safeParse(localStorage.getItem('telemetry_metrics')) || [];
+      const session = safeParse(sessionStorage.getItem('telemetry_metrics')) || [];
+      return local.concat(session);
+    })();
+    // Cargar logs infra
+    const base = '../docs/evidence/logs/';
+    const today = new Date().toISOString().slice(0, 10);
+    const files = [
+      `${base}${today}-frontdoor.json`,
+      `${base}${today}-waf.json`,
+      `${base}${today}-cdn.json`
+    ];
+    const [fd, waf, cdn] = await Promise.all(files.map(async (file) => {
+      try { const resp = await fetch(file, { cache: 'no-store' }); if (!resp.ok) return []; return await resp.json(); } catch { return []; }
+    }));
+    const infraLogs = ([]).concat(fd||[], waf||[], cdn||[]);
+    // Indexar por correlationId
+    const clientByCid = {};
+    clientMetrics.forEach(e => {
+      if (e.correlationId) {
+        if (!clientByCid[e.correlationId]) clientByCid[e.correlationId] = [];
+        clientByCid[e.correlationId].push({ ...e, source: 'cliente' });
+      }
+    });
+    const infraByCid = {};
+    infraLogs.forEach(e => {
+      if (e.correlationId) {
+        if (!infraByCid[e.correlationId]) infraByCid[e.correlationId] = [];
+        infraByCid[e.correlationId].push({ ...e, source: e.source || 'infra' });
+      }
+    });
+    // Buscar correlationIds presentes en ambos lados
+    const intersectCids = Object.keys(clientByCid).filter(cid => infraByCid[cid]);
+    // Construir filas para la tabla
+    const rows = [];
+    intersectCids.forEach(cid => {
+      clientByCid[cid].forEach(ev => {
+        rows.push({ correlationId: cid, type: ev.type, source: 'cliente', ts: ev.ts || ev.timestamp, details: ev });
+      });
+      infraByCid[cid].forEach(ev => {
+        rows.push({ correlationId: cid, type: ev.event, source: ev.source, ts: ev.timestamp, details: ev });
+      });
+    });
+    // Ordenar por timestamp descendente y limitar
+    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
+    const limited = rows.slice(0, 20);
+    // Renderizar
+    const tbody = document.getElementById('correlation-table');
+    if (tbody) {
+      tbody.innerHTML = '';
+      limited.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.correlationId}</td><td>${e.type}</td><td>${e.source}</td><td>${e.ts ? new Date(e.ts).toLocaleTimeString() : ''}</td><td><pre style="white-space:pre-wrap;font-size:11px;max-width:320px;overflow-x:auto;">${JSON.stringify(e.details, null, 1)}</pre></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+
   // Actualización periódica
   setInterval(updateDashboard, 4000);
   setInterval(loadInfrastructureLogs, 6000);
   setInterval(renderHealthcheck, 5000);
+  setInterval(renderCorrelation, 7000);
   updateDashboard();
   loadInfrastructureLogs();
   renderHealthcheck();
+  renderCorrelation();
 })();

@@ -1,4 +1,11 @@
-# 2026-04-04 (3)
+# 2026-04-04 (4)
+- Correlación de eventos cliente ↔ infraestructura:
+  - Se genera un `correlationId` UUID v4 por sesión en `js/telemetry.js` y se adjunta a todos los eventos de telemetría, errores, métricas y healthcheck.
+  - `js/healthcheck.js` emite eventos con correlationId para correlación en tiempo real.
+  - `observability/logs/ingest-logs.js` propaga correlationId si está presente en los logs de entrada.
+  - El dashboard (`observability/index.html`, `js/observability-dashboard.js`) visualiza eventos correlacionados por correlationId entre cliente e infraestructura.
+  - Sección dedicada de correlación en el dashboard.
+  - Documentación de privacidad y modelo de correlación en SECURITY_REVIEW.md.
 - Telemetría ligera del cliente:
   - Captura de errores globales y métricas Web Vitals (LCP, FID, CLS) en js/telemetry.js.
   - Registro en consola y preparado para envío seguro a futuro.

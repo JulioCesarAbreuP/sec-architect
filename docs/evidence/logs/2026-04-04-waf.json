@@ -1,0 +1,23 @@
+[
+  {
+    "source": "waf",
+    "timestamp": "2026-04-04T10:02:00Z",
+    "event": "WAFRuleMatch",
+    "metadata": {
+      "ruleId": "942100",
+      "action": "Block",
+      "message": "SQL Injection Detected",
+      "clientIP": "x.x.x.x"
+    }
+  },
+  {
+    "source": "waf",
+    "timestamp": "2026-04-04T10:03:00Z",
+    "event": "WAFAnomaly",
+    "metadata": {
+      "anomalyType": "Request Rate Limit",
+      "action": "Block",
+      "clientIP": "x.x.x.x"
+    }
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "source": "cdn",
+    "timestamp": "2026-04-04T10:04:00Z",
+    "event": "CDNAccessLog",
+    "metadata": {
+      "statusCode": 200,
+      "requestUri": "/static/img/logo.png",
+      "clientIP": "x.x.x.x",
+      "method": "GET"
+    }
+  }
+]

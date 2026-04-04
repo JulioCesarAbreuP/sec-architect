@@ -62,6 +62,17 @@
     </div>
   </section>
 
+  <section id="event-correlation" style="margin-top:2em;">
+    <h2>Correlación de eventos cliente ↔ infraestructura</h2>
+    <div>
+      <table>
+        <thead><tr><th>correlationId</th><th>Tipo evento</th><th>Fuente</th><th>Timestamp</th><th>Detalles</th></tr></thead>
+        <tbody id="correlation-table"></tbody>
+      </table>
+      <div style="font-size:12px;color:#666;margin-top:4px;">Solo se muestran eventos recientes con correlationId presente en ambos lados.</div>
+    </div>
+  </section>
+
   <section id="infra-logs" style="margin-top:2em;">
     <h2>Infraestructura</h2>
     <div style="display:flex;gap:2em;flex-wrap:wrap;">

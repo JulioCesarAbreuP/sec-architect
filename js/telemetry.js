@@ -1,5 +1,5 @@
 // js/telemetry.js
-// Telemetría ligera: captura de errores y métricas web vitales
+// Telemetría ligera: captura de errores, métricas web vitales y correlación de eventos
 (function () {
   // Trusted Types: evitar sinks inseguros
   if (window.trustedTypes && window.trustedTypes.createPolicy) {
@@ -9,8 +9,27 @@
     });
   }
 
+  // UUID v4 generator (RFC4122, simple)
+  function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+
+  // Obtener o generar correlationId por sesión
+  function getCorrelationId() {
+    let cid = sessionStorage.getItem('correlationId');
+    if (!cid) {
+      cid = uuidv4();
+      sessionStorage.setItem('correlationId', cid);
+    }
+    return cid;
+  }
+  const correlationId = getCorrelationId();
+
   // 1. Captura de errores globales
   function sendTelemetry(event) {
+    event.correlationId = correlationId;
     // Endpoint configurable o Application Insights (placeholder)
     // Por ahora, solo log a consola
     console.log('[telemetry]', event);
@@ -30,8 +49,7 @@
       const metrics = {};
       const logMetric = (name, value) => {
         metrics[name] = value;
-        console.log(`[telemetry] ${name}:`, value);
-        // TODO: preparar para envío futuro
+        sendTelemetry({ type: name, value, correlationId });
       };
       // LCP
       new PerformanceObserver((entryList) => {
@@ -52,7 +70,22 @@
         logMetric('CLS', cls);
       }).observe({ type: 'layout-shift', buffered: true });
     } catch (e) {
-      sendTelemetry({ type: 'telemetry-error', error: e });
+      sendTelemetry({ type: 'telemetry-error', error: e, correlationId });
     }
   }
+
+  // 3. Health check: escucha eventos de healthcheck.js
+  window.addEventListener('healthcheck-result', function (e) {
+    if (e && e.detail) {
+      sendTelemetry({ type: 'healthcheck', ...e.detail, correlationId });
+    }
+  });
+
+  // 4. Eventos de navegación
+  function sendNavigationEvent() {
+    sendTelemetry({ type: 'navigation', url: location.href, ts: Date.now(), correlationId });
+  }
+  window.addEventListener('DOMContentLoaded', sendNavigationEvent);
+  window.addEventListener('popstate', sendNavigationEvent);
+  window.addEventListener('hashchange', sendNavigationEvent);
 })();

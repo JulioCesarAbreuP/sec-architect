@@ -19,6 +19,15 @@
     arr.push(result);
     if (arr.length > MAX_RESULTS) arr = arr.slice(-MAX_RESULTS);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    // Emitir evento para correlación (telemetry.js)
+    try {
+      // Obtener correlationId de sesión si existe
+      let cid = null;
+      try { cid = sessionStorage.getItem('correlationId'); } catch {}
+      const detail = { ...result };
+      if (cid) detail.correlationId = cid;
+      window.dispatchEvent(new CustomEvent('healthcheck-result', { detail }));
+    } catch {}
   }
 
   async function doCheck() {

@@ -24,7 +24,22 @@ Ver detalles en docs/telemetry.md y CHANGELOG.md.
 
 
 
-## 10. Health Checks y monitorización de disponibilidad
+
+## 11. Correlación de eventos cliente ↔ infraestructura
+
+Se implementa un modelo de correlación de eventos entre el frontend (cliente) y la infraestructura (Front Door, WAF, CDN) usando un `correlationId` generado como UUID v4 por sesión (en `js/telemetry.js`).
+
+- El `correlationId` se almacena solo en sessionStorage, nunca se persiste ni se asocia a usuarios.
+- Todos los eventos de telemetría, errores, métricas y healthcheck incluyen el `correlationId`.
+- Los logs de infraestructura (ingest-logs.js) propagan el campo `correlationId` si está presente en los eventos de entrada.
+- El dashboard visualiza la correlación mostrando eventos con el mismo `correlationId` presentes tanto en cliente como en infraestructura.
+
+**Privacidad y seguridad:**
+- El `correlationId` no es un identificador personal ni se asocia a usuarios, solo a la sesión del navegador.
+- No se persiste más allá de la sesión ni se comparte entre navegadores/dispositivos.
+- No se recolectan datos personales ni identificadores persistentes.
+- El diseño cumple con los principios de privacidad por defecto y minimización de datos.
+
 
 Se implementó un health check periódico mediante `js/healthcheck.js` que consulta `/health.txt` cada 60 segundos:
 - Solo se registra latencia, código de estado y disponibilidad (sin información interna ni sensible).

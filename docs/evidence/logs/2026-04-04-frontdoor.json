@@ -1,0 +1,23 @@
+[
+  {
+    "source": "frontdoor",
+    "timestamp": "2026-04-04T10:00:00Z",
+    "event": "Microsoft.Network/frontdoors/AccessLog",
+    "metadata": {
+      "statusCode": 200,
+      "requestUri": "/api/health",
+      "clientIP": "x.x.x.x",
+      "method": "GET"
+    }
+  },
+  {
+    "source": "frontdoor",
+    "timestamp": "2026-04-04T10:01:00Z",
+    "event": "Microsoft.Network/frontdoors/HealthProbeLog",
+    "metadata": {
+      "statusCode": 200,
+      "probeStatus": "Healthy",
+      "backend": "api-01"
+    }
+  }
+]
