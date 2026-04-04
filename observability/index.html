@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard de Observabilidad</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-__NONCE__'; style-src 'self'; object-src 'none';">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../assets/css/enterprise.css">
+  <style>
+    body { font-family: system-ui,sans-serif; background: #f7f9fb; color: #222; }
+    .obs-status { font-weight: bold; }
+    .online { color: #2b8a3e; }
+    .offline { color: #c92a2a; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+    th, td { border: 1px solid #ddd; padding: 4px 8px; font-size: 13px; }
+    th { background: #e9ecef; }
+    .charts { display: flex; gap: 12px; margin: 1em 0; }
+    canvas { background: #fff; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard de Observabilidad</h1>
+  <div>
+    Estado del endpoint de telemetría: <span id="obs-endpoint-status" class="obs-status offline">Offline</span>
+  </div>
+  <div style="margin-top:1em;">
+    <strong>Métricas agregadas</strong>
+    <ul>
+      <li>Errores capturados: <span id="obs-err-count">-</span></li>
+      <li>LCP promedio: <span id="obs-lcp-avg">-</span> ms</li>
+      <li>FID promedio: <span id="obs-fid-avg">-</span> ms</li>
+      <li>CLS promedio: <span id="obs-cls-avg">-</span></li>
+      <li>INP promedio: <span id="obs-inp-avg">-</span> ms</li>
+      <li>TTFB promedio: <span id="obs-ttfb-avg">-</span> ms</li>
+    </ul>
+  </div>
+  <div class="charts">
+    <canvas id="obs-lcp-chart" width="120" height="60"></canvas>
+    <canvas id="obs-fid-chart" width="120" height="60"></canvas>
+    <canvas id="obs-cls-chart" width="120" height="60"></canvas>
+    <canvas id="obs-inp-chart" width="120" height="60"></canvas>
+    <canvas id="obs-ttfb-chart" width="120" height="60"></canvas>
+  </div>
+  <div>
+    <strong>Últimos eventos</strong>
+    <table>
+      <thead><tr><th>Tipo</th><th>Hora</th><th>Datos</th></tr></thead>
+      <tbody id="obs-last-events"></tbody>
+    </table>
+  </div>
+  <script nonce="__NONCE__" defer src="../js/observability-dashboard.js"></script>
+</body>
+</html>

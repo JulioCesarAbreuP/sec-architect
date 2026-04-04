@@ -35,13 +35,14 @@
 
 
 ### Added
-- Sistema de batching y envío fiable de métricas en `js/telemetry.js`:
-  - Buffer interno de eventos y envío por lotes usando `navigator.sendBeacon` (preferido) o `fetch` con `keepalive`.
-  - Reintentos exponenciales automáticos si el endpoint no responde.
-  - Integración transparente con Application Insights si está configurado.
-  - Envío disparado en idle (`requestIdleCallback`) o al cerrar/cambiar de pestaña (`visibilitychange`, `pagehide`).
-  - Cumple Trusted Types, SRI y nonce rotativo, sin bloquear el render ni afectar al rendimiento.
-  - Documentación de privacidad y seguridad ampliada en SECURITY_REVIEW.md.
+- Dashboard de salud y métricas en `observability/index.html`:
+  - Visualización de métricas técnicas (errores, LCP, FID, CLS, INP, TTFB) capturadas por `telemetry.js`.
+  - Estado del endpoint de telemetría (online/offline) y estadísticas básicas.
+  - Gráficos simples de barras generados solo con JS/DOM, sin librerías externas.
+  - Módulo `js/observability-dashboard.js` para leer métricas de localStorage/sessionStorage y endpoint remoto.
+  - Actualización en tiempo real si telemetry.js sigue activo.
+  - Cumple Trusted Types, SRI y nonce rotativo, sin sinks inseguros ni exposición de datos personales.
+  - Documentación de privacidad y seguridad en SECURITY_REVIEW.md.
 
 ### Changed
 - `tools.html`, `tools/control-analysis.html`, `tools/knowledge-base.html`, `intelligence-dashboard.html`: el enlace primario de Command Center apunta ahora a la superficie enterprise.

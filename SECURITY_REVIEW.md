@@ -21,6 +21,21 @@ La versión actual implementa:
 - El envío es asíncrono y no bloquea el render ni afecta al rendimiento.
 
 Ver detalles en docs/telemetry.md y CHANGELOG.md.
+
+## 8. Dashboard de salud y métricas
+
+Se implementó un dashboard estático en `/observability/index.html` que:
+- Muestra métricas técnicas capturadas por `telemetry.js` (errores, LCP, FID, CLS, INP, TTFB).
+- Lee datos solo de almacenamiento local (localStorage/sessionStorage) y, si está disponible, de un endpoint seguro.
+- No expone datos personales, identificadores persistentes ni información sensible.
+- Renderiza gráficos simples y estadísticas básicas solo en el cliente, sin librerías externas.
+- Cumple Trusted Types, SRI y nonce rotativo, sin sinks inseguros ni riesgo de XSS.
+
+**Privacidad y seguridad:**
+- El dashboard solo visualiza métricas técnicas y de rendimiento.
+- No almacena ni muestra información de usuario, contenido sensible ni identificadores persistentes.
+- El acceso al endpoint remoto es solo lectura y no requiere autenticación ni expone datos privados.
+- El diseño es compatible con CSP estricta y Trusted Types.
 ### 6.5 Informe de validación (2026-04-04)
 
 **Resumen técnico:**
