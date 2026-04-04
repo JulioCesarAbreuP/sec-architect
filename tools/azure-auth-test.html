@@ -8,7 +8,7 @@
     All authentication uses PKCE (no client_secret in browser).
     Tokens stored in sessionStorage, cleared on tab close.
   -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com; form-action 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content; report-uri https://juliocesarabreup.github.io/sec-architect/csp-report; report-to sec-architect-csp;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
