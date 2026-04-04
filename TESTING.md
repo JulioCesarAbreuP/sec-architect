@@ -95,10 +95,12 @@ Objetivo operativo:
 - Mantener contraste AA en texto pequeno sobre superficies del Command Center.
 - Evitar que el estado visual dependa solo del color: combinar color con texto/etiqueta/estado.
 - Ajustar contraste desde tokens antes que con overrides aislados.
+- Objetivo Lighthouse para `tools/enterprise-command-center.html` en desktop local: `100/100` en Accessibility despues del hardening AA.
 
 ### 1.6.2 Verificacion guiada en 15 minutos
 
 - Evidencia detallada por pantalla: `docs/evidence/enterprise-wcag-aa-15min.md`.
+- Ejecucion registrada: `docs/evidence/enterprise-aa-execution-2026-04-04.md`.
 - Ejecutar la guia completa en teclado y, si se dispone, con NVDA o VoiceOver.
 
 ---
