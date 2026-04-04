@@ -1,0 +1,4 @@
+[
+  {"timestamp":"2026-04-04T10:00:00Z","type":"error","source":"telemetry.js","correlationId":"abc123","details":{"message":"TypeError: ..."}},
+  {"timestamp":"2026-04-04T10:01:00Z","type":"error","source":"telemetry.js","correlationId":"abc123","details":{"message":"ReferenceError: ..."}}
+]

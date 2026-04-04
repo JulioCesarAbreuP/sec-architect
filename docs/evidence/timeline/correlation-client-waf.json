@@ -1,0 +1,4 @@
+[
+  {"timestamp":"2026-04-04T10:10:00Z","type":"error","source":"telemetry.js","correlationId":"xyz789","details":{"message":"Client error"}},
+  {"timestamp":"2026-04-04T10:10:01Z","type":"infra","source":"WAF","correlationId":"xyz789","details":{"event":"Blocked request"}}
+]

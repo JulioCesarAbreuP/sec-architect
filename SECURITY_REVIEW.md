@@ -1,3 +1,11 @@
+## 17. Línea temporal unificada de eventos
+
+El módulo timeline.js unifica eventos de cliente, métricas, health checks, alertas y logs de infraestructura en una estructura normalizada y defensiva:
+- No se expone información sensible en los detalles de eventos.
+- El correlationId se genera por sesión y nunca se transmite fuera del navegador.
+- Los detalles largos se truncan y requieren acción explícita para expandirse.
+- La integridad del timeline se protege con validaciones y defensas ante datos incompletos.
+- Compatible con CSP y Trusted Types, sin uso de innerHTML inseguro ni eval.
 ## 16. Modelo de resiliencia y degradación controlada
 
 El panel de resiliencia (`js/resilience.js`) evalúa métricas de healthcheck, alertas locales, logs de infraestructura y la línea temporal unificada para determinar el estado del sistema:

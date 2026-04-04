@@ -1,0 +1,4 @@
+[
+  {"timestamp":"2026-04-04T10:05:00Z","type":"infra","source":"WAF","correlationId":"def456","details":{"event":"Blocked IP"}},
+  {"timestamp":"2026-04-04T10:06:00Z","type":"infra","source":"Front Door","correlationId":"def456","details":{"event":"5xx spike"}}
+]

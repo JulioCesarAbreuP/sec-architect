@@ -1,0 +1,6 @@
+[
+  {"timestamp":"2026-04-04T10:15:00Z","type":"metric","source":"performance","correlationId":"mno321","details":{"LCP":2500}},
+  {"timestamp":"2026-04-04T10:15:01Z","type":"health","source":"healthcheck.js","correlationId":"mno321","details":{"latency":120}},
+  {"timestamp":"2026-04-04T10:15:02Z","type":"alert","source":"alerts.js","correlationId":"mno321","details":{"level":"warning"}},
+  {"timestamp":"2026-04-04T10:15:03Z","type":"infra","source":"CDN","correlationId":"mno321","details":{"event":"Cache miss"}}
+]

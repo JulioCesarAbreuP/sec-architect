@@ -1,5 +1,10 @@
 ## [Unreleased]
 ### Added
+- Unified timeline module (timeline.js)
+- Dashboard integration for unified timeline
+- Filtering, real-time updates, paginación y protección de privacidad
+## [Unreleased]
+### Added
 - Resilience panel: advanced modular state detection (NORMAL/DEGRADED/CRITICAL), dashboard integration, and controlled degradation logic.
 - Evidence and documentation for resilience states (normal, degraded, critical) in docs/evidence/resilience/.
 # 2026-04-04 (7)
