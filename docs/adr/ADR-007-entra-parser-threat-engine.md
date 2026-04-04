@@ -9,10 +9,15 @@ analisis de riesgo reproducible y remediacion contextual sin depender de UI conv
 
 Adoptar un flujo no-chat, dirigido por parser y motor de inferencia:
 
-- `core/enterprise/sabsa-logic.js` como capa de validacion estructural y orquestacion SABSA.
-- `core/enterprise/mitre-engine.js` para seleccion de tecnica MITRE y camino de ataque.
-- `ui/enterprise/ui-controller.js` para coordinacion UI, radar, monitor, board y eventos SOC.
-- `main.js` queda como bootstrap puro sin logica de dominio.
+- `core/identity-parser.js`: parser Entra ID con validacion por tipo.
+- `core/sabsa-logic.js`: motor multicapas SABSA IG4.
+- `core/mitre-engine.js`: mapeo MITRE y grafo de ataque.
+- `core/inference-engine.js`: ejecucion IA en segundo plano.
+- `core/remediation-engine.js`: IaC contextual + rollback opcional.
+- `core/memory-engine.js`: memoria operacional persistente.
+- `core/telemetry-engine.js`: shadow monitor adaptativo.
+- `ui/ui-renderer.js`, `ui/ui-panels.js`, `ui/ui-architecture-board.js` para capa de presentacion.
+- `main.js` queda como bootstrap y orquestador de flujo.
 
 La salida del motor es estrictamente:
 

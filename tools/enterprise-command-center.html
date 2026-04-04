@@ -32,7 +32,10 @@
     <section class="enterprise-grid">
       <article class="panel panel-json" id="panel-json">
         <h2>Entra ID Parser</h2>
-        <textarea id="graphJsonInput" class="code-input" placeholder='Ejemplo JSON Entra ID (Service Principal): {"servicePrincipal":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","permissions":["Contributor","Storage Blob Data Owner"],"mfa":"disabled"}'></textarea>
+        <textarea id="graphJsonInput" class="code-input" placeholder='Ejemplo Service Principal: {"servicePrincipal":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","permissions":["Contributor","Storage Blob Data Owner"],"mfa":"disabled"}
+
+Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls":["mfa"]},"conditions":{"users":{"includeRoles":["62e90394-69f5-4237-9190-012177145e10"]}}}'></textarea>
+        <p id="parserObjectType" class="memory-note">Tipo detectado: pendiente</p>
         <div class="panel-actions">
           <select id="remediationFormat">
             <option value="terraform">Terraform</option>

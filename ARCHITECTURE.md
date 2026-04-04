@@ -452,8 +452,15 @@ de inferencia para Azure Entra ID.
 
 ### 13.2 Modulos Staff obligatorios
 
-- `core/enterprise/mitre-engine.js`
-- `core/enterprise/sabsa-logic.js`
-- `ui/enterprise/ui-controller.js`
+- `core/mitre-engine.js`
+- `core/sabsa-logic.js`
+- `core/identity-parser.js`
+- `core/inference-engine.js`
+- `core/remediation-engine.js`
+- `core/memory-engine.js`
+- `core/telemetry-engine.js`
+- `ui/ui-renderer.js`
+- `ui/ui-panels.js`
+- `ui/ui-architecture-board.js`
 
 `main.js` queda restringido a bootstrap y no contiene logica de dominio.
