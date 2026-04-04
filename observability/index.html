@@ -1,3 +1,28 @@
+  <section id="timeline-section" style="margin-top:2em;">
+    <h2>Línea temporal unificada</h2>
+    <div>
+      <label for="timeline-filter" style="font-size:13px;">Filtrar por tipo:</label>
+      <select id="timeline-filter">
+        <option value="all">Todos</option>
+        <option value="error">Errores</option>
+        <option value="metric">Métricas</option>
+        <option value="health">Health</option>
+        <option value="alert">Alertas</option>
+        <option value="infra">Infraestructura</option>
+      </select>
+      <ul id="timeline-list" style="list-style:none;padding:0;margin-top:1em;"></ul>
+    </div>
+  </section>
+
+  <section id="resilience-section" style="margin-top:2em;">
+    <h2>Resiliencia del sistema</h2>
+    <div>
+      <div>Estado actual: <span id="resilience-state" style="font-weight:bold;">NORMAL</span></div>
+      <div>Último cambio: <span id="resilience-lastchange">-</span></div>
+      <div>Señales detectadas:</div>
+      <ul id="resilience-signals" style="font-size:13px;"></ul>
+    </div>
+  </section>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -112,6 +137,8 @@
   </section>
   <script nonce="__NONCE__" defer src="../js/healthcheck.js" integrity="sha384-PLACEHOLDER" ></script>
   <script nonce="__NONCE__" defer src="../js/alerts.js"></script>
+  <script nonce="__NONCE__" defer src="../js/timeline.js"></script>
+  <script nonce="__NONCE__" defer src="../js/resilience.js"></script>
   <script nonce="__NONCE__" defer src="../js/observability-dashboard.js"></script>
 </body>
 </html>

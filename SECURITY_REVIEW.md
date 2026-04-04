@@ -1,3 +1,27 @@
+## 13. Línea temporal unificada de eventos
+
+Se implementa una línea temporal unificada (`js/timeline.js`) que fusiona errores, métricas, health checks, alertas y logs de infraestructura:
+- Todos los eventos se normalizan y ordenan por timestamp.
+- Solo se incluyen datos técnicos, nunca información personal ni sensible.
+- El correlationId es de sesión y no identifica usuarios.
+- La línea temporal solo existe en memoria/sessionStorage y no se persiste ni expone fuera del cliente.
+- El dashboard permite filtrar y visualizar eventos sin exponer detalles internos.
+
+**Privacidad y seguridad:**
+- No se recolectan ni exponen datos personales.
+- El diseño cumple Trusted Types, SRI, nonce rotativo y CSP estricta.
+
+## 14. Panel de resiliencia y degradación controlada
+
+Se implementa un panel de resiliencia (`js/resilience.js`) que evalúa señales de degradación y ajusta el comportamiento del dashboard:
+- El estado de resiliencia (NORMAL, DEGRADED, CRITICAL) se almacena solo en sessionStorage.
+- Las señales se basan en métricas, health checks, alertas y logs recientes, nunca en datos sensibles.
+- En estado DEGRADED/CRITICAL se reduce la carga y se minimizan operaciones no críticas en el cliente.
+- No se expone información interna ni se persiste el estado más allá de la sesión.
+
+**Privacidad y seguridad:**
+- La degradación controlada protege al usuario y al sistema sin exponer detalles internos.
+- El diseño cumple Trusted Types, SRI, nonce rotativo y CSP estricta.
 ## 12. Alertas locales y señales tempranas
 
 Se implementa un sistema de alertas locales en el navegador (`js/alerts.js`) que detecta anomalías en métricas, health checks y logs recientes:

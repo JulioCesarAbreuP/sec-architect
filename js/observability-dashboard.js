@@ -1,3 +1,51 @@
+  // --- Línea temporal unificada ---
+  function renderTimeline() {
+    if (!window.getUnifiedTimeline) return;
+    const filter = (document.getElementById('timeline-filter')||{}).value || 'all';
+    const timeline = window.getUnifiedTimeline();
+    const list = document.getElementById('timeline-list');
+    if (!list) return;
+    list.innerHTML = '';
+    (timeline||[]).filter(e => filter==='all'||e.type===filter).slice(0,30).forEach(ev => {
+      const li = document.createElement('li');
+      li.style.borderLeft = '4px solid ' + ({error:'#f87171',metric:'#38bdf8',health:'#fbbf24',alert:'#facc15',infra:'#6366f1'}[ev.type]||'#bbb');
+      li.style.marginBottom = '0.7em';
+      li.style.padding = '0.4em 0.7em';
+      li.style.background = '#fff';
+      li.style.borderRadius = '6px';
+      li.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)';
+      li.innerHTML = `<span style="font-size:12px;font-weight:bold;">${ev.type.toUpperCase()}</span> <span style="color:#888;font-size:12px;">[${ev.source}]</span> <span style="font-size:12px;">${ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString() : ''}</span><br><span style="font-size:13px;">${ev.details && ev.details.message ? ev.details.message : (ev.details && ev.details.event ? ev.details.event : JSON.stringify(ev.details))}</span>`;
+      if (ev.correlationId) li.innerHTML += `<br><span style="font-size:11px;color:#888;">correlationId: ${ev.correlationId}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const sel = document.getElementById('timeline-filter');
+    if (sel) sel.onchange = renderTimeline;
+  });
+
+  // --- Panel de resiliencia ---
+  function renderResilience() {
+    if (!window.getResilienceState) return;
+    const { state, signals, lastChange } = window.getResilienceState();
+    const stateEl = document.getElementById('resilience-state');
+    if (stateEl) {
+      stateEl.textContent = state;
+      stateEl.style.color = state==='CRITICAL' ? '#c92a2a' : state==='DEGRADED' ? '#fbbf24' : '#2b8a3e';
+    }
+    const lastChangeEl = document.getElementById('resilience-lastchange');
+    if (lastChangeEl) lastChangeEl.textContent = lastChange ? new Date(lastChange).toLocaleTimeString() : '-';
+    const signalsEl = document.getElementById('resilience-signals');
+    if (signalsEl) {
+      signalsEl.innerHTML = '';
+      (signals||[]).forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = s;
+        signalsEl.appendChild(li);
+      });
+    }
+  }
 // js/observability-dashboard.js
 // Dashboard de salud y métricas: lee métricas de localStorage/sessionStorage y endpoint, renderiza gráficos simples
 (function () {
@@ -309,9 +357,13 @@
   setInterval(renderHealthcheck, 5000);
   setInterval(renderCorrelation, 7000);
   setInterval(renderAlerts, 5000);
+  setInterval(renderTimeline, 6000);
+  setInterval(renderResilience, 8000);
   updateDashboard();
   loadInfrastructureLogs();
   renderHealthcheck();
   renderCorrelation();
   renderAlerts();
+  renderTimeline();
+  renderResilience();
 })();

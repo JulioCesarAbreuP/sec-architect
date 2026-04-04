@@ -1,4 +1,12 @@
-# 2026-04-04 (5)
+# 2026-04-04 (6)
+- Línea temporal unificada de eventos:
+  - Nuevo módulo `js/timeline.js` que fusiona errores, métricas, health checks, alertas y logs de infraestructura en una sola vista ordenada y filtrable.
+  - Sección "Línea temporal unificada" en el dashboard.
+- Panel de resiliencia y degradación controlada:
+  - Nuevo módulo `js/resilience.js` que evalúa señales de degradación y ajusta el comportamiento del dashboard (NORMAL/DEGRADED/CRITICAL).
+  - Sección "Resiliencia del sistema" en el dashboard.
+  - Degradación controlada: reducción de frecuencia de health checks y métricas según estado.
+  - Documentación de privacidad y seguridad en SECURITY_REVIEW.md.
 - Alertas locales y señales tempranas:
   - Nuevo módulo `js/alerts.js` que detecta anomalías en métricas, health checks y logs recientes.
   - Genera alertas locales (console.warn, banner visual, sessionStorage).
