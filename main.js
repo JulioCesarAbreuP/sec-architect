@@ -1,9 +1,11 @@
 import { parseAndValidateIdentity } from "./core/identity-parser.js";
 import { evaluateIdentityRules } from "./core/rules-engine.js";
-import { calculateZeroTrustScore, applyFixImpact, calculateCaZeroTrustPosture } from "./core/scoring-engine.js";
+import { calculateZeroTrustScore, applyFixImpact, calculateCaZeroTrustPosture, applyThreatIntelToPosture } from "./core/scoring-engine.js";
 import { buildAttackGraph } from "./core/graph-engine.js";
 import { runSabsaInferenceLayers } from "./core/sabsa-logic.js";
 import { runBackgroundThreatInference } from "./core/inference-engine.js";
+import { calculateWeightedAttackImpact } from "./core/attack-weight-engine.js";
+import { loadThreatIntelFeed } from "./core/threat-intel-engine.js";
 import { buildDynamicRemediation } from "./core/remediation-engine.js";
 import { persistOperationalContext, buildOperationalNarrative } from "./core/memory-engine.js";
 import { createShadowMonitor } from "./core/telemetry-engine.js";
@@ -23,13 +25,7 @@ let docsCache = [];
 let previousRisk = 0;
 let currentScore = 100;
 let latestCaPolicies = [];
-
-function computeRiskFromTechnique(technique) {
-  if (technique === "T1556") return 88;
-  if (technique === "T1078" || technique === "T1078.004") return 84;
-  if (technique === "T1548") return 76;
-  return 62;
-}
+let threatIntelSummary = null;
 
 function applyThreatState(probability) {
   updateStatus(refs.status, refs.root, probability);
@@ -45,7 +41,8 @@ function applyThreatState(probability) {
 
 function updateZeroTrustFromPolicies(policies, source = "manual") {
   latestCaPolicies = Array.isArray(policies) ? policies : [];
-  const posture = calculateCaZeroTrustPosture(latestCaPolicies);
+  const basePosture = calculateCaZeroTrustPosture(latestCaPolicies);
+  const posture = threatIntelSummary ? applyThreatIntelToPosture(basePosture, threatIntelSummary) : basePosture;
   currentScore = posture.score;
   renderZeroTrustScore(refs.zeroTrustScore, posture.score);
   renderZeroTrustPanel(refs, posture);
@@ -55,6 +52,32 @@ function updateZeroTrustFromPolicies(policies, source = "manual") {
     "[ZERO-TRUST] Score " + posture.score + "/100 from " + posture.metrics.policyCount + " CA policies (source=" + source + ")",
     posture.score >= 80 ? "info" : "threat"
   );
+}
+
+function getWeightedImpact(techniqueId, baseImpact) {
+  return calculateWeightedAttackImpact({
+    techniqueId,
+    baseImpact,
+    zeroTrustScore: currentScore,
+    intelSummary: threatIntelSummary
+  });
+}
+
+async function primeThreatIntel() {
+  try {
+    const intel = await loadThreatIntelFeed();
+    threatIntelSummary = intel.summary;
+    appendSocLog(
+      refs.shadowConsole,
+      "[THREAT-INTEL] Feed loaded: " + intel.summary.itemCount + " entries, top technique " + intel.summary.topTechnique.id + " (" + intel.summary.topTechnique.risk + "/100)",
+      "info"
+    );
+
+    // Recompute score with intel pressure once the feed is available.
+    updateZeroTrustFromPolicies(latestCaPolicies, "intel");
+  } catch (error) {
+    appendSocLog(refs.shadowConsole, "[THREAT-INTEL] Feed unavailable: " + String(error.message || error), "threat");
+  }
 }
 
 function ensureParserInputState(raw) {
@@ -127,14 +150,18 @@ export async function analyzeArchitectureWithAI() {
       renderZeroTrustScore(refs.zeroTrustScore, score);
     }
 
+    const baselineProbability = rules.flags.mfaEnabled ? Math.max(12, 100 - score) : Math.max(80, aiAnalysis.probability);
+    const weighted = getWeightedImpact(aiAnalysis.mitre_technique, baselineProbability);
+
     const merged = {
       object_type: objectType,
-      probability: rules.flags.mfaEnabled ? Math.max(12, 100 - score) : Math.max(80, aiAnalysis.probability),
+      probability: weighted.impact,
       critical_node: aiAnalysis.critical_node,
       mitre_technique: aiAnalysis.mitre_technique,
       lateral_vector: aiAnalysis.lateral_vector,
       attack_path: aiAnalysis.attack_path,
-      terraform_fix: aiAnalysis.terraform_fix
+      terraform_fix: aiAnalysis.terraform_fix,
+      weighting: weighted.components
     };
 
     renderJson(refs.aiOutput, merged);
@@ -159,6 +186,7 @@ export async function analyzeArchitectureWithAI() {
     refs.memoryNote.textContent = buildOperationalNarrative(memory.current, memory.previous);
 
     appendSocLog(refs.shadowConsole, "[IA-LOG] Probabilidad de Movimiento Lateral: " + merged.probability + "%", merged.probability >= 70 ? "threat" : "info");
+    appendSocLog(refs.shadowConsole, "[IA-LOG] Weighting(base/posture/intel): " + weighted.components.baseImpact + "/" + weighted.components.posturePressure + "/" + weighted.components.intelPressure, merged.probability >= 70 ? "threat" : "info");
     appendSocLog(refs.shadowConsole, "[IA-LOG] Vector: " + merged.mitre_technique, merged.probability >= 70 ? "threat" : "info");
     appendSocLog(refs.shadowConsole, "Detecto un patron de permisos excesivos en tres objetos consecutivos. Recomiendo activar Just-In-Time Access.", "info");
   } catch (error) {
@@ -212,13 +240,16 @@ function wireAttackSimulation() {
     const payload = buildAttackSimulation(refs.attackSelect.value);
     const rules = evaluateIdentityRules(payload);
     const deterministic = runSabsaInferenceLayers(payload, refs.formatSelect.value);
-    const risk = computeRiskFromTechnique(deterministic.deterministicAnalysis.mitre_technique);
+    const weighted = getWeightedImpact(deterministic.deterministicAnalysis.mitre_technique);
+    const risk = weighted.impact;
     const graph = buildAttackGraph(payload, rules.flags);
 
     const output = {
       technique: refs.attackSelect.value,
+      mitre: deterministic.deterministicAnalysis.mitre_technique,
       attack_path: deterministic.deterministicAnalysis.attack_path,
       impact: risk,
+      weighting: weighted.components,
       remediation: deterministic.deterministicAnalysis.terraform_fix
     };
 
@@ -232,6 +263,7 @@ function wireAttackSimulation() {
     renderZeroTrustScore(refs.zeroTrustScore, Math.max(0, 100 - output.impact));
 
     appendSocLog(refs.shadowConsole, "[THREAT ENGINE] " + output.attack_path, output.impact >= 75 ? "threat" : "info");
+    appendSocLog(refs.shadowConsole, "[THREAT ENGINE] Weighting(base/posture/intel): " + output.weighting.baseImpact + "/" + output.weighting.posturePressure + "/" + output.weighting.intelPressure, output.impact >= 75 ? "threat" : "info");
   });
 }
 
@@ -276,15 +308,17 @@ async function boot() {
   wireArchitectureBoard();
   wireSocNightMode();
 
-  await initAzureAuthPanel(
-    (line, type) => appendSocLog(refs.shadowConsole, line, type),
-    () => analyzeArchitectureWithAI()
-  );
-
   window.addEventListener("sa:ca-policies-loaded", (event) => {
     const policies = Array.isArray(event?.detail?.policies) ? event.detail.policies : [];
     updateZeroTrustFromPolicies(policies, "graph");
   });
+
+  await primeThreatIntel();
+
+  await initAzureAuthPanel(
+    (line, type) => appendSocLog(refs.shadowConsole, line, type),
+    () => analyzeArchitectureWithAI()
+  );
 
   window.analyzeArchitectureWithAI = analyzeArchitectureWithAI;
 }

@@ -36,6 +36,10 @@ export function renderZeroTrustPanel(refs, posture) {
     refs.ztPolicyStates.textContent = String(metrics.reportOnlyCount ?? 0) + " report-only / " + String(metrics.disabledCount ?? 0) + " disabled";
   }
 
+  if (refs.ztIntelPressure) {
+    refs.ztIntelPressure.textContent = String(metrics.intelPressure ?? 0) + " pts | " + String(metrics.priorityTechnique ?? "n/a");
+  }
+
   if (refs.ztFindings) {
     refs.ztFindings.textContent = findings
       .map((item, index) => {
