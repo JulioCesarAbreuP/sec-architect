@@ -305,6 +305,66 @@ function logEntraConsole(message, level) {
   while (list.children.length > 10) { list.removeChild(list.lastChild); }
 }
 
+function renderEntraRemediation(evaluation) {
+  var codeEl = byId("entra-remediation-code");
+  var copyBtn = byId("entra-copy-fix");
+  var fixText = evaluation && evaluation.remediation && evaluation.remediation.hasFix
+    ? evaluation.remediation.terraform
+    : "# No remediation generated.\n# Identity object passed or has indeterminate posture.";
+
+  if (codeEl) {
+    codeEl.textContent = fixText;
+  }
+
+  if (copyBtn) {
+    copyBtn.disabled = !(evaluation && evaluation.remediation && evaluation.remediation.hasFix);
+  }
+}
+
+function copyFixToClipboard() {
+  var codeEl = byId("entra-remediation-code");
+  var copyBtn = byId("entra-copy-fix");
+  var text = String((codeEl && codeEl.textContent) || "").trim();
+  if (!text || text.indexOf("No remediation generated") !== -1) {
+    return;
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () {
+      if (copyBtn) {
+        copyBtn.textContent = "[COPIED]";
+        window.setTimeout(function () {
+          copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+        }, 1200);
+      }
+    }).catch(function () {
+      if (copyBtn) {
+        copyBtn.textContent = "[COPY BLOCKED]";
+      }
+    });
+    return;
+  }
+
+  try {
+    var temp = document.createElement("textarea");
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    temp.remove();
+    if (copyBtn) {
+      copyBtn.textContent = "[COPIED]";
+      window.setTimeout(function () {
+        copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+      }, 1200);
+    }
+  } catch (_error) {
+    if (copyBtn) {
+      copyBtn.textContent = "[COPY BLOCKED]";
+    }
+  }
+}
+
 function setEntraMode(active) {
   var entraEngine = byId("entra-engine");
   var runBtnEl    = byId("ai-run");
@@ -320,7 +380,10 @@ function setEntraMode(active) {
     }
   }
   if (runBtnEl) { runBtnEl.textContent = active ? "Analyze Payload" : "Ejecutar IA"; }
-  if (!active) { updateEntraRadar("neutral"); }
+  if (!active) {
+    updateEntraRadar("neutral");
+    renderEntraRemediation(null);
+  }
 }
 
 export function initAIPanel() {
@@ -344,6 +407,7 @@ export function initAIPanel() {
     '<textarea id="ai-input" placeholder="Introduce un control, riesgo o componente..." aria-label="Entrada para IA"></textarea>',
     '<button type="button" id="ai-run">Ejecutar IA</button>',
     '<div id="entra-engine" class="entra-engine" hidden>',
+    '<div class="entra-engine-left">',
     '<div class="entra-radar-shell">',
     '<svg class="entra-radar-svg" viewBox="0 0 160 90" aria-hidden="true">',
     '<path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#1a2530" stroke-width="10" stroke-linecap="round"/>',
@@ -356,6 +420,12 @@ export function initAIPanel() {
     '<div class="entra-radar-label" id="entra-radar-label">AWAITING PAYLOAD</div>',
     '</div>',
     '<ul class="entra-console" id="entra-console"></ul>',
+    '</div>',
+    '<aside class="entra-remediation" aria-live="polite">',
+    '<h4 class="entra-remediation-title">Remediation as Code</h4>',
+    '<pre id="entra-remediation-code" class="entra-remediation-code"># No remediation generated.\n# Identity object passed or has indeterminate posture.</pre>',
+    '<button type="button" id="entra-copy-fix" class="entra-copy-fix" disabled>[COPY FIX TO CLIPBOARD]</button>',
+    '</aside>',
     '</div>',
     "</div>",
     '<div class="ai-trace">',
@@ -382,6 +452,7 @@ export function initAIPanel() {
   var tabs = container.querySelectorAll(".ai-tab");
   var runBtn = byId("ai-run");
   var input = byId("ai-input");
+  var copyFixBtn = byId("entra-copy-fix");
   var traceFilterSelect = byId("ai-trace-filter");
   var traceClearBtn = byId("ai-trace-clear");
   var traceExportBtn = byId("ai-trace-export");
@@ -409,6 +480,12 @@ export function initAIPanel() {
   }
 
   renderTraceList(traceStore, traceFilter);
+
+  if (copyFixBtn) {
+    copyFixBtn.onclick = function () {
+      copyFixToClipboard();
+    };
+  }
 
   tabs.forEach(function (tab) {
     tab.onclick = function () {
@@ -454,6 +531,7 @@ export function initAIPanel() {
         for (i = 0; i < evaluation.logs.length; i += 1) {
           logEntraConsole(evaluation.logs[i].message, evaluation.logs[i].level);
         }
+        renderEntraRemediation(evaluation);
 
         traceStore.unshift({ engine: "entra-id-validator", status: evaluation.status, durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
         traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);

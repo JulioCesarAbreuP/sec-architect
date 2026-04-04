@@ -50,6 +50,13 @@ function main() {
     true,
     "should emit MITRE mapping log"
   );
+  assert.equal(resultDisabled.remediation.hasFix, true, "risk finding should generate remediation");
+  assert.match(
+    resultDisabled.remediation.terraform,
+    /resource\s+"azuread_conditional_access_policy"/i,
+    "remediation should include terraform policy resource"
+  );
+  assert.match(resultDisabled.remediation.terraform, /built_in_controls\s*=\s*\["mfa"\]/i, "remediation should enforce MFA");
 
   var resultEnabled = evaluateEntraIdentity(enabledGlobalAdmin);
   assert.equal(resultEnabled.radarLevel, "safe", "Global Admin with MFA enabled should be safe");
@@ -64,6 +71,8 @@ function main() {
     true,
     "should still emit MITRE mapping for cloud account"
   );
+  assert.equal(resultEnabled.remediation.hasFix, false, "safe finding should not generate remediation");
+  assert.equal(resultEnabled.remediation.terraform, "", "safe finding should return empty terraform fix");
 
   var resultPra = evaluateEntraIdentity(disabledPrivilegedRoleAdmin);
   assert.equal(resultPra.radarLevel, "risk", "Privileged Role Administrator with MFA disabled should be risk");
@@ -72,6 +81,7 @@ function main() {
     true,
     "should cover extended critical role set"
   );
+  assert.equal(resultPra.remediation.hasFix, true, "extended critical role should generate remediation");
 
   console.log("Entra rules smoke tests passed.");
 }

@@ -1,3 +1,38 @@
+function toTerraformSafeName(value) {
+  return String(value || "identity")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 48) || "identity";
+}
+
+function buildTerraformRemediation(principal, role, riskReasons) {
+  var roleName = role || "Unknown Role";
+  var resourceName = "enforce_mfa_" + toTerraformSafeName(roleName);
+  var lines = [
+    'resource "azuread_conditional_access_policy" "' + resourceName + '" {',
+    '  display_name = "SEC_ARCHITECT - Enforce MFA for ' + roleName.replace(/"/g, "\\\"") + '"',
+    '  state        = "enabled"',
+    "",
+    "  conditions {",
+    "    users {",
+    '      included_roles = ["' + roleName.replace(/"/g, "\\\"") + '"]',
+    "    }",
+    "  }",
+    "",
+    "  grant_controls {",
+    '    operator          = "OR"',
+    '    built_in_controls = ["mfa"]',
+    "  }",
+    "}",
+    "",
+    "# principal: " + principal,
+    "# reasons: " + (riskReasons.length ? riskReasons.join(", ") : "none")
+  ];
+
+  return lines.join("\n");
+}
+
 export function evaluateEntraIdentity(parsedId) {
   var logs = [];
   var keys = Object.keys(parsedId || {});
@@ -83,9 +118,17 @@ export function evaluateEntraIdentity(parsedId) {
     });
   }
 
+  var hasFix = riskReasons.length > 0;
+  var terraformFix = hasFix ? buildTerraformRemediation(principal, role, riskReasons) : "";
+
   return {
     radarLevel: radarLevel,
     status: radarLevel === "risk" ? "warning" : radarLevel === "safe" ? "ok" : "warning",
-    logs: logs
+    logs: logs,
+    findings: riskReasons,
+    remediation: {
+      hasFix: hasFix,
+      terraform: terraformFix
+    }
   };
 }
