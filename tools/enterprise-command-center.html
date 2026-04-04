@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
-  <title>Enterprise Command Center | SEC_ARCHITECT</title>
+  <title>Enterprise AI Command Graph | SEC_ARCHITECT</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="stylesheet" href="../assets/css/enterprise.css">
 </head>
@@ -14,33 +14,95 @@
     <nav class="header-nav">
       <a href="../tools.html">Herramientas</a>
       <a href="../sabsa-ig4-command-center.html">SABSA Legacy (deprecated)</a>
+      <button id="socNightMode" class="soc-toggle" type="button">SOC Night Mode</button>
     </nav>
   </header>
 
-  <main class="layout-main">
-    <section class="status-row">
-      <h1>Enterprise Command Center</h1>
-      <span id="command-status" class="status-badge">OPERATIONAL</span>
+  <main id="enterpriseRoot" class="layout-main risk-low">
+    <section class="status-row hero-row">
+      <div>
+        <h1>Enterprise AI Command Graph</h1>
+        <p class="hero-subtitle">Inference Engine multinivel con memoria operacional, shadow monitor y auto-remediacion contextual.</p>
+      </div>
+      <span id="command-status" class="status-badge status-healthy">HEALTHY</span>
     </section>
 
-    <section class="platform-note" aria-label="Estado de plataforma">
-      <p>Esta es la superficie principal del Command Center. La pantalla SABSA heredada queda disponible solo para compatibilidad y referencia histórica.</p>
+    <section id="threatEscalationBanner" class="threat-banner" aria-live="polite" hidden>Threat Escalation Detected</section>
+
+    <section class="enterprise-grid">
+      <article class="panel panel-json" id="panel-json">
+        <h2>Panel JSON</h2>
+        <textarea id="graphJsonInput" class="code-input" placeholder='Pega JSON de Azure Entra ID. Ejemplo: {"user":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","mfa":"disabled"}'></textarea>
+        <div class="panel-actions">
+          <select id="remediationFormat">
+            <option value="terraform">Terraform</option>
+            <option value="bicep">Bicep</option>
+          </select>
+          <button id="runInferenceBtn" class="primary-btn" type="button">Analyze Architecture</button>
+        </div>
+      </article>
+
+      <article class="panel panel-ia" id="panel-ia">
+        <h2>Panel IA</h2>
+        <pre id="aiAnalysisOutput">Sin analisis.</pre>
+        <p id="operationalMemoryNarrative" class="memory-note">Memoria operacional esperando primera corrida.</p>
+      </article>
+
+      <article class="panel panel-jwt" id="panel-jwt">
+        <h2>Panel JWT</h2>
+        <textarea id="jwtInput" class="code-input" placeholder="Pega JWT para evaluar salud operacional de identidad."></textarea>
+        <button id="validateJwtBtn" class="secondary-btn" type="button">Validate JWT</button>
+        <pre id="jwtOutput">Sin validacion.</pre>
+      </article>
     </section>
 
-    <section class="grid-panels">
-      <div id="panel-ia"></div>
-      <div id="panel-json"></div>
-      <div id="panel-jwt"></div>
+    <section class="enterprise-grid second-row">
+      <article class="panel panel-radar">
+        <h2>Graph Risk Radar</h2>
+        <div class="radar-shell"><canvas id="riskRadar"></canvas></div>
+      </article>
+
+      <article class="panel panel-remediation" id="remediationPanel">
+        <h2>Auto-Remediation</h2>
+        <pre id="terraformFixOutput">Sin remediacion.</pre>
+        <button id="copyFixBtn" class="secondary-btn" type="button">Copy to Clipboard</button>
+      </article>
+
+      <article class="panel panel-attack-sim" id="attackSimulationPanel">
+        <h2>Attack Simulation</h2>
+        <div class="panel-actions">
+          <select id="attackTechniqueSelect">
+            <option value="T1078">T1078</option>
+            <option value="T1556">T1556</option>
+            <option value="T1548">T1548</option>
+          </select>
+          <button id="runSimulationBtn" class="secondary-btn" type="button">Run Simulation</button>
+        </div>
+        <pre id="attackSimulationOutput">Sin simulacion.</pre>
+      </article>
     </section>
 
-    <section class="grid-results">
-      <article id="result-ia" class="result-box"><h3>Panel IA</h3><pre>Sin ejecucion.</pre></article>
-      <article id="result-json" class="result-box"><h3>Panel JSON</h3><pre>Sin ejecucion.</pre></article>
-      <article id="result-jwt" class="result-box"><h3>Panel JWT</h3><pre>Sin ejecucion.</pre></article>
-      <article id="result-mitre" class="result-box"><h3>MITRE Findings</h3><pre>Sin hallazgos.</pre></article>
+    <section class="enterprise-grid third-row">
+      <article class="panel panel-monitor">
+        <h2>Shadow Monitor</h2>
+        <div id="shadowConsole" class="shadow-console"></div>
+      </article>
+
+      <article class="panel panel-architecture-board" id="architectureBoardPanel">
+        <h2>Architecture Board</h2>
+        <div class="panel-actions">
+          <input id="architectureQuestion" class="question-input" type="text" placeholder="¿Por que tomamos esta decision arquitectonica?">
+          <button id="askArchitectureBtn" class="secondary-btn" type="button">Ask ADR</button>
+          <button id="refreshArchitectureBtn" class="secondary-btn" type="button">Refresh Docs</button>
+        </div>
+        <h3 id="architectureAnswerTitle">Board listo</h3>
+        <div id="architectureBoardContent" class="markdown-board">Esperando carga documental.</div>
+      </article>
     </section>
   </main>
 
+  <script src="../assets/vendor/chart.umd.min.js"></script>
+  <script src="../assets/vendor/marked.min.js"></script>
   <script type="module" src="../main.js"></script>
 </body>
 </html>

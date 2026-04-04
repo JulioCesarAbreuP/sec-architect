@@ -9,12 +9,12 @@ alineadas con MITRE ATT&CK y listas para ejecucion por equipos de plataforma.
 
 Adoptar remediacion informada por amenazas:
 
-- Si una Conditional Access Policy no incluye MFA en `grantControls`, disparar
-	`[CRITICAL] MITRE T1556 - Modify Authentication Process`.
-- Exponer `Auto-Remediar` para generar Bicep o Terraform correctivo.
-- En JWT, si `amr` no contiene `mfa`, marcar fallo SC-300 en estado del Command Center.
-- En inferencia de riesgo, devolver exclusivamente:
-	`probabilidad`, `tecnica MITRE`, `camino de ataque`, `recomendacion`.
+- Consumir JSON operativo como entrada primaria para inferencia.
+- Ejecutar inferencia multicapas sobre grafo `User -> Role -> Resource -> Exposure -> Attack Path`.
+- Si no se detecta MFA enforced o se confirma rol Global Admin con exposicion de Key Vault, priorizar `T1556` o `T1078` segun contexto.
+- Generar salida IA estricta con: `probability`, `critical_node`, `mitre_technique`, `attack_path`, `terraform_fix`.
+- Exponer auto-remediacion contextual en Terraform o Bicep con accion inmediata de copia.
+- Integrar narrativa historica de riesgo para comparar tendencia contra corrida anterior.
 
 ## Consequences
 
@@ -23,6 +23,7 @@ Positivas:
 - Respuesta accionable y no descriptiva.
 - Integracion directa entre deteccion y hardening.
 - Mejor priorizacion de riesgo operativo.
+- Vinculo directo entre documentacion ADR y decisiones ejecutables en dashboard.
 
 Negativas:
 
