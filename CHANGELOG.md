@@ -35,12 +35,12 @@
 
 
 ### Added
-- Integración de logs de infraestructura:
-  - Script Node.js (`observability/logs/ingest-logs.js`) para descargar y normalizar logs de Front Door, WAF y CDN.
-  - Ejemplos anonimizados en `docs/evidence/logs/`.
-  - Nueva sección en el dashboard para mostrar eventos de WAF, códigos de estado de Front Door y estadísticas de tráfico agregadas.
-  - Visualización segura: solo datos agregados/anonimizados, sin exponer información sensible.
-  - Documentación de protección y privacidad en SECURITY_REVIEW.md.
+- Health Checks y monitorización de disponibilidad:
+  - Módulo `js/healthcheck.js` que mide latencia, códigos de estado y disponibilidad vía fetch periódico a `/health.txt`.
+  - Archivo estático `/health.txt` con contenido "OK" (sin información sensible).
+  - Nueva sección “Health & Availability” en el dashboard con visualización de códigos, latencia media y disponibilidad.
+  - Visualización segura: solo datos de frontend, sin exponer detalles internos.
+  - Documentación de privacidad y protección en SECURITY_REVIEW.md.
   - Gráficos simples de barras generados solo con JS/DOM, sin librerías externas.
   - Módulo `js/observability-dashboard.js` para leer métricas de localStorage/sessionStorage y endpoint remoto.
   - Actualización en tiempo real si telemetry.js sigue activo.

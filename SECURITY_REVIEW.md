@@ -23,7 +23,19 @@ La versión actual implementa:
 Ver detalles en docs/telemetry.md y CHANGELOG.md.
 
 
-## 9. Integración de logs de infraestructura
+
+## 10. Health Checks y monitorización de disponibilidad
+
+Se implementó un health check periódico mediante `js/healthcheck.js` que consulta `/health.txt` cada 60 segundos:
+- Solo se registra latencia, código de estado y disponibilidad (sin información interna ni sensible).
+- Los resultados se almacenan en localStorage y se visualizan en el dashboard.
+- El archivo `/health.txt` contiene únicamente "OK" y es compatible con Front Door, CDN y WAF.
+- El script se incluye con SRI, nonce rotativo y Trusted Types.
+
+**Privacidad y seguridad:**
+- No se expone información interna del sistema ni detalles de infraestructura.
+- El health check solo mide disponibilidad y latencia del frontend, nunca datos de backend ni usuarios.
+- El diseño es compatible con CSP estricta y Trusted Types.
 
 El dashboard lee archivos JSON de logs anonimizados generados por scripts locales y almacenados en `docs/evidence/logs/`.
 

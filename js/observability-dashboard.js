@@ -192,9 +192,34 @@
     }
   }
 
+  // --- Healthcheck: renderizar sección de disponibilidad ---
+  function renderHealthcheck() {
+    let arr = [];
+    try { arr = JSON.parse(localStorage.getItem('healthcheck_results')) || []; } catch {}
+    const tbody = document.getElementById('healthcheck-status');
+    if (tbody) {
+      tbody.innerHTML = '';
+      arr.slice(-10).reverse().forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.ts ? new Date(e.ts).toLocaleTimeString() : ''}</td><td>${e.status}</td><td>${e.latency ?? '-'}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    // Latencia media
+    const latArr = arr.filter(e => typeof e.latency === 'number').map(e => e.latency);
+    const avg = latArr.length ? (latArr.reduce((a,b)=>a+b,0)/latArr.length).toFixed(2) : '-';
+    const pct = arr.length ? Math.round(arr.filter(e => e.ok).length * 100 / arr.length) : '-';
+    const latSpan = document.getElementById('health-latency-avg');
+    const pctSpan = document.getElementById('health-availability-pct');
+    if (latSpan) latSpan.textContent = avg;
+    if (pctSpan) pctSpan.textContent = pct;
+  }
+
   // Actualización periódica
   setInterval(updateDashboard, 4000);
   setInterval(loadInfrastructureLogs, 6000);
+  setInterval(renderHealthcheck, 5000);
   updateDashboard();
   loadInfrastructureLogs();
+  renderHealthcheck();
 })();

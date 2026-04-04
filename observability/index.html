@@ -41,6 +41,7 @@
     <canvas id="obs-inp-chart" width="120" height="60"></canvas>
     <canvas id="obs-ttfb-chart" width="120" height="60"></canvas>
   </div>
+
   <div>
     <strong>Últimos eventos</strong>
     <table>
@@ -48,6 +49,18 @@
       <tbody id="obs-last-events"></tbody>
     </table>
   </div>
+
+  <section id="health-availability" style="margin-top:2em;">
+    <h2>Health & Availability</h2>
+    <table>
+      <thead><tr><th>Hora</th><th>Código</th><th>Latencia (ms)</th></tr></thead>
+      <tbody id="healthcheck-status"></tbody>
+    </table>
+    <div style="margin-top:1em;">
+      <span>Latencia media: <span id="health-latency-avg">-</span> ms</span> | 
+      <span>Disponibilidad (últimos 50): <span id="health-availability-pct">-</span>%</span>
+    </div>
+  </section>
 
   <section id="infra-logs" style="margin-top:2em;">
     <h2>Infraestructura</h2>
@@ -75,6 +88,7 @@
       </div>
     </div>
   </section>
+  <script nonce="__NONCE__" defer src="../js/healthcheck.js" integrity="sha384-PLACEHOLDER" ></script>
   <script nonce="__NONCE__" defer src="../js/observability-dashboard.js"></script>
 </body>
 </html>
