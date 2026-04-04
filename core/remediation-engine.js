@@ -6,6 +6,10 @@ function normalizeToken(value, fallback) {
   return token || fallback;
 }
 
+function escapeTerraformString(value) {
+  return String(value || "").replace(/[\\"]/g, "\\$&");
+}
+
 export function buildDynamicRemediation(payload, flags, format, includeRollback = true) {
   const identityToken = normalizeToken(payload.servicePrincipal || payload.user || payload.principalId || payload.appId, "identity");
   const resourceToken = normalizeToken(payload.resource || payload.targetResource || payload.scope, "resource");
@@ -76,11 +80,12 @@ export function generateEntraTerraformFix(payload, ruleResult) {
     : [roleName];
   const policyName = "enforce_mfa_" + normalizeToken(roleName, "identity");
   const findingsText = ruleResult.findings.join(", ");
-  const includedRoles = allRoles.map((role) => '"' + role.replace(/"/g, "\\\"") + '"').join(", ");
+  const escapedRoleName = escapeTerraformString(roleName);
+  const includedRoles = allRoles.map((role) => '"' + escapeTerraformString(role) + '"').join(", ");
 
   return [
     'resource "azuread_conditional_access_policy" "' + policyName + '" {',
-    '  display_name = "SEC_ARCHITECT - Enforce MFA for ' + roleName.replace(/"/g, "\\\"") + '"',
+    '  display_name = "SEC_ARCHITECT - Enforce MFA for ' + escapedRoleName + '"',
     '  state        = "enabled"',
     "",
     "  conditions {",
