@@ -30,7 +30,7 @@ if ($payload.app -ne "SEC_ARCHITECT") {
     $errors += "Field app must be SEC_ARCHITECT"
 }
 
-if ($payload.exportedAt -isnot [string]) {
+if ($payload.exportedAt -isnot [string] -and $payload.exportedAt -isnot [datetime] -and $payload.exportedAt -isnot [datetimeoffset]) {
     $errors += "Field exportedAt must be a string"
 }
 
@@ -66,6 +66,10 @@ if ($payload.traces -isnot [System.Collections.IEnumerable]) {
 
         if ($trace.durationMs -and ($trace.durationMs -isnot [int] -and $trace.durationMs -isnot [long])) {
             $errors += "traces[$i].durationMs must be numeric"
+        }
+
+        if ($trace.startedAt -and $trace.startedAt -isnot [string] -and $trace.startedAt -isnot [datetime] -and $trace.startedAt -isnot [datetimeoffset]) {
+            $errors += "traces[$i].startedAt must be a string"
         }
     }
 }
