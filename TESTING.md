@@ -134,9 +134,10 @@ date: 2026-04-02
 
 **Resultado esperado**:
 - `<script>` eliminado; no aparece en el DOM.
-- `<img onerror>` eliminado o atributo `onerror` removido.
+- `<img onerror>` eliminado o atributo `onerror` removido por DOMPurify.
 - `href="javascript:"` reemplazado por `href="#"` o eliminado.
 - `<iframe>` eliminado completamente.
+- `<svg>` y `<math>` eliminados completamente por `FORBID_TAGS`.
 
 **Eliminar el archivo de prueba** después de confirmar el resultado.
 
