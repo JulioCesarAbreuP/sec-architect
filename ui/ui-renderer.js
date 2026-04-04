@@ -21,18 +21,21 @@ export function updateStatus(statusEl, rootEl, risk) {
 
   if (score >= 80) {
     statusEl.textContent = "CRITICAL";
+    statusEl.setAttribute("aria-label", "Estado del comando: critico");
     statusEl.classList.add("status-critical");
     rootEl.classList.add("risk-critical");
     return "critical";
   }
   if (score >= 50) {
     statusEl.textContent = "DEGRADED";
+    statusEl.setAttribute("aria-label", "Estado del comando: degradado");
     statusEl.classList.add("status-degraded");
     rootEl.classList.add("risk-high");
     return "degraded";
   }
 
   statusEl.textContent = "HEALTHY";
+  statusEl.setAttribute("aria-label", "Estado del comando: saludable");
   statusEl.classList.add("status-healthy");
   rootEl.classList.add("risk-low");
   return "healthy";
