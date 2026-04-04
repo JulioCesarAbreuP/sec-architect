@@ -1,3 +1,92 @@
+
+// --- Related Posts Logic ---
+async function discoverMarkdownFiles() {
+  const candidates = new Set();
+  try {
+    const manifestResponse = await fetchWithTimeout("blog/posts.json", { cache: "no-store" }, POST_FETCH_TIMEOUT_MS);
+    if (manifestResponse.ok) {
+      const manifest = await manifestResponse.json();
+      if (Array.isArray(manifest)) {
+        for (const entry of manifest) {
+          if (typeof entry === "string" && /\.md$/i.test(entry)) {
+            candidates.add(entry);
+          }
+          if (entry && typeof entry === "object" && typeof entry.file === "string" && /\.md$/i.test(entry.file)) {
+            candidates.add(entry.file);
+          }
+        }
+      }
+    }
+  } catch (_error) {}
+  return Array.from(candidates).filter(Boolean);
+}
+
+async function loadPostMetadata(fileName) {
+  const response = await fetchWithTimeout(`blog/${encodeURIComponent(fileName)}`, { cache: "no-store" }, POST_FETCH_TIMEOUT_MS);
+  if (!response.ok) throw new Error(`No se pudo leer ${fileName}`);
+  const markdown = await response.text();
+  if (markdown.length > MAX_MARKDOWN_LENGTH) throw new Error(`Post demasiado grande: ${fileName}`);
+  const parsed = parseFrontMatter(markdown);
+  return {
+    file: fileName,
+    title: parsed.data.title || getHeadingTitle(parsed.content) || fileName.replace(/\.md$/i, ""),
+    tags: (parsed.data.tags || "").split(",").map(t => t.trim().toLowerCase()).filter(Boolean),
+  };
+}
+
+function buildPostLink(fileName) {
+  const staticRoutes = {
+    "identidad-vs-cuenta.md": "blog/identidad-vs-cuenta/",
+    "identidad-y-cuenta.md": "blog/identidad-y-cuenta/",
+    "sabsa-ig4-command-center.md": "blog/sabsa-ig4-command-center/"
+  };
+  const staticTarget = staticRoutes[fileName];
+  if (staticTarget) return staticTarget;
+  return `post.html?post=${encodeURIComponent(fileName)}`;
+}
+
+function renderRelatedPosts(currentFile, currentTags, currentTitle) {
+  const container = document.getElementById("relatedPosts");
+  if (!container) return;
+  container.innerHTML = "";
+  if (!Array.isArray(window.__relatedPosts) || window.__relatedPosts.length === 0) {
+    container.style.display = "none";
+    return;
+  }
+  const title = document.createElement("div");
+  title.className = "related-posts-title";
+  title.textContent = "Artículos relacionados";
+  container.appendChild(title);
+  const list = document.createElement("ul");
+  list.className = "related-posts-list";
+  for (const post of window.__relatedPosts) {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = buildPostLink(post.file);
+    a.textContent = post.title;
+    li.appendChild(a);
+    list.appendChild(li);
+  }
+  container.appendChild(list);
+  container.style.display = "";
+}
+
+async function showRelatedPosts(currentFile, currentTags, currentTitle) {
+  if (!Array.isArray(currentTags) || currentTags.length === 0) return;
+  const files = await discoverMarkdownFiles();
+  const metas = (await Promise.allSettled(files.map(loadPostMetadata)))
+    .filter(r => r.status === "fulfilled")
+    .map(r => r.value)
+    .filter(post => post.file !== currentFile);
+  // Score by tag overlap
+  const scored = metas.map(post => {
+    const overlap = post.tags.filter(t => currentTags.includes(t)).length;
+    return { ...post, overlap };
+  }).filter(p => p.overlap > 0);
+  scored.sort((a, b) => b.overlap - a.overlap || a.title.localeCompare(b.title, "es"));
+  window.__relatedPosts = scored.slice(0, 5);
+  renderRelatedPosts(currentFile, currentTags, currentTitle);
+}
 const postTitleElement = document.getElementById("postTitle");
 const postMetaElement = document.getElementById("postMeta");
 const postContentElement = document.getElementById("postContent");
@@ -14,136 +103,7 @@ function sanitizePostParam(value) {
   return /^[a-zA-Z0-9._-]+\.md$/i.test(cleaned) ? cleaned : "";
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
-  function sanitizeRenderedHtmlLegacy(rawHtml) {
-  const template = document.createElement("template");
-  template.innerHTML = rawHtml;
-
-  const allowedTags = new Set([
-    "a",
-    "article",
-    "blockquote",
-    "br",
-    "code",
-    "em",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "hr",
-    "img",
-    "li",
-    "ol",
-    "p",
-    "pre",
-    "strong",
-    "ul"
-  ]);
-
-  const allowedAttrs = {
-    a: new Set(["href", "title", "target", "rel"]),
-    img: new Set(["src", "alt", "title"])
-  };
-
-  const isSafeUrl = (value, isImage) => {
-    if (!value || typeof value !== "string") {
-      return false;
-    }
-
-    const input = value.trim();
-    if (input.startsWith("#")) {
-      return true;
-    }
-
-    if (input.startsWith("//")) {
-      return false;
-    }
-
-    if (input.startsWith("/")) {
-      return true;
-    }
-
-    if (/^(\.\/|\.\.\/)/.test(input)) {
-      return true;
-    }
-
-    if (/^mailto:/i.test(input) && !isImage) {
-      return true;
-    }
-
-    if (/^https?:\/\//i.test(input)) {
-      return true;
-    }
-
-    if (/^data:image\/(png|jpe?g|gif|webp|avif);/i.test(input) && isImage) {
-      return true;
-    }
-
-    return false;
-  };
-
-  const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_ELEMENT);
-  const elements = [];
-
-  while (walker.nextNode()) {
-    elements.push(walker.currentNode);
-  }
-
-  for (const element of elements) {
-    const tagName = element.tagName.toLowerCase();
-    if (!allowedTags.has(tagName)) {
-      element.remove();
-      continue;
-    }
-
-    // Aplicando sanitizacion para evitar inyeccion en el DOM al renderizar markdown dinamico.
-    for (const attrName of element.getAttributeNames()) {
-      const attrValue = element.getAttribute(attrName) || "";
-      const lowerName = attrName.toLowerCase();
-      const lowerValue = attrValue.trim().toLowerCase();
-
-      if (lowerName.startsWith("on")) {
-        element.removeAttribute(attrName);
-        continue;
-      }
-
-      const tagAllowedAttrs = allowedAttrs[tagName] || new Set();
-      if (!tagAllowedAttrs.has(lowerName)) {
-        element.removeAttribute(attrName);
-        continue;
-      }
-
-      if (lowerName === "href" && !isSafeUrl(attrValue, false)) {
-        element.removeAttribute(attrName);
-        continue;
-      }
-
-      if (lowerName === "src" && !isSafeUrl(attrValue, true)) {
-        element.removeAttribute(attrName);
-      }
-
-      if (tagName === "a" && lowerName === "target") {
-        element.setAttribute("target", "_blank");
-      }
-
-      if (tagName === "a" && (lowerName === "href" || lowerName === "target")) {
-        element.setAttribute("rel", "noopener noreferrer");
-      }
-    }
-  }
-
-  return template.innerHTML;
-}
 
 function sanitizeRenderedHtml(rawHtml) {
   if (window.DOMPurify && typeof window.DOMPurify.sanitize === "function") {
@@ -272,6 +232,11 @@ function configureMarked(postDirectory) {
     return `<a href="${safeHref}"${safeTitle}${target}${rel}>${text}</a>`;
   };
 
+  renderer.code = function (code, infostring, escaped) {
+    const lang = (infostring || '').split(/\s+/)[0];
+    const classAttr = lang ? ` class="language-${lang}"` : '';
+    return `<pre><code${classAttr}>${escapeHtml(code)}</code></pre>`;
+  };
   marked.setOptions({
     renderer,
     breaks: true,
@@ -391,6 +356,10 @@ async function initPost() {
   const rendered = marked.parse(parsed.content);
   postContentElement.innerHTML = sanitizeRenderedHtml(rendered);
   initReadingProgress();
+
+  // Related posts logic
+  const currentTags = (parsed.data.tags || "").split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+  showRelatedPosts(postParam, currentTags, derivedTitle);
 }
 
 initPost();

@@ -10,6 +10,7 @@
     "test:auth": "node tests/run-auth-smoke.js",
     "test:zero-trust": "node tests/run-zero-trust-smoke.js",
     "test:attack-weight": "node tests/run-attack-weighting-smoke.js",
-    "test:smoke": "npm run test:enterprise && npm run test:entra && npm run test:auth && npm run test:zero-trust && npm run test:attack-weight"
+    "test:smoke": "npm run test:enterprise && npm run test:entra && npm run test:auth && npm run test:zero-trust && npm run test:attack-weight",
+    "update:posts": "node scripts/update-posts-json.cjs"
   }
 }

@@ -190,6 +190,12 @@ async function discoverMarkdownFiles() {
   return Array.from(candidates).map(sanitizeFileName).filter(Boolean).slice(0, MAX_MARKDOWN_FILES);
 }
 
+// Calcula el tiempo estimado de lectura en minutos (palabras/200, mínimo 1 min)
+function estimateReadingTime(text) {
+  const words = (text || "").split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 async function loadPostMetadata(fileName) {
   const response = await fetchWithTimeout(resolveBlogPath(encodeURIComponent(fileName)), { cache: "no-store" }, FETCH_TIMEOUT_MS);
   if (!response.ok) {
@@ -201,6 +207,7 @@ async function loadPostMetadata(fileName) {
     throw new Error(`Post demasiado grande: ${fileName}`);
   }
   const parsed = parseFrontMatter(markdown);
+  const readingTime = estimateReadingTime(parsed.content);
 
   return {
     file: fileName,
@@ -208,7 +215,8 @@ async function loadPostMetadata(fileName) {
     dateRaw: parsed.data.date || "",
     dateValue: parseDateValue(parsed.data.date || ""),
     dateLabel: formatDate(parsed.data.date || ""),
-    tags: parseTags(parsed.data.tags || "")
+    tags: parseTags(parsed.data.tags || ""),
+    readingTime
   };
 }
 
@@ -229,6 +237,7 @@ function renderEmptyState(message) {
 function renderPosts(posts) {
   postsList.textContent = "";
 
+
   posts.forEach((post, index) => {
     const item = document.createElement("li");
     item.className = "post-item post-enter";
@@ -246,8 +255,14 @@ function renderPosts(posts) {
     meta.className = "post-meta";
     meta.textContent = post.dateLabel;
 
+    // Tiempo de lectura
+    const reading = document.createElement("span");
+    reading.className = "post-reading-time";
+    reading.textContent = `· ${post.readingTime} min lectura`;
+
     link.appendChild(title);
     link.appendChild(meta);
+    link.appendChild(reading);
 
     item.appendChild(link);
     postsList.appendChild(item);
