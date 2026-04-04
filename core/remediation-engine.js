@@ -71,8 +71,12 @@ export function generateEntraTerraformFix(payload, ruleResult) {
 
   const principal = String(ruleResult?.context?.principal || payload?.user || payload?.upn || "unknown");
   const roleName = String(ruleResult?.context?.primaryRole || payload?.role || payload?.directoryRole || "Unknown Role");
+  const allRoles = Array.isArray(payload?.roles) && payload.roles.length
+    ? payload.roles.map((role) => String(role || "").trim()).filter(Boolean)
+    : [roleName];
   const policyName = "enforce_mfa_" + normalizeToken(roleName, "identity");
   const findingsText = ruleResult.findings.join(", ");
+  const includedRoles = allRoles.map((role) => '"' + role.replace(/"/g, "\\\"") + '"').join(", ");
 
   return [
     'resource "azuread_conditional_access_policy" "' + policyName + '" {',
@@ -81,7 +85,7 @@ export function generateEntraTerraformFix(payload, ruleResult) {
     "",
     "  conditions {",
     "    users {",
-    '      included_roles = ["' + roleName.replace(/"/g, "\\\"") + '"]',
+    '      included_roles = [' + includedRoles + ']',
     '      excluded_users = ["breakglass@contoso.com"]',
     "    }",
     "",
@@ -97,6 +101,7 @@ export function generateEntraTerraformFix(payload, ruleResult) {
     "}",
     "",
     "# principal: " + principal,
+    "# primary_role: " + roleName,
     "# findings: " + findingsText
   ].join("\n");
 }

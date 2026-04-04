@@ -114,6 +114,16 @@ function main() {
     true,
     "roles[] input should trigger critical-role rule"
   );
+  assert.equal(
+    hasLog(resultSecurityAdmin, "[MITRE] Mapping to T1078.004 (Cloud Accounts)."),
+    true,
+    "critical Entra cloud roles should map to T1078.004"
+  );
+  assert.match(
+    generateEntraTerraformFix(securityAdminFromRolesArray, resultSecurityAdmin),
+    /included_roles\s*=\s*\["Security Administrator", "Reader"\]/i,
+    "remediation should preserve all roles when roles[] is present"
+  );
 
   console.log("Entra rules smoke tests passed.");
 }

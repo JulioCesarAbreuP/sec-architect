@@ -153,9 +153,13 @@ export async function copyTextToClipboard(text) {
     return false;
   }
 
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
     await navigator.clipboard.writeText(value);
     return true;
+  }
+
+  if (typeof document === "undefined") {
+    return false;
   }
 
   const temp = document.createElement("textarea");

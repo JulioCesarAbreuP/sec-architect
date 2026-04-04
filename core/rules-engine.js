@@ -99,6 +99,27 @@ function calculateEntraRiskScore(riskReasons, isPrivilegedRole, mfaDisabled, mfa
   return Math.min(score, 100);
 }
 
+function resolveEntraMitreTechnique(primaryRole, resource, accountType, mfaEnabled, isPrivilegedRole) {
+  const isCloudContext = accountType === "cloud" || /azure|entra|o365|m365|cloud/i.test(resource);
+  const isGlobalAdmin = /global\s*admin(istrator)?/i.test(primaryRole);
+
+  if (isCloudContext || isPrivilegedRole || isGlobalAdmin) {
+    return {
+      id: "T1078.004",
+      name: "Cloud Accounts"
+    };
+  }
+
+  return selectMitreTechnique({
+    mfaEnforced: mfaEnabled,
+    isGlobalAdmin,
+    hasDangerousRole: isPrivilegedRole,
+    hasExcessivePermissions: false,
+    targetsKeyVault: /key\s*vault|kv/i.test(resource),
+    targetsStorage: /storage|blob|data\s*lake/i.test(resource)
+  });
+}
+
 export function evaluateEntraRules(payload) {
   const roleCandidates = normalizeRoleCandidates(payload);
   const primaryRole = roleCandidates[0] || "unknown";
@@ -150,14 +171,7 @@ export function evaluateEntraRules(payload) {
     radarLevel = "risk";
   }
 
-  const technique = selectMitreTechnique({
-    mfaEnforced: mfaEnabled,
-    isGlobalAdmin: /global\s*admin(istrator)?/i.test(primaryRole),
-    hasDangerousRole: isPrivilegedRole,
-    hasExcessivePermissions: false,
-    targetsKeyVault: /key\s*vault|kv/i.test(resource),
-    targetsStorage: /storage|blob|data\s*lake/i.test(resource)
-  });
+  const technique = resolveEntraMitreTechnique(primaryRole, resource, accountType, mfaEnabled, isPrivilegedRole);
 
   if (isPrivilegedRole || accountType === "cloud" || /azure|entra|o365|m365|cloud/i.test(resource)) {
     logs.push({

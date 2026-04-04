@@ -3,7 +3,10 @@ import { evaluateEntraRules } from "../rules-engine.js";
 import { generateEntraTerraformFix } from "../remediation-engine.js";
 
 export function evaluateEntraIdentity(parsedId) {
-  var parsed = parseIdentityJson(JSON.stringify(parsedId || {}));
+  var parsed = typeof parsedId === "string"
+    ? parseIdentityJson(parsedId)
+    : { ok: true, value: parsedId || {} };
+
   if (!parsed.ok) {
     return {
       radarLevel: "neutral",
