@@ -17,6 +17,7 @@ import { loadArchitectureBoard, answerArchitectureQuestion } from "./ui/ui-archi
 import { pushSocLogs, pushSingleLog, clearLogs } from "./ui/ui-logs.js";
 import { renderAttackGraph } from "./ui/ui-graph.js";
 import { renderZeroTrustScore, renderZeroTrustPanel } from "./ui/ui-score.js";
+import { renderThreatIntelPanel } from "./ui/ui-threat-intel.js";
 
 let refs;
 let radarChart;
@@ -26,6 +27,8 @@ let previousRisk = 0;
 let currentScore = 100;
 let latestCaPolicies = [];
 let threatIntelSummary = null;
+let threatIntelHistory = [];
+let threatIntelTimeline = [];
 
 function applyThreatState(probability) {
   updateStatus(refs.status, refs.root, probability);
@@ -37,6 +40,37 @@ function applyThreatState(probability) {
     shadowMonitor.updateRisk(probability);
   }
 
+}
+
+function appendThreatTimeline(source, message) {
+  threatIntelTimeline.unshift({
+    at: new Date().toISOString(),
+    source,
+    message
+  });
+  threatIntelTimeline = threatIntelTimeline.slice(0, 16);
+}
+
+function appendThreatHistory(technique, risk) {
+  threatIntelHistory.push({
+    at: new Date().toISOString(),
+    technique: String(technique || "n/a"),
+    risk: Math.max(0, Math.min(100, Number(risk || 0)))
+  });
+  threatIntelHistory = threatIntelHistory.slice(-10);
+}
+
+function refreshThreatIntelPanel(intelPressure = 0) {
+  renderThreatIntelPanel(refs, {
+    summary: threatIntelSummary || {
+      generatedAt: new Date().toISOString(),
+      topTechnique: { id: "n/a", risk: 0 },
+      topTechniques: []
+    },
+    intelPressure,
+    history: threatIntelHistory,
+    timeline: threatIntelTimeline
+  });
 }
 
 function updateZeroTrustFromPolicies(policies, source = "manual") {
@@ -52,6 +86,9 @@ function updateZeroTrustFromPolicies(policies, source = "manual") {
     "[ZERO-TRUST] Score " + posture.score + "/100 from " + posture.metrics.policyCount + " CA policies (source=" + source + ")",
     posture.score >= 80 ? "info" : "threat"
   );
+
+  appendThreatTimeline("scoring", "Zero-Trust updated from " + source + " | score=" + posture.score + " | pressure=" + posture.metrics.intelPressure);
+  refreshThreatIntelPanel(posture.metrics.intelPressure);
 }
 
 function getWeightedImpact(techniqueId, baseImpact) {
@@ -67,6 +104,9 @@ async function primeThreatIntel() {
   try {
     const intel = await loadThreatIntelFeed();
     threatIntelSummary = intel.summary;
+    appendThreatHistory(intel.summary.topTechnique.id, intel.summary.topTechnique.risk);
+    appendThreatTimeline("intel-feed", "Feed synced | top=" + intel.summary.topTechnique.id + " | confidence=" + intel.summary.topTechnique.risk);
+
     appendSocLog(
       refs.shadowConsole,
       "[THREAT-INTEL] Feed loaded: " + intel.summary.itemCount + " entries, top technique " + intel.summary.topTechnique.id + " (" + intel.summary.topTechnique.risk + "/100)",
@@ -76,6 +116,8 @@ async function primeThreatIntel() {
     // Recompute score with intel pressure once the feed is available.
     updateZeroTrustFromPolicies(latestCaPolicies, "intel");
   } catch (error) {
+    appendThreatTimeline("intel-feed", "Feed unavailable");
+    refreshThreatIntelPanel(0);
     appendSocLog(refs.shadowConsole, "[THREAT-INTEL] Feed unavailable: " + String(error.message || error), "threat");
   }
 }
@@ -152,6 +194,9 @@ export async function analyzeArchitectureWithAI() {
 
     const baselineProbability = rules.flags.mfaEnabled ? Math.max(12, 100 - score) : Math.max(80, aiAnalysis.probability);
     const weighted = getWeightedImpact(aiAnalysis.mitre_technique, baselineProbability);
+    appendThreatHistory(aiAnalysis.mitre_technique, weighted.components.intelScore);
+    appendThreatTimeline("attack-analysis", "Technique=" + aiAnalysis.mitre_technique + " | weightedImpact=" + weighted.impact + " | intel=" + weighted.components.intelScore);
+    refreshThreatIntelPanel(Math.round((weighted.components.intelScore || 0) * 0.18));
 
     const merged = {
       object_type: objectType,
@@ -242,6 +287,10 @@ function wireAttackSimulation() {
     const deterministic = runSabsaInferenceLayers(payload, refs.formatSelect.value);
     const weighted = getWeightedImpact(deterministic.deterministicAnalysis.mitre_technique);
     const risk = weighted.impact;
+    appendThreatHistory(deterministic.deterministicAnalysis.mitre_technique, weighted.components.intelScore);
+    appendThreatTimeline("attack-sim", "Technique=" + deterministic.deterministicAnalysis.mitre_technique + " | impact=" + weighted.impact + " | base/posture/intel=" + weighted.components.baseImpact + "/" + weighted.components.posturePressure + "/" + weighted.components.intelPressure);
+    refreshThreatIntelPanel(weighted.components.intelPressure);
+
     const graph = buildAttackGraph(payload, rules.flags);
 
     const output = {
@@ -307,6 +356,7 @@ async function boot() {
   wireAttackSimulation();
   wireArchitectureBoard();
   wireSocNightMode();
+  refreshThreatIntelPanel(0);
 
   window.addEventListener("sa:ca-policies-loaded", (event) => {
     const policies = Array.isArray(event?.detail?.policies) ? event.detail.policies : [];

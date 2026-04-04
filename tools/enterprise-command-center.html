@@ -122,6 +122,45 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
       </article>
     </section>
 
+    <section class="enterprise-grid threat-intel-row">
+      <article class="panel panel-threat-intel" id="threatIntelPanel">
+        <h2>Threat Intel Command Panel</h2>
+        <div class="ti-topline">
+          <div id="tiStatus" class="ti-status">Feed: waiting</div>
+          <div id="tiLastUpdated" class="ti-updated">Updated: n/a</div>
+        </div>
+
+        <div class="ti-metrics-grid">
+          <div class="ti-metric">
+            <span class="ti-label">Top Techniques</span>
+            <strong id="tiTopTechniqueCount">0</strong>
+          </div>
+          <div class="ti-metric">
+            <span class="ti-label">Confidence Trend</span>
+            <strong id="tiTrendDirection">stable</strong>
+          </div>
+          <div class="ti-metric">
+            <span class="ti-label">Score Influence</span>
+            <strong id="tiScoreInfluence">0 pts</strong>
+          </div>
+        </div>
+
+        <div class="ti-columns">
+          <div class="ti-column">
+            <h3>Main Techniques</h3>
+            <pre id="tiTopTechniques">No techniques yet.</pre>
+          </div>
+          <div class="ti-column">
+            <h3>Confidence Trend</h3>
+            <pre id="tiConfidenceTrend">No trend data yet.</pre>
+          </div>
+        </div>
+
+        <h3>Temporal View</h3>
+        <pre id="tiTimeline">No timeline events yet.</pre>
+      </article>
+    </section>
+
     <section class="enterprise-grid graph-row">
       <article class="panel panel-graph">
         <h2>Attack Graph</h2>
