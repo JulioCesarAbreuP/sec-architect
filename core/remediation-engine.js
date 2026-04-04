@@ -62,3 +62,46 @@ export function buildDynamicRemediation(payload, flags, format, includeRollback 
 
   return terraform.join("\n");
 }
+
+export function generateEntraTerraformFix(payload, ruleResult) {
+  const hasFindings = Array.isArray(ruleResult?.findings) && ruleResult.findings.length > 0;
+  if (!hasFindings) {
+    return "";
+  }
+
+  const principal = String(ruleResult?.context?.principal || payload?.user || payload?.upn || "unknown");
+  const roleName = String(ruleResult?.context?.primaryRole || payload?.role || payload?.directoryRole || "Unknown Role");
+  const allRoles = Array.isArray(payload?.roles) && payload.roles.length
+    ? payload.roles.map((role) => String(role || "").trim()).filter(Boolean)
+    : [roleName];
+  const policyName = "enforce_mfa_" + normalizeToken(roleName, "identity");
+  const findingsText = ruleResult.findings.join(", ");
+  const includedRoles = allRoles.map((role) => '"' + role.replace(/"/g, "\\\"") + '"').join(", ");
+
+  return [
+    'resource "azuread_conditional_access_policy" "' + policyName + '" {',
+    '  display_name = "SEC_ARCHITECT - Enforce MFA for ' + roleName.replace(/"/g, "\\\"") + '"',
+    '  state        = "enabled"',
+    "",
+    "  conditions {",
+    "    users {",
+    '      included_roles = [' + includedRoles + ']',
+    '      excluded_users = ["breakglass@contoso.com"]',
+    "    }",
+    "",
+    "    applications {",
+    '      included_applications = ["All"]',
+    "    }",
+    "  }",
+    "",
+    "  grant_controls {",
+    '    operator          = "OR"',
+    '    built_in_controls = ["mfa"]',
+    "  }",
+    "}",
+    "",
+    "# principal: " + principal,
+    "# primary_role: " + roleName,
+    "# findings: " + findingsText
+  ].join("\n");
+}

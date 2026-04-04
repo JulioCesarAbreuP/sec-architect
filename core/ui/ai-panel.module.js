@@ -1,6 +1,10 @@
 import { analyzeRisk } from "../ai/risk-analyzer.module.js";
 import { mapControl } from "../ai/control-mapper.module.js";
 import { explainArchitecture } from "../ai/architecture-explainer.module.js";
+import { parseIdentityJson, validateIdentityObject } from "../identity-validator.js";
+import { evaluateEntraRules } from "../rules-engine.js";
+import { generateEntraTerraformFix } from "../remediation-engine.js";
+import { paintEntraRadar, renderEntraConsole, renderEntraRemediationPanel, copyTextToClipboard } from "../../ui/renderer.js";
 
 var TRACE_STORAGE_KEY = "sec_architect_ai_trace_v1";
 var MAX_TRACE_ITEMS = 8;
@@ -273,6 +277,28 @@ function resolveHandler(activeTab) {
   return mapControl;
 }
 
+function setEntraMode(active) {
+  var entraEngine = byId("entra-engine");
+  var runBtnEl    = byId("ai-run");
+  var inputEl     = byId("ai-input");
+  if (entraEngine) { entraEngine.hidden = !active; }
+  if (inputEl) {
+    if (active) {
+      inputEl.classList.add("entra-active");
+      inputEl.placeholder = 'Pega un objeto Entra ID (JSON)\n\nEjemplo:\n{"user":"john@contoso.com","role":"Global Administrator","mfa":"disabled","resource":"KeyVault-Prod"}';
+    } else {
+      inputEl.classList.remove("entra-active");
+      inputEl.placeholder = "Introduce un control, riesgo o componente...";
+    }
+  }
+  if (runBtnEl) { runBtnEl.textContent = active ? "Analyze Payload" : "Ejecutar IA"; }
+  if (!active) {
+    paintEntraRadar(document, "neutral");
+    renderEntraConsole(document, []);
+    renderEntraRemediationPanel(document, null);
+  }
+}
+
 export function initAIPanel() {
   var container = byId("ai-panel-container");
   var traceStore = loadTraceStore();
@@ -288,10 +314,33 @@ export function initAIPanel() {
     '<button type="button" class="ai-tab active" data-tab="control" role="tab" aria-selected="true">Control Mapper</button>',
     '<button type="button" class="ai-tab" data-tab="risk" role="tab" aria-selected="false">Risk Analyzer</button>',
     '<button type="button" class="ai-tab" data-tab="arch" role="tab" aria-selected="false">Architecture Explainer</button>',
+    '<button type="button" class="ai-tab" data-tab="entra" role="tab" aria-selected="false">Entra ID</button>',
     "</div>",
     '<div class="ai-content">',
     '<textarea id="ai-input" placeholder="Introduce un control, riesgo o componente..." aria-label="Entrada para IA"></textarea>',
     '<button type="button" id="ai-run">Ejecutar IA</button>',
+    '<div id="entra-engine" class="entra-engine" hidden>',
+    '<div class="entra-engine-left">',
+    '<div class="entra-radar-shell">',
+    '<svg class="entra-radar-svg" viewBox="0 0 160 90" aria-hidden="true">',
+    '<path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#1a2530" stroke-width="10" stroke-linecap="round"/>',
+    '<text x="10" y="86" font-size="8" fill="#4ade80" font-family="monospace">SAFE</text>',
+    '<text x="124" y="86" font-size="8" fill="#f87171" font-family="monospace">RISK</text>',
+    '<path id="entra-arc-fill" d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#7e96ad" stroke-width="8" stroke-linecap="round" stroke-dasharray="204" stroke-dashoffset="102"/>',
+    '<line id="entra-needle" x1="80" y1="90" x2="80" y2="30" stroke="#7e96ad" stroke-width="2.5" stroke-linecap="round"/>',
+    '<circle cx="80" cy="90" r="4" fill="#e0e0e0"/>',
+    '</svg>',
+    '<div class="entra-radar-label" id="entra-radar-label">AWAITING PAYLOAD</div>',
+    '</div>',
+    '<ul class="entra-console" id="entra-console"></ul>',
+    '</div>',
+    '<aside class="entra-remediation" aria-live="polite">',
+    '<h4 class="entra-remediation-title">Remediation as Code</h4>',
+    '<div id="entra-risk-score" class="entra-risk-score is-neutral">Risk Score: N/A</div>',
+    '<pre id="entra-remediation-code" class="entra-remediation-code"># No remediation generated.\n# Identity object passed or has indeterminate posture.</pre>',
+    '<button type="button" id="entra-copy-fix" class="entra-copy-fix" disabled>[COPY FIX TO CLIPBOARD]</button>',
+    '</aside>',
+    '</div>',
     "</div>",
     '<div class="ai-trace">',
     '<div class="ai-trace-header">',
@@ -317,6 +366,7 @@ export function initAIPanel() {
   var tabs = container.querySelectorAll(".ai-tab");
   var runBtn = byId("ai-run");
   var input = byId("ai-input");
+  var copyFixBtn = byId("entra-copy-fix");
   var traceFilterSelect = byId("ai-trace-filter");
   var traceClearBtn = byId("ai-trace-clear");
   var traceExportBtn = byId("ai-trace-export");
@@ -345,6 +395,26 @@ export function initAIPanel() {
 
   renderTraceList(traceStore, traceFilter);
 
+  if (copyFixBtn) {
+    copyFixBtn.onclick = function () {
+      var codeEl = byId("entra-remediation-code");
+      var text = String((codeEl && codeEl.textContent) || "").trim();
+      copyTextToClipboard(text)
+        .then(function (copied) {
+          copyFixBtn.textContent = copied ? "[COPIED]" : "[COPY BLOCKED]";
+          window.setTimeout(function () {
+            copyFixBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+          }, 1200);
+        })
+        .catch(function () {
+          copyFixBtn.textContent = "[COPY BLOCKED]";
+          window.setTimeout(function () {
+            copyFixBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+          }, 1200);
+        });
+    };
+  }
+
   tabs.forEach(function (tab) {
     tab.onclick = function () {
       activeTab = tab.getAttribute("data-tab") || "control";
@@ -356,6 +426,7 @@ export function initAIPanel() {
 
       tab.classList.add("active");
       tab.setAttribute("aria-selected", "true");
+      setEntraMode(activeTab === "entra");
     };
   });
 
@@ -366,6 +437,49 @@ export function initAIPanel() {
       var engine = resolveEngineName(activeTab);
 
       if (!inputValue) {
+        return;
+      }
+
+      if (activeTab === "entra") {
+        var parsedJson = parseIdentityJson(inputValue);
+        if (!parsedJson.ok) {
+          paintEntraRadar(document, "neutral");
+          renderEntraConsole(document, [{ level: "error", message: parsedJson.message || "[ERROR] JSON de Identidad No V\u00e1lido" }]);
+          renderEntraRemediationPanel(document, null);
+          traceStore.unshift({ engine: "entra-id-validator", status: "error", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+          traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
+          return;
+        }
+
+        var validation = validateIdentityObject(parsedJson.value);
+        if (!validation.ok) {
+          paintEntraRadar(document, "neutral");
+          renderEntraConsole(document, (validation.errors || []).map(function (err) {
+            return { level: "error", message: "[ERROR] " + err };
+          }));
+          renderEntraRemediationPanel(document, null);
+          traceStore.unshift({ engine: "entra-id-validator", status: "error", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+          traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
+          return;
+        }
+
+        var evaluation = evaluateEntraRules(validation.value);
+        var warningLogs = (validation.warnings || []).map(function (warn) {
+          return { level: "info", message: "[CHECK] " + warn };
+        });
+        var terraformFix = generateEntraTerraformFix(validation.value, evaluation);
+
+        paintEntraRadar(document, evaluation.radarLevel);
+        renderEntraConsole(document, warningLogs.concat(evaluation.logs || []));
+        renderEntraRemediationPanel(document, {
+          hasFix: Boolean(terraformFix),
+          terraformFix: terraformFix,
+          riskScore: evaluation.riskScore,
+          radarLevel: evaluation.radarLevel
+        });
+
+        traceStore.unshift({ engine: "entra-id-validator", status: evaluation.status, durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+        traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
         return;
       }
 
