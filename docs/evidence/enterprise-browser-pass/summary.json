@@ -1,0 +1,420 @@
+{
+  "generatedAt": "2026-04-04T16:48:38Z",
+  "before": {
+    "label": "before",
+    "url": "http://127.0.0.1:8020/tools/enterprise-command-center.html",
+    "title": "Enterprise AI Command Graph | SEC_ARCHITECT",
+    "focusSequence": [
+      {
+        "ariaLabel": "Hallazgos del motor Zero Trust",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "ztFindings",
+        "role": "",
+        "tag": "pre",
+        "text": "1. [HIGH] No Conditional Access policies were detected from the tenant feed.\n2. [HIGH] Threat Intel pressure (-11 points",
+        "step": 1
+      },
+      {
+        "ariaLabel": "Tecnicas principales detectadas",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "tiTopTechniques",
+        "role": "",
+        "tag": "pre",
+        "text": "1. T1078 | confidence=100/100\n2. T1556 | confidence=100/100\n3. T1190 | confidence=100/100\n4. T1505.003 | confidence=100/",
+        "step": 2
+      },
+      {
+        "ariaLabel": "Tendencia de confianza de inteligencia",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "tiConfidenceTrend",
+        "role": "",
+        "tag": "pre",
+        "text": "2026-04-04 16:48:21Z | T1078 | 100/100",
+        "step": 3
+      },
+      {
+        "ariaLabel": "Linea temporal de eventos de inteligencia",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "tiTimeline",
+        "role": "",
+        "tag": "pre",
+        "text": "2026-04-04 16:48:21Z | SCORING | Zero-Trust updated from graph | score=14 | pressure=11\n2026-04-04 16:48:21Z | SCORING |",
+        "step": 4
+      },
+      {
+        "ariaLabel": "Grafo de ataque generado por inferencia",
+        "ariaPressed": "",
+        "className": "graph-shell",
+        "href": "",
+        "id": "attackGraph",
+        "role": "",
+        "tag": "div",
+        "text": "",
+        "step": 5
+      },
+      {
+        "ariaLabel": "App Registration Client ID",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "azure-client-id",
+        "role": "",
+        "tag": "input",
+        "text": "",
+        "step": 6
+      },
+      {
+        "ariaLabel": "Azure AD Tenant ID",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "azure-tenant-id",
+        "role": "",
+        "tag": "input",
+        "text": "",
+        "step": 7
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "primary-btn",
+        "href": "",
+        "id": "azure-connect-btn",
+        "role": "",
+        "tag": "button",
+        "text": "Conectar con Microsoft",
+        "step": 8
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "shadow-console",
+        "href": "",
+        "id": "shadowConsole",
+        "role": "log",
+        "tag": "div",
+        "text": "[16:48:21] [THREAT-INTEL] Feed loaded: 50 entries, top technique T1078 (100/100)\n[16:48:21] [ZERO-TRUST] Score 14/100 fr",
+        "step": 9
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "question-input",
+        "href": "",
+        "id": "architectureQuestion",
+        "role": "",
+        "tag": "input",
+        "text": "",
+        "step": 10
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "secondary-btn",
+        "href": "",
+        "id": "askArchitectureBtn",
+        "role": "",
+        "tag": "button",
+        "text": "Ask ADR",
+        "step": 11
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "secondary-btn",
+        "href": "",
+        "id": "refreshArchitectureBtn",
+        "role": "",
+        "tag": "button",
+        "text": "Refresh Docs",
+        "step": 12
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "markdown-board",
+        "href": "",
+        "id": "architectureBoardContent",
+        "role": "",
+        "tag": "div",
+        "text": "ARCHITECTURE \u2014 SEC_ARCHITECT\n\n> Documento de arquitectura t\u00e9cnica del sitio. Versi\u00f3n controlada en repositorio.\n\n> Audie",
+        "step": 13
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "",
+        "role": "",
+        "tag": "body",
+        "text": "Saltar al contenido principal\nSEC_ARCHITECT\nHerramientas\nSABSA Legacy (deprecated)\nSOC Night Mode\nEnterprise AI Command ",
+        "step": 14
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "skip-link",
+        "href": "#enterpriseRoot",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "Saltar al contenido principal",
+        "step": 15
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "brand",
+        "href": "../index.html",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "SEC_ARCHITECT",
+        "step": 16
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "",
+        "href": "../tools.html",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "Herramientas",
+        "step": 17
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "",
+        "href": "../sabsa-ig4-command-center.html",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "SABSA Legacy (deprecated)",
+        "step": 18
+      }
+    ]
+  },
+  "after": {
+    "label": "after",
+    "url": "http://127.0.0.1:8019/tools/enterprise-command-center.html",
+    "title": "Enterprise AI Command Graph | SEC_ARCHITECT",
+    "focusSequence": [
+      {
+        "ariaLabel": "Hallazgos del motor Zero Trust",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "ztFindings",
+        "role": "",
+        "tag": "pre",
+        "text": "1. [HIGH] No Conditional Access policies were detected from the tenant feed.\n2. [HIGH] Threat Intel pressure (-11 points",
+        "step": 1
+      },
+      {
+        "ariaLabel": "Tecnicas principales detectadas",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "tiTopTechniques",
+        "role": "",
+        "tag": "pre",
+        "text": "1. T1078 | confidence=100/100\n2. T1556 | confidence=100/100\n3. T1190 | confidence=100/100\n4. T1505.003 | confidence=100/",
+        "step": 2
+      },
+      {
+        "ariaLabel": "Tendencia de confianza de inteligencia",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "tiConfidenceTrend",
+        "role": "",
+        "tag": "pre",
+        "text": "2026-04-04 16:48:27Z | T1078 | 100/100",
+        "step": 3
+      },
+      {
+        "ariaLabel": "Linea temporal de eventos de inteligencia",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "tiTimeline",
+        "role": "",
+        "tag": "pre",
+        "text": "2026-04-04 16:48:27Z | SCORING | Zero-Trust updated from graph | score=14 | pressure=11\n2026-04-04 16:48:27Z | SCORING |",
+        "step": 4
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "graph-shell",
+        "href": "",
+        "id": "attackGraph",
+        "role": "group",
+        "tag": "div",
+        "text": "",
+        "step": 5
+      },
+      {
+        "ariaLabel": "App Registration Client ID",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "azure-client-id",
+        "role": "",
+        "tag": "input",
+        "text": "",
+        "step": 6
+      },
+      {
+        "ariaLabel": "Azure AD Tenant ID",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "azure-tenant-id",
+        "role": "",
+        "tag": "input",
+        "text": "",
+        "step": 7
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "primary-btn",
+        "href": "",
+        "id": "azure-connect-btn",
+        "role": "",
+        "tag": "button",
+        "text": "Conectar con Microsoft",
+        "step": 8
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "shadow-console",
+        "href": "",
+        "id": "shadowConsole",
+        "role": "log",
+        "tag": "div",
+        "text": "[16:48:27] [THREAT-INTEL] Feed loaded: 50 entries, top technique T1078 (100/100)\n[16:48:27] [ZERO-TRUST] Score 14/100 fr",
+        "step": 9
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "question-input",
+        "href": "",
+        "id": "architectureQuestion",
+        "role": "",
+        "tag": "input",
+        "text": "",
+        "step": 10
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "secondary-btn",
+        "href": "",
+        "id": "askArchitectureBtn",
+        "role": "",
+        "tag": "button",
+        "text": "Ask ADR",
+        "step": 11
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "secondary-btn",
+        "href": "",
+        "id": "refreshArchitectureBtn",
+        "role": "",
+        "tag": "button",
+        "text": "Refresh Docs",
+        "step": 12
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "markdown-board",
+        "href": "",
+        "id": "architectureBoardContent",
+        "role": "",
+        "tag": "div",
+        "text": "ARCHITECTURE \u2014 SEC_ARCHITECT\n\n> Documento de arquitectura t\u00e9cnica del sitio. Versi\u00f3n controlada en repositorio.\n\n> Audie",
+        "step": 13
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "",
+        "href": "",
+        "id": "",
+        "role": "",
+        "tag": "body",
+        "text": "Saltar al contenido principal\nSEC_ARCHITECT\nHerramientas\nSABSA Legacy (deprecated)\nSOC Night Mode\nEnterprise AI Command ",
+        "step": 14
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "skip-link",
+        "href": "#enterpriseRoot",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "Saltar al contenido principal",
+        "step": 15
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "brand",
+        "href": "../index.html",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "SEC_ARCHITECT",
+        "step": 16
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "",
+        "href": "../tools.html",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "Herramientas",
+        "step": 17
+      },
+      {
+        "ariaLabel": "",
+        "ariaPressed": "",
+        "className": "",
+        "href": "../sabsa-ig4-command-center.html",
+        "id": "",
+        "role": "",
+        "tag": "a",
+        "text": "SABSA Legacy (deprecated)",
+        "step": 18
+      }
+    ],
+    "screenshots": [
+      "01-header.png",
+      "02-parser.png",
+      "03-zero-trust.png",
+      "04-threat-intel.png",
+      "05-architecture-board.png"
+    ]
+  }
+}

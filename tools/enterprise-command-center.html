@@ -168,8 +168,9 @@ Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls"
 
     <section class="enterprise-grid graph-row">
       <article class="panel panel-graph">
-        <h2>Attack Graph</h2>
-        <div id="attackGraph" class="graph-shell" tabindex="0" aria-label="Grafo de ataque generado por inferencia"></div>
+        <h2 id="attackGraphTitle">Attack Graph</h2>
+        <p id="attackGraphDescription" class="visually-hidden">Grafo de ataque generado por inferencia para revisar relaciones entre identidad, riesgo y movimiento lateral.</p>
+        <div id="attackGraph" class="graph-shell" tabindex="0" role="group" aria-labelledby="attackGraphTitle" aria-describedby="attackGraphDescription"></div>
       </article>
     </section>
 
