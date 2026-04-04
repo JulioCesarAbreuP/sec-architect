@@ -9,6 +9,9 @@ $issues = @()
 $inlineScriptExceptions = @(
     "tools/credential-exposure.html"
 )
+$inlineScriptAllowedGlobs = @(
+    "tools/credential-exposure.html"
+)
 
 function Get-CspContent([string]$htmlText) {
     $meta = [regex]::Match(
@@ -52,6 +55,21 @@ try {
 
         if ($content -match 'href\s*=\s*"\s*javascript:') {
             $issues += "[LINK] javascript: URL found: $relative"
+        }
+
+        $hasInlineScriptTag = $content -match '<script(?![^>]*\bsrc=)[^>]*>'
+        if ($hasInlineScriptTag) {
+            $allowedInline = $false
+            foreach ($glob in $inlineScriptAllowedGlobs) {
+                if ($relative -like $glob) {
+                    $allowedInline = $true
+                    break
+                }
+            }
+
+            if (-not $allowedInline) {
+                $issues += "[SCRIPT] Inline <script> tag found: $relative"
+            }
         }
     }
 

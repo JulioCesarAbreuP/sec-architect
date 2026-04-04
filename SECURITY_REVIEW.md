@@ -212,6 +212,10 @@ a nivel de etiqueta.
 3. **Mantener la disciplina sin inline script/style** en nuevas páginas y PRs,
    con revisión obligatoria de CSP en cada cambio de UI.
 
+Estado actual: `scripts/security-policy-check.ps1` valida la ausencia de etiquetas
+`<script>` inline en superficies HTML, con excepción explícita documentada para
+`tools/credential-exposure.html` por compatibilidad legacy.
+
 4. **Implementar CSP `report-to`** con un endpoint de reporte (p.ej., Report URI)
    para monitorización continua de violaciones CSP en producción.
 

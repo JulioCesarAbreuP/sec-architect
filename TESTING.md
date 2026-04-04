@@ -112,6 +112,14 @@ document.write("<script>alert(1)<\/script>")
 - Confirmar que no existan hallazgos de `Missing report-uri directive` ni
   `Missing report-to directive` en páginas HTML con CSP.
 
+### 2.5 Verificación de Scripts Inline
+
+- Ejecutar `scripts/security-policy-check.ps1`.
+- Confirmar que no existan hallazgos `Inline <script> tag found` en páginas de
+  blog y artículos.
+- Validar que cualquier excepción legacy esté declarada explícitamente en el
+  script de política.
+
 ---
 
 ## 3. Pruebas de Sanitización del Blog
