@@ -9,6 +9,7 @@ import { persistOperationalContext, buildOperationalNarrative } from "./core/mem
 import { createShadowMonitor } from "./core/telemetry-engine.js";
 import { decodeJwt, validateSc300Claims } from "./core/jwt-validator.js";
 import { getPanelRefs } from "./ui/ui-panels.js";
+import { initAzureAuthPanel } from "./core/ui/azure-auth-panel.js";
 import { appendSocLog, renderJson, renderCode, updateStatus, ensureRadarChart, updateRadar } from "./ui/ui-renderer.js";
 import { loadArchitectureBoard, answerArchitectureQuestion } from "./ui/ui-architecture-board.js";
 import { pushSocLogs, pushSingleLog, clearLogs } from "./ui/ui-logs.js";
@@ -249,6 +250,11 @@ async function boot() {
   wireAttackSimulation();
   wireArchitectureBoard();
   wireSocNightMode();
+
+  await initAzureAuthPanel(
+    (line, type) => appendSocLog(refs.shadowConsole, line, type),
+    () => analyzeArchitectureWithAI()
+  );
 
   window.analyzeArchitectureWithAI = analyzeArchitectureWithAI;
 }
