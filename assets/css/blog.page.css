@@ -168,6 +168,49 @@ body {
   padding: 1.2rem;
 }
 
+.posts-pagination {
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.pagination-button {
+  border: 1px solid var(--border-line);
+  background: var(--card-bg);
+  color: var(--text-main);
+  border-radius: 9px;
+  padding: 0.45rem 0.78rem;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+  border-color: rgba(0, 120, 212, 0.45);
+  transform: translateY(-1px);
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-status {
+  color: var(--text-sub);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.pagination-button:focus-visible {
+  outline: 2px solid var(--azure-blue);
+  outline-offset: 2px;
+}
+
 @media (max-width: 480px) {
   body {
     padding: 1rem;
@@ -201,6 +244,15 @@ body {
 
   .post-title {
     font-size: 0.98rem;
+  }
+
+  .posts-pagination {
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .pagination-button {
+    padding: 0.4rem 0.65rem;
   }
 }
 

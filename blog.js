@@ -1,8 +1,10 @@
 const postsList = document.getElementById("postsList");
+const postsPagination = document.getElementById("postsPagination");
 const isNestedBlogIndex = /\/blog\/(?:index\.html)?$/i.test(window.location.pathname);
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_MARKDOWN_FILES = 200;
 const MAX_POST_BYTES = 500000;
+const POSTS_PER_PAGE = 5;
 const prefersReducedMotion = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function resolveBlogPath(fileName) {
@@ -182,6 +184,9 @@ async function loadPostMetadata(fileName) {
 
 function renderEmptyState(message) {
   postsList.textContent = "";
+  if (postsPagination) {
+    postsPagination.textContent = "";
+  }
   const item = document.createElement("li");
   item.className = "empty-state";
   item.textContent = message;
@@ -216,6 +221,63 @@ function renderPosts(posts) {
   });
 
   animatePostEntries(postsList.querySelectorAll(".post-enter"));
+}
+
+function renderPagination(totalPosts, currentPage, onNavigate) {
+  if (!postsPagination) {
+    return;
+  }
+
+  postsPagination.textContent = "";
+
+  const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
+  if (totalPages <= 1) {
+    return;
+  }
+
+  const previousButton = document.createElement("button");
+  previousButton.type = "button";
+  previousButton.className = "pagination-button";
+  previousButton.textContent = "Anterior";
+  previousButton.disabled = currentPage === 1;
+  previousButton.addEventListener("click", () => onNavigate(currentPage - 1));
+
+  const status = document.createElement("span");
+  status.className = "pagination-status";
+  status.setAttribute("aria-live", "polite");
+  status.textContent = `Pagina ${currentPage} de ${totalPages}`;
+
+  const nextButton = document.createElement("button");
+  nextButton.type = "button";
+  nextButton.className = "pagination-button";
+  nextButton.textContent = "Siguiente";
+  nextButton.disabled = currentPage === totalPages;
+  nextButton.addEventListener("click", () => onNavigate(currentPage + 1));
+
+  postsPagination.appendChild(previousButton);
+  postsPagination.appendChild(status);
+  postsPagination.appendChild(nextButton);
+}
+
+function renderPaginatedPosts(posts) {
+  if (!Array.isArray(posts) || posts.length === 0) {
+    renderEmptyState("No hay articulos disponibles.");
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  let currentPage = 1;
+
+  const updatePage = (requestedPage) => {
+    currentPage = Math.min(totalPages, Math.max(1, requestedPage));
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const visiblePosts = posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+
+    renderPosts(visiblePosts);
+    renderPagination(posts.length, currentPage, updatePage);
+  };
+
+  updatePage(currentPage);
 }
 
 function animatePostEntries(elements) {
@@ -272,7 +334,7 @@ async function initBlog() {
     return;
   }
 
-  renderPosts(posts);
+  renderPaginatedPosts(posts);
 }
 
 animateFeaturedPost();
