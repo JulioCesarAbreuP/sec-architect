@@ -42,13 +42,41 @@
     return lines.join("\n");
   }
 
-  function explainArchitecture(topic, scope, options) {
+  function buildArchitectureExplanationPack(topic, scope, options) {
     var mode = resolveMode(options && options.mode);
     return {
       topic: (topic || "").toString(),
       scope: (scope || "high-level").toString(),
       mode: mode,
       prompt: buildArchitectureExplainerPrompt(topic, scope, { mode: mode })
+    };
+  }
+
+  async function explainArchitecture(component, options) {
+    var scope = (options && options.scope) || "high-level";
+    var pack = buildArchitectureJsonPack(component, scope, options);
+    var adapter = w.SECArchitectAI && w.SECArchitectAI.invokeCopilot;
+
+    if (typeof adapter === "function") {
+      return adapter(pack.prompt, {
+        engine: "architecture-explainer",
+        mode: pack.mode,
+        input: pack.topic,
+        scope: pack.scope
+      });
+    }
+
+    if (w.copilot && typeof w.copilot.invoke === "function") {
+      return w.copilot.invoke(pack.prompt);
+    }
+
+    return {
+      ok: false,
+      source: "local-fallback",
+      reason: "window.copilot.invoke no disponible en este entorno.",
+      prompt: pack.prompt,
+      topic: pack.topic,
+      scope: pack.scope
     };
   }
 
@@ -66,5 +94,6 @@
   w.SECArchitectAI = w.SECArchitectAI || {};
   w.SECArchitectAI.buildArchitectureExplainerPrompt = buildArchitectureExplainerPrompt;
   w.SECArchitectAI.buildArchitectureJsonPack = buildArchitectureJsonPack;
+  w.SECArchitectAI.buildArchitectureExplanationPack = buildArchitectureExplanationPack;
   w.SECArchitectAI.explainArchitecture = explainArchitecture;
 })(window);

@@ -1,0 +1,9 @@
+{
+  "displayName": "CA - Require MFA",
+  "grantControls": {
+    "operator": "OR",
+    "builtInControls": [
+      "mfa"
+    ]
+  }
+}

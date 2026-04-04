@@ -48,6 +48,21 @@ lhci autorun --collect.url=http://127.0.0.1:5500/blog.html
 lhci autorun --collect.url="http://127.0.0.1:5500/post.html?post=test.md"
 ```
 
+## 1.5 Pruebas Smoke del Enterprise Command Center
+
+Existe un smoke test sin dependencias externas para validar el flujo modular nuevo:
+
+```bash
+npm run test:enterprise
+```
+
+Cobertura actual:
+
+- Parsing y validacion de politicas JSON.
+- Deteccion MITRE para Conditional Access y objetos Azure.
+- Generacion de remediacion Bicep y Terraform.
+- Decodificacion JWT y validacion SC-300 con MFA y expiracion.
+
 ---
 
 ## 2. Pruebas de CSP
@@ -258,6 +273,32 @@ export default function () {
 ### 8.2 Checklist de Compatibilidad
 
 - [ ] Layout correcto en todos los navegadores objetivo.
+
+---
+
+## 9. Prueba de Contrato AI Trace Schema
+
+### 9.1 Objetivo
+
+Validar en CI que el esquema de exportacion de trazas IA mantiene contrato estable y campos obligatorios para auditoria.
+
+### 9.2 Script
+
+```powershell
+./scripts/validate-ai-trace-schema.ps1
+./scripts/validate-ai-trace-schema.ps1 -FilePath tests/fixtures/ai-trace-export.invalid.json -Expect invalid
+```
+
+### 9.3 Fixture de validacion
+
+- Archivo base: `tests/fixtures/ai-trace-export.valid.json`
+- Fixture negativo: `tests/fixtures/ai-trace-export.invalid.json`
+- Contrato de referencia: `docs/ai-trace-schema.md`
+
+### 9.4 Resultado esperado
+
+- Salida `AI trace schema validation passed.`
+- Exit code `0`.
 - [ ] Toggle de tema funciona (localStorage disponible).
 - [ ] Footer con iconos SVG visible.
 - [ ] Blog dinámico carga correctamente (fetch + JSON parsing).

@@ -1,29 +1,31 @@
-# ADR-002: Knowledge-Base en JSON en lugar de API
+# ADR-002: Threat-Informed Remediation
 
-## Contexto
-El proyecto se despliega en GitHub Pages, con foco en simplicidad operativa, transparencia y versionado por repositorio.
+## Context
 
-## Problema
-Se requiere una fuente de conocimiento estructurada y extensible sin introducir complejidad temprana de backend.
+El flujo defensivo debe convertir hallazgos tecnicos en acciones de remediacion concretas,
+alineadas con MITRE ATT&CK y listas para ejecucion por equipos de plataforma.
 
-## Opciones consideradas
-1. JSON local versionado en repositorio.
-2. API backend dedicada.
-3. CMS externo.
+## Decision
 
-## Decisión
-Usar JSON local como base primaria de conocimiento en la fase actual.
+Adoptar remediacion informada por amenazas:
 
-## Justificación
-Reduce costo operativo, acelera iteración, simplifica contribuciones por pull request y mantiene trazabilidad completa de cambios.
+- Consumir JSON operativo como entrada primaria para inferencia.
+- Ejecutar inferencia multicapas sobre grafo `User -> Role -> Resource -> Exposure -> Attack Path`.
+- Si no se detecta MFA enforced o se confirma rol Global Admin con exposicion de Key Vault, priorizar `T1556` o `T1078` segun contexto.
+- Generar salida IA estricta con: `probability`, `critical_node`, `mitre_technique`, `attack_path`, `terraform_fix`.
+- Exponer auto-remediacion contextual en Terraform o Bicep con accion inmediata de copia.
+- Integrar narrativa historica de riesgo para comparar tendencia contra corrida anterior.
 
-## Consecuencias
-### Positivas
-- Despliegue simple y robusto.
-- Excelente auditabilidad por Git.
-- Facilidad de evolución del catálogo.
+## Consequences
 
-### Negativas
-- Sin control de acceso granular en runtime.
-- Sin telemetría nativa de consumo por usuario.
-- Escalabilidad limitada para escenarios multiusuario enterprise.
+Positivas:
+
+- Respuesta accionable y no descriptiva.
+- Integracion directa entre deteccion y hardening.
+- Mejor priorizacion de riesgo operativo.
+- Vinculo directo entre documentacion ADR y decisiones ejecutables en dashboard.
+
+Negativas:
+
+- Mayor responsabilidad en calidad del mapeo MITRE.
+- Riesgo de recomendaciones incompletas ante inputs ambiguos.

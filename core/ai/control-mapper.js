@@ -66,6 +66,31 @@
     };
   }
 
+  async function mapControl(input, context, options) {
+    var pack = buildControlMapperJsonPack(input, context, options);
+    var adapter = w.SECArchitectAI && w.SECArchitectAI.invokeCopilot;
+
+    if (typeof adapter === "function") {
+      return adapter(pack.prompt, {
+        engine: "control-mapper",
+        mode: pack.mode,
+        input: pack.input
+      });
+    }
+
+    if (w.copilot && typeof w.copilot.invoke === "function") {
+      return w.copilot.invoke(pack.prompt);
+    }
+
+    return {
+      ok: false,
+      source: "local-fallback",
+      reason: "window.copilot.invoke no disponible en este entorno.",
+      prompt: pack.prompt,
+      nistFunctions: NIST_FUNCTIONS.slice()
+    };
+  }
+
   function getNistFunctions() {
     return NIST_FUNCTIONS.slice();
   }
@@ -74,4 +99,5 @@
   w.SECArchitectAI.buildControlMapperPrompt = buildControlMapperPrompt;
   w.SECArchitectAI.buildControlMapperJsonPack = buildControlMapperJsonPack;
   w.SECArchitectAI.getNistFunctions = getNistFunctions;
+  w.SECArchitectAI.mapControl = mapControl;
 })(window);

@@ -1,0 +1,245 @@
+/* AI Panel styles scoped for SEC_ARCHITECT */
+
+.ai-panel {
+  border: 1px solid var(--analysis-border, #2a2a2a);
+  border-radius: 10px;
+  background: var(--analysis-card, #1b1b1b);
+  padding: 0.9rem;
+  color: var(--analysis-text, #e0e0e0);
+}
+
+.ai-tabs {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.ai-tab {
+  border: 1px solid var(--analysis-border, #333);
+  background: transparent;
+  color: var(--analysis-sub, #dcdcdc);
+  border-radius: 999px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.ai-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ai-tab.active {
+  background: var(--analysis-accent, #3f6df5);
+  color: #fff;
+}
+
+.ai-content {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+#ai-input {
+  width: 100%;
+  min-height: 130px;
+  border: 1px solid var(--analysis-border, #333);
+  border-radius: 8px;
+  background: #111;
+  color: var(--analysis-text, #e0e0e0);
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 0.72rem;
+  resize: vertical;
+}
+
+#ai-run {
+  justify-self: start;
+  border: 0;
+  border-radius: 8px;
+  background: var(--analysis-accent, #3f6df5);
+  color: #fff;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#ai-run:hover {
+  filter: brightness(1.08);
+}
+
+#ai-run[disabled] {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.ai-trace {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--analysis-border, #2a2a2a);
+  padding-top: 0.7rem;
+}
+
+.ai-trace h3 {
+  margin: 0 0 0.5rem;
+  color: var(--analysis-sub, #c1c1c1);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ai-trace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ai-trace-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ai-trace-controls label {
+  color: var(--analysis-sub, #c1c1c1);
+  font-size: 0.78rem;
+}
+
+#ai-trace-filter,
+.ai-trace-clear,
+.ai-trace-export {
+  border: 1px solid var(--analysis-border, #333);
+  border-radius: 6px;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.73rem;
+}
+
+#ai-trace-filter {
+  background: #07101f;
+  color: var(--analysis-sub, #c1c1c1);
+}
+
+.ai-trace-clear {
+  background: transparent;
+  color: var(--analysis-sub, #c1c1c1);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ai-trace-export {
+  background: rgba(63, 109, 245, 0.18);
+  color: var(--analysis-text, #e0e0e0);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ai-trace-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.ai-trace-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  border: 1px solid var(--analysis-border, #333);
+  border-radius: 8px;
+  padding: 0.45rem 0.5rem;
+  background: rgba(8, 16, 33, 0.52);
+}
+
+.ai-trace-empty {
+  border: 1px dashed var(--analysis-border, #333);
+  border-radius: 8px;
+  padding: 0.45rem 0.5rem;
+  color: var(--analysis-sub, #c1c1c1);
+  font-size: 0.82rem;
+}
+
+.ai-trace-status {
+  border-radius: 999px;
+  font-size: 0.68rem;
+  padding: 0.16rem 0.46rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ai-trace-status-ok {
+  background: rgba(0, 242, 160, 0.16);
+  color: #31f1bf;
+}
+
+.ai-trace-status-warning {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffcf44;
+}
+
+.ai-trace-status-error {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff8a8a;
+}
+
+.ai-trace-summary {
+  font-size: 0.77rem;
+  color: var(--analysis-sub, #c1c1c1);
+}
+
+.ai-panel-error {
+  margin: 0;
+  color: #ff7c7c;
+  font-size: 0.9rem;
+}
+
+.ai-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.75);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.ai-modal-content {
+  width: min(900px, 100%);
+  max-height: 82vh;
+  overflow: auto;
+  border: 1px solid var(--analysis-border, #333);
+  border-radius: 12px;
+  background: #1b1b1b;
+  padding: 1rem;
+  color: var(--analysis-text, #e0e0e0);
+}
+
+.ai-modal-content h2 {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+}
+
+.ai-modal-content pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.ai-modal-close {
+  margin-top: 0.85rem;
+  border: 1px solid var(--analysis-border, #333);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--analysis-sub, #c1c1c1);
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}

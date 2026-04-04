@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>SABSA IG4 Strategic Command Center | SEC_ARCHITECT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0; url=tools/enterprise-command-center.html">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'none'; media-src 'self'; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -141,6 +142,28 @@
 
         .nav-social a:hover {
             color: var(--neon-blue);
+        }
+
+        .legacy-banner {
+            margin: 0 auto;
+            max-width: 1540px;
+            padding: 14px 22px 0;
+        }
+
+        .legacy-banner-inner {
+            border: 1px solid rgba(255, 189, 0, 0.24);
+            background: linear-gradient(180deg, rgba(255, 189, 0, 0.12) 0%, rgba(8, 11, 18, 0.92) 100%);
+            color: #ffe8a3;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 0.84rem;
+            letter-spacing: 0.04em;
+        }
+
+        .legacy-banner-inner a {
+            color: var(--neon-blue);
+            font-weight: 700;
+            text-decoration: none;
         }
 
         /* LAYOUT */
@@ -289,6 +312,13 @@
             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
         }
 
+        .code-input {
+            min-height: 154px;
+            resize: vertical;
+            white-space: pre;
+            line-height: 1.45;
+        }
+
         .terminal-input:hover,
         .terminal-select:hover {
             border-color: rgba(0, 242, 255, 0.3);
@@ -394,6 +424,52 @@
         .console.is-streaming {
             border-color: rgba(0, 242, 255, 0.16);
             box-shadow: inset 0 0 18px rgba(0, 242, 255, 0.06);
+        }
+
+        .console-remediation {
+            margin-top: 10px;
+            border: 1px solid rgba(255, 0, 60, 0.32);
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(255, 0, 60, 0.09);
+        }
+
+        .console-remediation-title {
+            margin: 0 0 8px;
+            color: var(--neon-red);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .console-remediation pre {
+            margin: 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #050607;
+            color: var(--neon-gold);
+            font-size: 0.72rem;
+            white-space: pre-wrap;
+        }
+
+        .console-copy-btn {
+            margin-top: 8px;
+            width: 100%;
+            border: 1px solid rgba(0, 242, 255, 0.38);
+            border-radius: 8px;
+            background: rgba(0, 242, 255, 0.14);
+            color: var(--neon-blue);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        .console-copy-btn:hover {
+            background: rgba(0, 242, 255, 0.2);
         }
 
         .chart-wrapper {
@@ -725,7 +801,7 @@
             <li><a href="/sec-architect/index.html">Inicio</a></li>
             <li><a href="/sec-architect/blog.html">Blog</a></li>
             <li><a href="/sec-architect/sections/azure-labs.html">Azure‑Labs</a></li>
-            <li><a href="/sec-architect/sabsa-ig4-command-center.html" class="nav-highlight">Strategic Command Center</a></li>
+            <li><a href="/sec-architect/sabsa-ig4-command-center.html" class="nav-highlight">SABSA Legacy</a></li>
             <li><a href="/sec-architect/tools.html">Herramientas</a></li>
         </ul>
 
@@ -735,6 +811,12 @@
         </div>
     </nav>
 </header>
+
+<section class="legacy-banner" aria-label="Estado deprecado del modulo legacy">
+    <div class="legacy-banner-inner">
+        Este modulo queda deprecado como superficie primaria. Use el <a href="/sec-architect/tools/enterprise-command-center.html">Enterprise Command Center</a> para flujos activos de IA, JSON-to-MITRE y JWT SC-300.
+    </div>
+</section>
 
 <main class="layout">
 
@@ -793,22 +875,22 @@
     <section class="panel panel-operations">
         <div class="panel-header">
             <div class="panel-title">Operations Command Center</div>
-            <div class="panel-subtitle">Evaluación SABSA IG · Simulación CLI</div>
+            <div class="panel-subtitle">Evaluación SABSA IG · Motor JSON real</div>
         </div>
 
         <div class="panel-stack ops-grid">
             <div class="ops-inputs">
                 <input id="target-input" class="terminal-input" placeholder="TENANT ID o dominio conceptual...">
 
-                <input id="cli-input" class="terminal-input" placeholder="az ad user list --query ...">
-                <div class="hint">CLI simulada: se valida sintaxis y se genera respuesta conceptual. No se ejecutan comandos reales.</div>
+                <textarea id="policy-json-input" class="terminal-input code-input" placeholder='Pega JSON de política (ejemplo): {"displayName":"CA Admin","mfa":"enforced"}'></textarea>
+                <div class="hint">El JSON es el motor de evaluación. Si no contiene mfa=enforced se dispara un hallazgo crítico MITRE T1556.</div>
 
                 <button class="btn-primary" id="btn-run">Ejecutar Evaluación Arquitectónica</button>
                 <button class="btn-primary" id="btn-export-ai" type="button">Exportar AI Artifacts (JSON)</button>
             </div>
 
             <div class="console-shell">
-                <div class="console" id="console">[SYSTEM] SABSA Engine listo. Ingrese objetivo y escenario.</div>
+                <div class="console" id="console">[SYSTEM] SABSA Engine listo. Pegue una política JSON para iniciar evaluación funcional.</div>
             </div>
 
             <div class="chart-shell">
@@ -849,11 +931,8 @@
 
 <footer data-site-footer="true"></footer>
 
-<script src="core/ai/risk-analyzer.js" defer></script>
-<script src="core/ai/control-mapper.js" defer></script>
-<script src="core/ai/architecture-explainer.js" defer></script>
-<script src="assets/js/sabsa-ig4-command-center.js" defer></script>
-    <script src="assets/js/site.js" defer></script>
+<script type="module" src="assets/js/sabsa-ig4-command-center.module.js"></script>
+<script src="assets/js/site.js" defer></script>
 
 </body>
 </html>

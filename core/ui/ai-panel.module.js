@@ -1,0 +1,425 @@
+import { analyzeRisk } from "../ai/risk-analyzer.module.js";
+import { mapControl } from "../ai/control-mapper.module.js";
+import { explainArchitecture } from "../ai/architecture-explainer.module.js";
+
+var TRACE_STORAGE_KEY = "sec_architect_ai_trace_v1";
+var MAX_TRACE_ITEMS = 8;
+var TRACE_EXPORT_SCHEMA = {
+  type: "object",
+  required: ["exportedAt", "app", "traceCount", "schemaVersion", "traces"]
+};
+
+function byId(id) {
+  return document.getElementById(id);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeResult(result) {
+  if (typeof result === "string") {
+    return result;
+  }
+
+  try {
+    return JSON.stringify(result, null, 2);
+  } catch (_error) {
+    return String(result);
+  }
+}
+
+function safeStorage() {
+  try {
+    return window.sessionStorage;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function loadTraceStore() {
+  var storage = safeStorage();
+
+  if (!storage) {
+    return [];
+  }
+
+  try {
+    var raw = storage.getItem(TRACE_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+
+    var parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .filter(function (item) {
+        return item && typeof item.engine === "string" && typeof item.status === "string";
+      })
+      .slice(0, MAX_TRACE_ITEMS);
+  } catch (_error) {
+    return [];
+  }
+}
+
+function saveTraceStore(traceStore) {
+  var storage = safeStorage();
+
+  if (!storage) {
+    return;
+  }
+
+  try {
+    storage.setItem(TRACE_STORAGE_KEY, JSON.stringify(traceStore.slice(0, MAX_TRACE_ITEMS)));
+  } catch (_error) {
+    // Ignore storage failures to keep panel interactive.
+  }
+}
+
+function createLocalRequestId() {
+  return "ui-req-" + Date.now() + "-" + Math.floor(Math.random() * 1000000);
+}
+
+function showAIModal(content) {
+  var modal = document.createElement("div");
+  var normalized = normalizeResult(content);
+
+  modal.className = "ai-modal";
+  modal.innerHTML = [
+    '<div class="ai-modal-content" role="dialog" aria-modal="true" aria-label="Resultado IA">',
+    "<h2>Resultado IA</h2>",
+    "<pre>" + escapeHtml(normalized) + "</pre>",
+    '<button type="button" class="ai-modal-close" id="close-ai-modal">Cerrar</button>',
+    "</div>"
+  ].join("");
+
+  document.body.appendChild(modal);
+
+  var closeBtn = byId("close-ai-modal");
+  if (closeBtn) {
+    closeBtn.onclick = function () {
+      modal.remove();
+    };
+  }
+
+  modal.addEventListener("click", function (event) {
+    if (event.target === modal) {
+      modal.remove();
+    }
+  });
+}
+
+function exportTraceStore(traceStore) {
+  if (!traceStore.length) {
+    showAIModal({
+      ok: false,
+      error: "trace_empty",
+      message: "No hay trazas para exportar."
+    });
+    return;
+  }
+
+  var payload = {
+    exportedAt: new Date().toISOString(),
+    app: "SEC_ARCHITECT",
+    schemaVersion: "1.0.0",
+    traceCount: traceStore.length,
+    traces: traceStore
+  };
+
+  var validation = validateTraceExportSchema(payload);
+  if (!validation.valid) {
+    showAIModal({
+      ok: false,
+      error: "trace_schema_invalid",
+      message: "No se pudo exportar: el esquema de trazas no es valido.",
+      details: validation.errors
+    });
+    return;
+  }
+
+  var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  var url = window.URL.createObjectURL(blob);
+  var link = document.createElement("a");
+
+  link.href = url;
+  link.download = "sec-architect-ai-traces-" + Date.now() + ".json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+function validateTraceExportSchema(payload) {
+  var errors = [];
+
+  if (!payload || typeof payload !== "object") {
+    return {
+      valid: false,
+      errors: ["El payload de exportacion no es un objeto valido."]
+    };
+  }
+
+  TRACE_EXPORT_SCHEMA.required.forEach(function (field) {
+    if (typeof payload[field] === "undefined") {
+      errors.push("Falta campo requerido: " + field);
+    }
+  });
+
+  if (typeof payload.exportedAt !== "string") {
+    errors.push("exportedAt debe ser string ISO.");
+  }
+
+  if (payload.app !== "SEC_ARCHITECT") {
+    errors.push("app debe ser SEC_ARCHITECT.");
+  }
+
+  if (typeof payload.traceCount !== "number") {
+    errors.push("traceCount debe ser numerico.");
+  }
+
+  if (!Array.isArray(payload.traces)) {
+    errors.push("traces debe ser un arreglo.");
+  } else {
+    payload.traces.forEach(function (trace, idx) {
+      if (!trace || typeof trace !== "object") {
+        errors.push("traces[" + idx + "] no es un objeto valido.");
+        return;
+      }
+
+      ["engine", "status", "durationMs", "inputPreview", "requestId", "startedAt"].forEach(function (field) {
+        if (typeof trace[field] === "undefined") {
+          errors.push("traces[" + idx + "] falta campo: " + field);
+        }
+      });
+    });
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors: errors
+  };
+}
+
+function resolveEngineName(activeTab) {
+  if (activeTab === "risk") {
+    return "risk-analyzer";
+  }
+
+  if (activeTab === "arch") {
+    return "architecture-explainer";
+  }
+
+  return "control-mapper";
+}
+
+function renderTraceList(traceStore, filterStatus) {
+  var traceList = byId("ai-trace-list");
+  var visibleTraces = traceStore.filter(function (trace) {
+    return !filterStatus || filterStatus === "all" ? true : trace.status === filterStatus;
+  });
+
+  if (!traceList) {
+    return;
+  }
+
+  traceList.textContent = "";
+
+  if (!visibleTraces.length) {
+    var empty = document.createElement("li");
+    empty.className = "ai-trace-empty";
+    empty.textContent = "Sin ejecuciones aun.";
+    traceList.appendChild(empty);
+    return;
+  }
+
+  visibleTraces.forEach(function (trace) {
+    var item = document.createElement("li");
+    item.className = "ai-trace-item";
+
+    var status = document.createElement("span");
+    status.className = "ai-trace-status ai-trace-status-" + trace.status;
+    status.textContent = trace.status.toUpperCase();
+
+    var summary = document.createElement("span");
+    summary.className = "ai-trace-summary";
+    summary.textContent =
+      "[" + trace.engine + "] " + trace.durationMs + "ms - " + trace.inputPreview +
+      " (" + (trace.at || "N/D") + ") | requestId: " + (trace.requestId || "N/D");
+
+    item.appendChild(status);
+    item.appendChild(summary);
+    traceList.appendChild(item);
+  });
+}
+
+function resolveHandler(activeTab) {
+  if (activeTab === "risk") {
+    return analyzeRisk;
+  }
+
+  if (activeTab === "arch") {
+    return explainArchitecture;
+  }
+
+  return mapControl;
+}
+
+export function initAIPanel() {
+  var container = byId("ai-panel-container");
+  var traceStore = loadTraceStore();
+  var traceFilter = "all";
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = [
+    '<div class="ai-panel">',
+    '<div class="ai-tabs" role="tablist" aria-label="Motores IA">',
+    '<button type="button" class="ai-tab active" data-tab="control" role="tab" aria-selected="true">Control Mapper</button>',
+    '<button type="button" class="ai-tab" data-tab="risk" role="tab" aria-selected="false">Risk Analyzer</button>',
+    '<button type="button" class="ai-tab" data-tab="arch" role="tab" aria-selected="false">Architecture Explainer</button>',
+    "</div>",
+    '<div class="ai-content">',
+    '<textarea id="ai-input" placeholder="Introduce un control, riesgo o componente..." aria-label="Entrada para IA"></textarea>',
+    '<button type="button" id="ai-run">Ejecutar IA</button>',
+    "</div>",
+    '<div class="ai-trace">',
+    '<div class="ai-trace-header">',
+    "<h3>Trazabilidad</h3>",
+    '<div class="ai-trace-controls">',
+    '<label for="ai-trace-filter">Filtro</label>',
+    '<select id="ai-trace-filter">',
+    '<option value="all">Todos</option>',
+    '<option value="ok">OK</option>',
+    '<option value="warning">Warning</option>',
+    '<option value="error">Error</option>',
+    "</select>",
+    '<button type="button" id="ai-trace-clear" class="ai-trace-clear">Limpiar</button>',
+    '<button type="button" id="ai-trace-export" class="ai-trace-export">Exportar JSON</button>',
+    "</div>",
+    "</div>",
+    '<ul id="ai-trace-list" class="ai-trace-list"></ul>',
+    "</div>",
+    "</div>"
+  ].join("");
+
+  var activeTab = "control";
+  var tabs = container.querySelectorAll(".ai-tab");
+  var runBtn = byId("ai-run");
+  var input = byId("ai-input");
+  var traceFilterSelect = byId("ai-trace-filter");
+  var traceClearBtn = byId("ai-trace-clear");
+  var traceExportBtn = byId("ai-trace-export");
+
+  if (traceFilterSelect) {
+    traceFilterSelect.value = traceFilter;
+    traceFilterSelect.onchange = function () {
+      traceFilter = traceFilterSelect.value || "all";
+      renderTraceList(traceStore, traceFilter);
+    };
+  }
+
+  if (traceClearBtn) {
+    traceClearBtn.onclick = function () {
+      traceStore = [];
+      saveTraceStore(traceStore);
+      renderTraceList(traceStore, traceFilter);
+    };
+  }
+
+  if (traceExportBtn) {
+    traceExportBtn.onclick = function () {
+      exportTraceStore(traceStore);
+    };
+  }
+
+  renderTraceList(traceStore, traceFilter);
+
+  tabs.forEach(function (tab) {
+    tab.onclick = function () {
+      activeTab = tab.getAttribute("data-tab") || "control";
+
+      tabs.forEach(function (t) {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+      });
+
+      tab.classList.add("active");
+      tab.setAttribute("aria-selected", "true");
+    };
+  });
+
+  if (runBtn) {
+    runBtn.onclick = async function () {
+      var inputValue = String((input && input.value) || "").trim();
+      var startedAt = Date.now();
+      var engine = resolveEngineName(activeTab);
+
+      if (!inputValue) {
+        return;
+      }
+
+      runBtn.disabled = true;
+      runBtn.textContent = "Ejecutando...";
+
+      try {
+        var handler = resolveHandler(activeTab);
+        var result = await handler(inputValue);
+
+        traceStore.unshift({
+          engine: engine,
+          status: result && result.ok === false ? "warning" : "ok",
+          durationMs: Date.now() - startedAt,
+          inputPreview: inputValue.slice(0, 90),
+          at: new Date().toLocaleTimeString("es-ES"),
+          requestId: (result && result.requestId) || createLocalRequestId(),
+          startedAt: (result && result.startedAt) || new Date(startedAt).toISOString()
+        });
+        traceStore = traceStore.slice(0, MAX_TRACE_ITEMS);
+        saveTraceStore(traceStore);
+        renderTraceList(traceStore, traceFilter);
+
+        showAIModal(result);
+      } catch (error) {
+        traceStore.unshift({
+          engine: engine,
+          status: "error",
+          durationMs: Date.now() - startedAt,
+          inputPreview: inputValue.slice(0, 90),
+          at: new Date().toLocaleTimeString("es-ES"),
+          requestId: createLocalRequestId(),
+          startedAt: new Date(startedAt).toISOString()
+        });
+        traceStore = traceStore.slice(0, MAX_TRACE_ITEMS);
+        saveTraceStore(traceStore);
+        renderTraceList(traceStore, traceFilter);
+
+        showAIModal({
+          ok: false,
+          error: "ai_execution_failed",
+          message: "No fue posible completar la ejecucion del motor.",
+          detail: error && error.message ? error.message : "unknown"
+        });
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = "Ejecutar IA";
+      }
+    };
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAIPanel);
+} else {
+  initAIPanel();
+}

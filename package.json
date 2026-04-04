@@ -1,0 +1,8 @@
+{
+  "name": "sec-architect",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:enterprise": "node tests/run-enterprise-smoke.js"
+  }
+}

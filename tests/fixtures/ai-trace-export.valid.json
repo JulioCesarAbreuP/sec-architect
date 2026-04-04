@@ -1,0 +1,26 @@
+{
+  "exportedAt": "2026-04-04T18:20:00.000Z",
+  "app": "SEC_ARCHITECT",
+  "schemaVersion": "1.0.0",
+  "traceCount": 2,
+  "traces": [
+    {
+      "engine": "risk-analyzer",
+      "status": "ok",
+      "durationMs": 742,
+      "inputPreview": "Evaluar ausencia de MFA para cuentas privilegiadas",
+      "requestId": "req-123e4567-e89b-12d3-a456-426614174000",
+      "startedAt": "2026-04-04T18:19:58.100Z",
+      "at": "20:19:58"
+    },
+    {
+      "engine": "control-mapper",
+      "status": "warning",
+      "durationMs": 512,
+      "inputPreview": "Mapear control de segmentacion por zonas de confianza",
+      "requestId": "req-223e4567-e89b-12d3-a456-426614174000",
+      "startedAt": "2026-04-04T18:20:02.100Z",
+      "at": "20:20:02"
+    }
+  ]
+}

@@ -99,7 +99,7 @@ const matrixBody = document.getElementById('matrix-body');
 const remediationPanel = document.getElementById('remediation-panel');
 const igSelect = document.getElementById('ig-select');
 const igBadge = document.getElementById('ig-badge');
-const cliInput = document.getElementById('cli-input');
+const policyJsonInput = document.getElementById('policy-json-input');
 const btnRun = document.getElementById('btn-run');
 const scenarioSelect = document.getElementById('scenario-select');
 const profileSelect = document.getElementById('profile-select');
@@ -276,6 +276,103 @@ function log(msg, level='info'){
     line.textContent = `[${ts}] ${msg}`;
     consoleEl.appendChild(line);
     consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+const TERRAFORM_MFA_REMEDIATION = [
+    'resource "azuread_conditional_access_policy" "enforce_mfa" {',
+    '  display_name = "Enforce MFA for Admins"',
+    '  state        = "enabled"',
+    '  # ... rest of the code',
+    '}',
+    '',
+    'resource "azuread_conditional_access_policy" "enforce_mfa" {',
+    '  display_name = "Enforce MFA for Admins"',
+    '  state        = "enabled"',
+    '  # ... rest of the code',
+    '}'
+].join('\n');
+
+function renderTerraformRemediationInConsole(){
+    const block = document.createElement('section');
+    block.className = 'console-remediation';
+
+    const title = document.createElement('p');
+    title.className = 'console-remediation-title';
+    title.textContent = 'SC-300 FAIL · Terraform Remediation';
+
+    const pre = document.createElement('pre');
+    pre.textContent = TERRAFORM_MFA_REMEDIATION;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'console-copy-btn';
+    button.textContent = 'COPIAR TERRAFORM';
+    button.addEventListener('click', async ()=>{
+        try{
+            await navigator.clipboard.writeText(TERRAFORM_MFA_REMEDIATION);
+            log('Terraform copiado al portapapeles.','sys');
+        } catch {
+            log('No fue posible copiar Terraform al portapapeles.','warn');
+        }
+    });
+
+    block.appendChild(title);
+    block.appendChild(pre);
+    block.appendChild(button);
+    consoleEl.appendChild(block);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+function parsePolicyJson(raw){
+    try{
+        return {
+            ok: true,
+            value: JSON.parse(raw)
+        };
+    } catch (error){
+        return {
+            ok: false,
+            message: error?.message || 'JSON invalido.'
+        };
+    }
+}
+
+function searchMfaEnforced(node){
+    if(node === null || node === undefined){
+        return false;
+    }
+
+    if(Array.isArray(node)){
+        return node.some(item=> searchMfaEnforced(item));
+    }
+
+    if(typeof node !== 'object'){
+        return false;
+    }
+
+    if(typeof node.mfa === 'string' && node.mfa.toLowerCase() === 'enforced'){
+        return true;
+    }
+
+    const builtInControls = node.grantControls?.builtInControls;
+    if(Array.isArray(builtInControls) && builtInControls.some(value=> String(value).toLowerCase() === 'mfa')){
+        return true;
+    }
+
+    return Object.values(node).some(value=> searchMfaEnforced(value));
+}
+
+function deriveTargetFromPolicy(policy, fallbackTarget){
+    if(policy && typeof policy === 'object'){
+        const preferred = [policy.displayName, policy.name, policy.id, policy.policyId]
+            .find(value=> typeof value === 'string' && value.trim());
+        if(preferred){
+            return preferred.trim();
+        }
+    }
+
+    const normalizedFallback = String(fallbackTarget || '').trim();
+    return normalizedFallback || 'conditional-access-policy';
 }
 
 function resolveMitre(ruleId, scenarioKey){
@@ -627,25 +724,10 @@ targetInput.addEventListener('change',()=>{
     setActivePanel(operationsPanel);
 });
 
-cliInput.addEventListener('change',()=>{
-    pulseElement(cliInput);
+policyJsonInput.addEventListener('change',()=>{
+    pulseElement(policyJsonInput);
     setActivePanel(operationsPanel);
 });
-
-/* --- Validación CLI simulada --- */
-function validateCli(command){
-    if(!command.trim()) return { ok:false, reason:'Comando vacío.' };
-
-    if(!command.startsWith('az ')){
-        return { ok:false, reason:'Solo se simulan comandos az (Azure CLI).' };
-    }
-
-    if(command.includes('delete') || command.includes('remove') || command.includes('purge')){
-        return { ok:false, reason:'Operaciones destructivas no están permitidas ni siquiera en simulación.' };
-    }
-
-    return { ok:true, reason:'Sintaxis aceptada para simulación conceptual.' };
-}
 
 /* --- Ejecución --- */
 let isAuditRunning = false;
@@ -653,11 +735,11 @@ let isAuditRunning = false;
 async function runStrategicAudit(){
     pulseElement(btnRun);
     setActivePanel(operationsPanel);
-    const target = document.getElementById('target-input').value.trim();
-    const scenarioKey = document.getElementById('scenario-select').value;
+    const rawTarget = document.getElementById('target-input').value.trim();
+    const selectedScenarioKey = document.getElementById('scenario-select').value;
     const profileKey = document.getElementById('profile-select').value;
     const igLevel = igSelect.value;
-    const cliCmd = cliInput.value.trim();
+    const rawPolicyJson = policyJsonInput.value.trim();
 
     if(isAuditRunning){
         log('Ejecución en curso. Espere finalización del análisis actual.','warn');
@@ -669,19 +751,24 @@ async function runStrategicAudit(){
     setExecutionState(true);
     isAuditRunning = true;
 
-    if(!target){
-        log('Objetivo no definido. Ingrese un Tenant ID o dominio conceptual.','warn');
+    if(!rawPolicyJson){
+        log('No se proporcionó JSON de política. Pegue un JSON válido para ejecutar el motor.','warn');
         setExecutionState(false);
         isAuditRunning = false;
         return;
     }
 
-    const cliValidation = validateCli(cliCmd || 'az ad user list');
-    if(!cliValidation.ok){
-        log(`CLI rechazado: ${cliValidation.reason}`,'warn');
-    } else {
-        log(`CLI aceptado para simulación: "${cliCmd || 'az ad user list'}"`,'sys');
+    const parsedPolicy = parsePolicyJson(rawPolicyJson);
+    if(!parsedPolicy.ok){
+        log(`JSON inválido: ${parsedPolicy.message}`,'crit');
+        setExecutionState(false);
+        isAuditRunning = false;
+        return;
     }
+
+    const hasMfaEnforced = searchMfaEnforced(parsedPolicy.value);
+    const scenarioKey = hasMfaEnforced ? selectedScenarioKey : 'no-mfa';
+    const target = deriveTargetFromPolicy(parsedPolicy.value, rawTarget);
 
     if(!isMitreCatalogReady){
         await loadMitreCatalog();
@@ -693,6 +780,7 @@ async function runStrategicAudit(){
     log(`Escenario: ${SCENARIOS[scenarioKey].name}`,'info');
     log(`Perfil: ${PROFILES[profileKey].label}`,'info');
     log(`Nivel IG: ${IG_LEVELS[igLevel].label}`,'info');
+    log(`MFA detectado en JSON: ${hasMfaEnforced ? 'enforced' : 'not enforced'}`,'info');
     log(`Base MITRE activa: ${dynamicMitreCatalog.length || 'fallback local'} técnicas disponibles.`,'sys');
     log('Inicio de telemetría doctrinal en tiempo real...','sys');
 
@@ -732,6 +820,12 @@ async function runStrategicAudit(){
         log(`Desviación detectada en atributo clave. Hallazgos: ${summary.failedCount}/${summary.total}. Riesgo compuesto: ${summary.riskIndex}/100.`,'warn');
     } else {
         log('No se detectaron fallos críticos en esta corrida. Mantener monitoreo continuo.','sys');
+    }
+
+    if(!hasMfaEnforced){
+        log('[CRITICAL] MITRE T1556 - MFA NOT DETECTED.','crit');
+        log('SC-300 FAIL: La política JSON evaluada no incluye mfa=enforced.','crit');
+        renderTerraformRemediationInConsole();
     }
 
     log('Generando Threat Matrix y directiva IG correspondiente...','crit');
@@ -786,8 +880,9 @@ targetInput.addEventListener('keydown',(event)=>{
     }
 });
 
-cliInput.addEventListener('keydown',(event)=>{
-    if(event.key === 'Enter'){
+policyJsonInput.addEventListener('keydown',(event)=>{
+    if(event.key === 'Enter' && (event.ctrlKey || event.metaKey)){
+        event.preventDefault();
         btnRun.click();
     }
 });

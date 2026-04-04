@@ -1,29 +1,34 @@
-# ADR-001: Command Center como núcleo del framework
+# ADR-001: Decoupled Logic for SABSA-MITRE Engine
 
-## Contexto
-SEC_ARCHITECT integra evaluación doctrinal, priorización de riesgo, visualización de hallazgos y narrativa de remediación en un entorno modular.
+## Context
 
-## Problema
-Sin un punto central de correlación, los módulos se perciben como piezas aisladas con baja trazabilidad y menor capacidad de decisión operativa.
+El Command Center requiere separar logica de negocio, deteccion MITRE, validacion de artefactos,
+presentacion UI y orquestacion para evitar acoplamiento y reducir deuda tecnica.
 
-## Opciones consideradas
-1. Centro único de orquestación (Command Center).
-2. Paneles independientes por dominio, sin núcleo central.
-3. Navegación lineal documental sin módulo operativo.
+## Decision
 
-## Decisión
-Adoptar el Command Center como núcleo funcional y narrativo del framework.
+Adoptar arquitectura modular ES6 con responsabilidades estrictas:
 
-## Justificación
-Permite consolidar en un único flujo: entrada de contexto, evaluación SABSA IG, mapeo MITRE ATT&CK, matriz de amenazas y recomendación prioritaria.
+- `core/enterprise/inference-engine.js`: inferencia IA con prompt oculto y salida estructurada.
+- `core/enterprise/multi-layer-inference.js`: 5 capas (sintactica, semantica, grafo, probabilidad, remediacion).
+- `core/enterprise/operational-memory.js`: memoria operacional persistente de analisis.
+- `core/enterprise/shadow-monitor.js`: telemetria viva con frecuencia adaptativa al riesgo.
+- `core/enterprise/architecture-board.js`: board documental vivo para ARCHITECTURE y ADR.
+- `core/enterprise/attack-simulation.js`: simulacion MITRE T1078/T1556/T1548 con impacto dinamico.
+- `ui/enterprise/*.js`: panel IA, panel JSON, panel JWT y renderer de estado.
+- `main.js`: patron central `analyzeArchitectureWithAI()` como nucleo de orquestacion.
 
-## Consecuencias
-### Positivas
-- Coherencia de arquitectura y operación.
-- Mejor lectura ejecutiva y técnica del riesgo.
-- Mayor valor demostrativo para arquitectura de seguridad.
+## Consequences
 
-### Negativas
-- Riesgo de centralización excesiva.
-- Mayor criticidad del módulo para la experiencia global.
-- Exige mayor disciplina de calidad y pruebas sobre el núcleo.
+Positivas:
+
+- Testabilidad por modulo.
+- Menor impacto cruzado entre paneles.
+- Escalabilidad enterprise del Command Center.
+- Trazabilidad explicita entre grafo de ataque y accion correctiva.
+- Estado operativo persistente con contexto historico por corrida.
+
+Negativas:
+
+- Mayor cantidad de contratos entre modulos.
+- Mayor disciplina requerida para evolucion de interfaces.

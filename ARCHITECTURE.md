@@ -423,3 +423,71 @@ La resiliencia de la capa de contenido se garantiza mediante:
 > progresión natural desde la capa contextual (¿por qué existe el sitio y qué protege?)
 > hasta la física (¿cómo se sirven los archivos y con qué controles técnicos concretos?).
 > Cada decisión de diseño es trazable a un riesgo o un principio de seguridad definido.
+
+---
+
+## 13. Enterprise SABSA IG4 Command Graph
+
+La superficie enterprise del Command Center adopta un patron no-chat, orientado a parser y motor
+de inferencia para Azure Entra ID.
+
+### 13.1 Flujo principal
+
+1. **Entra ID Parser**
+  - Entrada obligatoria: JSON valido.
+  - Validacion de estructura: Service Principal o Conditional Access Policy.
+2. **Threat Inference Engine (background)**
+  - Prompt interno oculto para inferencia de ataque.
+  - Salida estricta: `probability`, `critical_node`, `mitre_technique`, `attack_path`, `terraform_fix`.
+3. **Motor multicapas (SABSA IG4)**
+  - Capa 1: sintactica.
+  - Capa 2: semantica.
+  - Capa 3: grafo `User -> Role -> Resource -> Exposure -> Attack Path`.
+  - Capa 4: inferencia probabilistica.
+  - Capa 5: remediacion contextual IaC.
+4. **Operational Memory**
+  - Estado persistente de ultimo analisis, riesgo previo y tendencia.
+5. **Shadow Monitor**
+  - Eventos sinteticos cada 30s, frecuencia adaptativa por riesgo.
+
+### 13.2 Modulos Staff obligatorios
+
+- `core/mitre-engine.js`
+- `core/sabsa-logic.js`
+- `core/identity-parser.js`
+- `core/rules-engine.js`
+- `core/scoring-engine.js`
+- `core/graph-engine.js`
+- `core/inference-engine.js`
+- `core/remediation-engine.js`
+- `core/memory-engine.js`
+- `core/telemetry-engine.js`
+- `ui/ui-renderer.js`
+- `ui/ui-panels.js`
+- `ui/ui-logs.js`
+- `ui/ui-graph.js`
+- `ui/ui-score.js`
+- `ui/ui-architecture-board.js`
+
+`main.js` queda restringido a bootstrap y no contiene logica de dominio.
+
+### 13.3 Stack de visualizacion y justificacion
+
+1. **SABSA IG4 como marco base**
+  - Se usa porque obliga trazabilidad entre decision de seguridad, riesgo y control tecnico.
+  - Permite evaluar el mismo payload desde capa sintactica, semantica, grafo, probabilidad y remediacion.
+2. **Chart.js para series y radar operativos**
+  - Adecuado para tendencias de riesgo y score temporal con costo cognitivo bajo para SOC.
+  - Su API estable reduce deuda de mantenimiento para tableros tacticos.
+3. **D3/Cytoscape para topologia de ataque**
+  - El modelo de nodos y aristas es mas expresivo para movimiento lateral que una grafica tradicional.
+  - Se usa como capa especializada para interaccion por nodo, simulacion de trayectorias y analisis de caminos.
+  - En esta iteracion se conserva un renderer SVG minimalista (`ui/ui-graph.js`) y se deja preparado el contrato
+    para evolucionar a D3 o Cytoscape sin tocar el dominio (`core/graph-engine.js`).
+
+### 13.4 Contratos de salida de control
+
+- El parser produce `meta`, `errors` y `warnings` con semantica estable.
+- El rules engine produce `findings` + `logs` para alimentar SOC dynamic feed.
+- El scoring engine produce un score de confianza de 0 a 100 con mejoras incrementales por remediacion.
+- El graph engine produce nodos y aristas para simulacion de attack path y callbacks de inspeccion.

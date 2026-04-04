@@ -1,0 +1,15 @@
+{
+  "exportedAt": "2026-04-04T18:20:00.000Z",
+  "app": "SEC_ARCHITECT_WRONG",
+  "schemaVersion": "1.0.0",
+  "traceCount": 1,
+  "traces": [
+    {
+      "engine": "risk-analyzer",
+      "status": "ok",
+      "durationMs": "742",
+      "inputPreview": "Payload intentionally invalid for contract test",
+      "startedAt": "2026-04-04T18:19:58.100Z"
+    }
+  ]
+}
