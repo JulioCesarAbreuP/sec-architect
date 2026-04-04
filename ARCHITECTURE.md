@@ -452,22 +452,41 @@ de inferencia para Azure Entra ID.
 
 ### 13.2 Modulos Staff obligatorios
 
-- `core/mitre-engine.js`
-- `core/sabsa-logic.js`
-- `core/identity-parser.js`
-- `core/rules-engine.js`
-- `core/scoring-engine.js`
-- `core/graph-engine.js`
-- `core/inference-engine.js`
-- `core/remediation-engine.js`
-- `core/memory-engine.js`
-- `core/telemetry-engine.js`
-- `ui/ui-renderer.js`
-- `ui/ui-panels.js`
-- `ui/ui-logs.js`
-- `ui/ui-graph.js`
-- `ui/ui-score.js`
-- `ui/ui-architecture-board.js`
+#### 13.2.1 Modulos de Dominio (Legacy + Nuevos)
+
+**Legacy Core (10 módulos):**
+- `core/mitre-engine.js` — MITRE ATT&CK mapping (30 cloud techniques) + risk scoring
+- `core/sabsa-logic.js` — SABSA IG4 inference layers (syntactic, semantic, probabilistic)
+- `core/identity-parser.js` — Validación de payloads de identidad (JSON schema)
+- `core/rules-engine.js` — Evaluación de riesgos por reglas (MFA, roles, permisos)
+- `core/scoring-engine.js` — Zero Trust Score + legacy scoring logic
+- `core/graph-engine.js` — Construcción de grafo de ataque (nodos, aristas, simulación)
+- `core/inference-engine.js` — Motor de inferencia probabilística (MITRE técnica + lateral vector)
+- `core/remediation-engine.js` — Generación de soluciones IaC (Terraform)
+- `core/memory-engine.js` — Persistencia de contexto operacional (narrative builder)
+- `core/telemetry-engine.js` — Eventos sinteticos + shadow monitor
+
+**Nuevos Módulos (7 módulos — CSPM ultra-premium):**
+- `core/azure-connector.js` — PKCE OAuth2 + Graph API (Entra ID, Conditional Access, Audit Logs)
+- `core/threat-intel.js` — MITRE STIX sync + CISA KEV (vulnerabilidades en tiempo real)
+- `core/drift-engine.js` — Monitoreo de desviación en Azure Activity Logs (9 patrones)
+- `core/osint-engine.js` — Shodan + Criminal IP (reconocimiento externo de exposición)
+- `core/risk-engine.js` — Scoring multidimensional composable (8 dimensiones de riesgo)
+- `core/iac-generator.js` — Blueprint Architect (5 blueprints Terraform + Bicep)
+- `core/digital-twin.js` — Gemelo digital de tenant (simulación de cambios + ataques)
+
+#### 13.2.2 Módulos de Presentación (UI + Logging)
+
+- `ui/ui-renderer.js` — Renderizador JSON + Markdown genérico
+- `ui/ui-panels.js` — Referencias al DOM para todas las secciones
+- `ui/ui-logs.js` — Consola SOC (pushSocLogs, pushSingleLog, tone classes)
+- `ui/ui-graph.js` — Renderizador de grafo (D3.js force-directed + fallback SVG)
+- `ui/ui-score.js` — Renderizadores de puntuación (texto, gauge SVG, breakdown grid)
+- `ui/ui-architecture-board.js` — Panel de arquitectura (preguntas + respuestas)
+
+#### 13.2.3 Loader Principal
+
+- `main.js` (797 líneas) — Bootstrap de 8 tabs, wiring de eventos, handlers de análisis
 
 `main.js` queda restringido a bootstrap y no contiene logica de dominio.
 
@@ -491,3 +510,102 @@ de inferencia para Azure Entra ID.
 - El rules engine produce `findings` + `logs` para alimentar SOC dynamic feed.
 - El scoring engine produce un score de confianza de 0 a 100 con mejoras incrementales por remediacion.
 - El graph engine produce nodos y aristas para simulacion de attack path y callbacks de inspeccion.
+---
+
+## 14. Plataforma CSPM Ultra-Premium (Cloud Security Posture Management)
+
+### 14.1 Vista General
+
+La plataforma CSPM es accesible via `tools/enterprise-command-center.html` y proporciona:
+- 8 tabs especializados para análisis de seguridad en tiempo real
+- Integración con Azure (Graph API + Activity Logs)
+- Reconocimiento OSINT (Shodan + Criminal IP)
+- Sincronización de amenazas (MITRE STIX + CISA KEV)
+- Monitoreo de desviación (drift detection)
+- Gemelo digital del tenant (Digital Twin)
+- Blueprints de remediación (Terraform + Bicep)
+- Consola SOC con 12 tonos de log (check, fail, mitre, info, warn, threat, ok, drift, alert, etc.)
+
+### 14.2 Arquitectura de 8 Tabs
+
+| Tab | Módulos | Función |
+|-----|---------|---------|
+| **Analyzer** | identity-parser, rules-engine, inference-engine, iac-generator, risk-engine | Análisis de payload de identidad → riesgo compuesto → remediación JIT |
+| **Attack Graph** | graph-engine, mitre-engine, renderAttackGraph | Visualización D3.js de trayectoria de ataque con simulación |
+| **Threat Intel** | threat-intel (MITRE STIX + CISA KEV), getTechniqueList | Sync de amenazas en tiempo real, búsqueda de CVEs |
+| **Drift Monitor** | drift-engine, authenticateGraph, fetchAuditLogs | Detección de desviación en Azure Activity Logs (9 patrones) |
+| **OSINT Scanner** | osint-engine (Shodan + Criminal IP) | Reconocimiento externo de exposición de IPs/dominios |
+| **Blueprint Architect** | iac-generator (5 blueprints: storage, keyvault, appservice, mfa, network) | Generación de IaC (Terraform + Bicep) para remediación |
+| **Digital Twin** | digital-twin class (DigitalTwin) | Simulación de cambios + ataques sobre gemelo del tenant |
+| **Azure Scanner** | azure-connector (Graph API + PKCE) | Conexión PKCE OAuth2 → fetch Conditional Access policies + Activity Logs |
+
+### 14.3 CSS Personalizado (enterprise.css)
+
+Fichero `assets/css/enterprise.css` (~600 líneas) proporciona:
+
+- **Tema CSPM**: 14 variables CSS (bg, bg2, card, border, border-glow, text, muted, accent, accent2, healthy, degraded, critical, warn)
+- **Sticky header** con global status badge y botón night mode
+- **Tab navigation** (sticky top, 8 pestañas activas/inactivas)
+- **Panel layouts específicos**: analyzer grid (3-col), attack-graph, intel-grid (2-col), drift feed, osint layout, blueprint sidebar + code output, digital twin grid, azure scanner
+- **Gauge SVG helpers**: arc path, fill animation, value display
+- **Console styling**: 12 tonos (check=✓, fail=✗, mitre=🎯, info=ℹ, warn=⚠, threat=⛔, ok=✅, drift=≈, alert=🔔)
+- **Escalation banner**: animación pulse para eventos críticos
+- **SOC night mode**: sobrescribe `body.soc-night` con colores adicionales (rojo más oscuro, fondo aún más negro)
+- **D3 graph styles**: classes para node circles, links, labels
+
+### 14.4 Flujo de Análisis (Analyzer Tab - Tab 1)
+
+```
+Usuario pega JSON de identidad
+  ↓
+parseAndValidateIdentity() → parseador + ruleset
+  ↓
+evaluateIdentityRules() → flags (mfaEnabled, privilegedRole, ...)
+  ↓
+calculateCompositeRisk() → 8 dimensiones → score + level + breakdown + zeroTrustScore
+  ↓
+applyGlobalState() → actualiza gauge, score bar, radar, status badge global
+  ↓
+runBackgroundThreatInference() → engine IA → MITRE técnica + lateral vector + attack_path
+  ↓
+generateContextualRemediation() → iac-generator → Terraform/Bicep (contextual por flags)
+  ↓
+Webhook opcional → GitHub Actions → remediación JIT
+  ↓
+Memory engine → persistOperationalContext() → narrative builder
+```
+
+### 14.5 Digital Twin (Tab 7)
+
+Clase `DigitalTwin` (core/digital-twin.js) permite:
+
+1. **loadFromPayload()** — Carga snapshot de tenant desde payload de identidad
+2. **simulateChange(type)** — Simula 5 tipos de cambios: enable-mfa, scope-role, restrict-permissions, baseline-ca, maturity-phase
+3. **simulateAttack(mitre_technique)** — Simula 4 ATT&CK techniques: T1078 (brute-force), T1556 (modify auth), T1548 (privesc), T1567 (exfil), calcula probabilidad de compromiso
+4. **getState()** — Retorna gemelo actual (identidades, permisos, MFA, score)
+5. **reset()** — Reinicia al state inicial
+
+### 14.6 Integración Azure + PKCE (Tab 8)
+
+Módulo `core/azure-connector.js`:
+
+- `initiateGraphLogin(clientId, tenantId, redirectUri)` — Genera PKCE verifier + challenge, redirige a Azure AD
+- `handleAuthCallback()` — Intercambia code + verifier por access token (SessionStorage)
+- `fetchConditionalAccessPolicies()` — GET /identity/conditionalAccessPolicies
+- `fetchAuditLogs(hours)` — GET /auditLogs/directoryAudits?$filter=createdDateTime gt [time] (retorna Activity log)
+- `isAuthenticated()` — Check si token válido
+- `disconnect()` — Borra token + restablece UI
+
+### 14.7 Stack Tecnológico
+
+- **Frontend**: ES Modules (type="module"), JavaScript vanilla (no frameworks)
+- **CDNs**: D3.js v7 + Chart.js v4 (cdn.jsdelivr.net)
+- **Visualización**: D3 force simulation, Chart.js radar, SVG gauges
+- **Storage**: SessionStorage para auth tokens (auto-cleared on close)
+- **Seguridad**: CSP relajada para CDNs + Graph API, SRI integridad si aplica
+
+### 14.8 ADRs Relacionados
+
+- **ADR-004** — Decisión de usar Graph API + PKCE (no client secret en browser)
+- **ADR-005** — Decisión de Shodan OSINT (external reconnaissance)
+- **ADR-006** — Decisión de webhooks GitHub Actions (JIT remediation auditable)

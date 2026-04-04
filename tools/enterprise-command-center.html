@@ -3,118 +3,325 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
-  <title>Enterprise AI Command Graph | SEC_ARCHITECT</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+      script-src 'self' https://cdn.jsdelivr.net;
+      style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data:;
+      connect-src 'self' https://graph.microsoft.com https://login.microsoftonline.com https://raw.githubusercontent.com https://www.cisa.gov https://api.shodan.io https://api.criminalip.io;
+      object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <title>CSPM Platform | SEC_ARCHITECT</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/enterprise.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
-<body>
-  <header class="layout-header">
-    <a href="../index.html" class="brand">SEC_ARCHITECT</a>
-    <nav class="header-nav">
-      <a href="../tools.html">Herramientas</a>
-      <a href="../sabsa-ig4-command-center.html">SABSA Legacy (deprecated)</a>
-      <button id="socNightMode" class="soc-toggle" type="button">SOC Night Mode</button>
-    </nav>
-  </header>
+<body id="cspmRoot" data-theme="dark" class="risk-low">
 
-  <main id="enterpriseRoot" class="layout-main risk-low">
-    <section class="status-row hero-row">
-      <div>
-        <h1>Enterprise AI Command Graph</h1>
-        <p class="hero-subtitle">Inference Engine multinivel con memoria operacional, shadow monitor y auto-remediacion contextual.</p>
+<header class="layout-header">
+  <a href="../index.html" class="brand">SEC_<span>ARCHITECT</span></a>
+  <div class="header-center">
+    <span class="platform-label">Cloud Security Posture Management</span>
+    <span id="globalStatus" class="status-badge status-healthy">HEALTHY</span>
+  </div>
+  <nav class="header-nav">
+    <button id="socNightBtn" class="soc-toggle" type="button">&#9789; SOC Night</button>
+    <a href="../tools.html" class="nav-link">Tools</a>
+  </nav>
+</header>
+
+<div id="escalationBanner" class="escalation-banner" aria-live="polite" hidden>
+  &#9888; THREAT ESCALATION DETECTED &mdash; Immediate remediation required.
+</div>
+
+<nav class="tab-nav" role="tablist" aria-label="CSPM Modules">
+  <button class="tab-btn active" data-tab="analyzer"     role="tab" aria-selected="true">&#11041; Analyzer</button>
+  <button class="tab-btn"        data-tab="attack-graph" role="tab">&#10824; Attack Graph</button>
+  <button class="tab-btn"        data-tab="threat-intel" role="tab">&#9889; Threat Intel</button>
+  <button class="tab-btn"        data-tab="drift"        role="tab">&#10227; Drift Monitor</button>
+  <button class="tab-btn"        data-tab="osint"        role="tab">&#9673; OSINT Scanner</button>
+  <button class="tab-btn"        data-tab="blueprint"    role="tab">&#8862; Blueprint Architect</button>
+  <button class="tab-btn"        data-tab="twin"         role="tab">&#10763; Digital Twin</button>
+  <button class="tab-btn"        data-tab="azure"        role="tab">&#9729; Azure Scanner</button>
+</nav>
+
+<main class="cspm-main">
+
+<!-- TAB: ANALYZER -->
+<section id="tab-analyzer" class="tab-panel active" role="tabpanel">
+  <div class="analyzer-grid">
+
+    <article class="panel" id="panel-validator">
+      <div class="panel-header">
+        <h2>Entra ID Validator</h2>
+        <span id="objectTypeBadge" class="badge badge-neutral">Pendiente</span>
       </div>
-      <span id="command-status" class="status-badge status-healthy">HEALTHY</span>
-    </section>
+      <textarea id="graphJsonInput" class="code-input" spellcheck="false" rows="14"
+        placeholder='Service Principal: {"servicePrincipal":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","permissions":["Contributor","Storage Blob Data Owner"],"mfa":"disabled"}&#10;&#10;CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls":["mfa"]},"conditions":{"users":{"includeRoles":["62e90394-69f5-4237-9190-012177145e10"]}},"state":"enabled"}&#10;&#10;Role Assignment: {"principalId":"a1b2c3d4","roleDefinitionName":"Owner","scope":"/subscriptions/xxx/resourceGroups/prod"}'></textarea>
+      <p id="parserObjectType" class="parser-info">Schema: waiting for input</p>
+      <div class="panel-actions">
+        <select id="remediationFormat" aria-label="IaC format">
+          <option value="terraform">Terraform HCL</option>
+          <option value="bicep">Bicep</option>
+        </select>
+        <button id="runInferenceBtn" class="btn-primary" type="button">Analyze Payload</button>
+      </div>
+    </article>
 
-    <section id="threatEscalationBanner" class="threat-banner" aria-live="polite" hidden>Threat Escalation Detected</section>
-
-    <section class="enterprise-grid">
-      <article class="panel panel-json" id="panel-json">
-        <h2>Entra ID Parser</h2>
-        <textarea id="graphJsonInput" class="code-input" placeholder='Ejemplo Service Principal: {"servicePrincipal":"spn-prod","role":"Global Admin","resource":"KeyVault-Prod","permissions":["Contributor","Storage Blob Data Owner"],"mfa":"disabled"}
-
-Ejemplo CA Policy: {"displayName":"CA-Admins","grantControls":{"builtInControls":["mfa"]},"conditions":{"users":{"includeRoles":["62e90394-69f5-4237-9190-012177145e10"]}}}'></textarea>
-        <p id="parserObjectType" class="memory-note">Tipo detectado: pendiente</p>
-        <div class="panel-actions">
-          <select id="remediationFormat">
-            <option value="terraform">Terraform</option>
-            <option value="bicep">Bicep</option>
-          </select>
-          <button id="runInferenceBtn" class="primary-btn" type="button">Analyze Payload</button>
-        </div>
-      </article>
-
-      <article class="panel panel-ia" id="panel-ia">
+    <article class="panel" id="panel-ai">
+      <div class="panel-header">
         <h2>AI Attack Path Analysis</h2>
-        <p id="aiNarrative" class="memory-note">La IA analizara el payload en segundo plano y mostrara inferencia tecnica.</p>
-        <pre id="aiAnalysisOutput">Sin analisis.</pre>
-        <p id="operationalMemoryNarrative" class="memory-note">Memoria operacional esperando primera corrida.</p>
-      </article>
+        <span id="riskBadge" class="badge badge-neutral">&#8212;</span>
+      </div>
+      <p id="aiNarrative" class="ai-narrative">La IA analizara el payload y generara inferencia tecnica basada en grafo de ataque.</p>
+      <pre id="aiAnalysisOutput" class="code-output" aria-live="polite">Sin analisis.</pre>
+      <div class="score-row">
+        <span class="score-label-sm">Zero-Trust Score</span>
+        <span id="zeroTrustScore" class="score-value">&#8212;</span>
+        <div id="scoreBar" class="score-bar"><div id="scoreBarFill" class="score-bar-fill" style="width:100%"></div></div>
+      </div>
+      <p id="operationalNarrative" class="memory-note"></p>
+    </article>
 
-      <article class="panel panel-jwt" id="panel-jwt">
-        <h2>Panel JWT</h2>
-        <textarea id="jwtInput" class="code-input" placeholder="Pega JWT para evaluar salud operacional de identidad."></textarea>
-        <button id="validateJwtBtn" class="secondary-btn" type="button">Validate JWT</button>
-        <pre id="jwtOutput">Sin validacion.</pre>
-      </article>
-    </section>
+    <article class="panel" id="panel-remediation">
+      <div class="panel-header">
+        <h2>IaC Remediation Engine</h2>
+      </div>
+      <pre id="remediationOutput" class="code-output" aria-live="polite">Sin remediacion.</pre>
+      <div class="remediation-actions">
+        <button id="copyFixBtn" class="btn-secondary" type="button">[COPY FIX TO CLIPBOARD]</button>
+        <button id="autoRemediateBtn" class="btn-danger" type="button">[AUTO-REMEDIATE &#8594;]</button>
+      </div>
+      <div id="webhookConfig" class="webhook-config" hidden>
+        <label class="config-label" for="webhookUrl">GitHub Actions Webhook URL</label>
+        <input id="webhookUrl" class="input-sm" type="url" placeholder="https://api.github.com/repos/org/repo/dispatches" autocomplete="off">
+        <button id="sendWebhookBtn" class="btn-ghost" type="button">Send &#8594;</button>
+      </div>
+      <p id="webhookStatus" class="memory-note" aria-live="polite"></p>
+    </article>
 
-    <section class="enterprise-grid second-row">
-      <article class="panel panel-radar">
-        <h2>Graph Risk Radar</h2>
-        <div class="radar-shell"><canvas id="riskRadar"></canvas></div>
-        <p id="zeroTrustScore" class="memory-note">Zero-Trust Score: 100 / 100 (Healthy)</p>
-      </article>
+  </div>
+</section>
 
-      <article class="panel panel-remediation" id="remediationPanel">
-        <h2>Auto-Remediation</h2>
-        <pre id="terraformFixOutput">Sin remediacion.</pre>
-        <button id="copyFixBtn" class="secondary-btn" type="button">[COPY FIX TO CLIPBOARD]</button>
-      </article>
-
-      <article class="panel panel-attack-sim" id="attackSimulationPanel">
-        <h2>Attack Simulation</h2>
-        <div class="panel-actions">
-          <select id="attackTechniqueSelect">
-            <option value="T1078">T1078</option>
-            <option value="T1556">T1556</option>
-            <option value="T1548">T1548</option>
+<!-- TAB: ATTACK GRAPH -->
+<section id="tab-attack-graph" class="tab-panel" role="tabpanel" hidden>
+  <div class="graph-layout">
+    <article class="panel panel-graph-main">
+      <div class="panel-header">
+        <h2>Attack Path Simulation</h2>
+        <div class="graph-controls">
+          <select id="attackTechniqueSelect" aria-label="MITRE technique">
+            <option value="T1078.004">T1078.004 &mdash; Cloud Account Compromise</option>
+            <option value="T1556">T1556 &mdash; Modify Auth Process</option>
+            <option value="T1548">T1548 &mdash; Privilege Escalation</option>
+            <option value="T1098.003">T1098.003 &mdash; Additional Cloud Roles</option>
+            <option value="T1530">T1530 &mdash; Data from Cloud Storage</option>
+            <option value="T1562.008">T1562.008 &mdash; Disable Cloud Logs</option>
           </select>
-          <button id="runSimulationBtn" class="secondary-btn" type="button">Run Simulation</button>
+          <button id="simulateAttackBtn" class="btn-danger" type="button">Simulate Attack</button>
         </div>
-        <pre id="attackSimulationOutput">Sin simulacion.</pre>
-      </article>
-    </section>
-
-    <section class="enterprise-grid graph-row">
-      <article class="panel panel-graph">
-        <h2>Attack Graph</h2>
-        <div id="attackGraph" class="graph-shell"></div>
-      </article>
-    </section>
-
-    <section class="enterprise-grid third-row">
-      <article class="panel panel-monitor">
-        <h2>Shadow Monitor</h2>
-        <div id="shadowConsole" class="shadow-console"></div>
-      </article>
-
-      <article class="panel panel-architecture-board" id="architectureBoardPanel">
-        <h2>Architecture Board</h2>
-        <div class="panel-actions">
-          <input id="architectureQuestion" class="question-input" type="text" placeholder="¿Por que tomamos esta decision arquitectonica?">
-          <button id="askArchitectureBtn" class="secondary-btn" type="button">Ask ADR</button>
-          <button id="refreshArchitectureBtn" class="secondary-btn" type="button">Refresh Docs</button>
+      </div>
+      <div id="d3GraphContainer" class="d3-container"></div>
+      <div id="nodeDetail" class="node-detail" hidden>
+        <span id="nodeDetailClose" class="node-close" role="button" tabindex="0">&#10005;</span>
+        <h3 id="nodeDetailTitle"></h3>
+        <p id="nodeDetailMitre" class="memory-note"></p>
+        <p id="nodeDetailProb"></p>
+      </div>
+    </article>
+    <aside class="graph-sidebar">
+      <article class="panel">
+        <div class="panel-header"><h2>Zero-Trust Score</h2></div>
+        <div class="gauge-container">
+          <svg class="gauge-svg" viewBox="0 0 120 70" aria-hidden="true">
+            <path d="M10,60 A50,50,0,0,1,110,60" fill="none" stroke="#1f2b38" stroke-width="12" stroke-linecap="round"/>
+            <path id="gaugeFill" d="M10,60 A50,50,0,0,1,110,60" fill="none" stroke="#66c18c" stroke-width="12" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="0"/>
+            <text x="60" y="55" text-anchor="middle" fill="#e0e0e0" font-size="18" font-weight="700" font-family="JetBrains Mono"><tspan id="gaugeValue">100</tspan></text>
+            <text x="60" y="67" text-anchor="middle" fill="#9aa3ad" font-size="7" font-family="JetBrains Mono"><tspan id="gaugeLabelText">HARDENED</tspan></text>
+          </svg>
         </div>
-        <h3 id="architectureAnswerTitle">Board listo</h3>
-        <div id="architectureBoardContent" class="markdown-board">Esperando carga documental.</div>
+        <div id="scoreBreakdown" class="score-breakdown"></div>
       </article>
-    </section>
-  </main>
+      <article class="panel">
+        <div class="panel-header"><h2>Threat Radar</h2></div>
+        <div class="radar-shell"><canvas id="riskRadar"></canvas></div>
+      </article>
+    </aside>
+  </div>
+</section>
 
-  <script src="../assets/vendor/chart.umd.min.js"></script>
-  <script src="../assets/vendor/marked.min.js"></script>
-  <script type="module" src="../main.js"></script>
+<!-- TAB: THREAT INTEL -->
+<section id="tab-threat-intel" class="tab-panel" role="tabpanel" hidden>
+  <div class="intel-grid">
+    <article class="panel">
+      <div class="panel-header">
+        <h2>MITRE ATT&amp;CK Live</h2>
+        <span id="mitreSyncBadge" class="badge badge-neutral">Not synced</span>
+      </div>
+      <div class="intel-actions">
+        <button id="syncMitreBtn" class="btn-primary" type="button">Sync MITRE ATT&amp;CK</button>
+        <input id="mitreSearch" class="input-sm" placeholder="Search technique..." aria-label="Search MITRE">
+      </div>
+      <div id="mitreList" class="intel-list" aria-live="polite"></div>
+    </article>
+    <article class="panel">
+      <div class="panel-header">
+        <h2>CISA KEV Feed</h2>
+        <span id="kevSyncBadge" class="badge badge-neutral">Not synced</span>
+      </div>
+      <div class="intel-actions">
+        <button id="syncKevBtn" class="btn-primary" type="button">Sync CISA KEV</button>
+        <span id="kevCount" class="muted-label"></span>
+      </div>
+      <div id="kevList" class="intel-list" aria-live="polite"></div>
+    </article>
+  </div>
+</section>
+
+<!-- TAB: DRIFT MONITOR -->
+<section id="tab-drift" class="tab-panel" role="tabpanel" hidden>
+  <article class="panel panel-wide">
+    <div class="panel-header">
+      <h2>Security Drift Monitor</h2>
+      <div class="drift-controls">
+        <button id="runDriftBtn" class="btn-primary" type="button">Scan Activity Logs (Graph API)</button>
+        <button id="syntheticDriftBtn" class="btn-secondary" type="button">Load Demo Data</button>
+      </div>
+    </div>
+    <div id="driftSummary" class="drift-summary" hidden></div>
+    <div id="driftFeed" class="drift-feed" aria-live="polite">
+      <p class="muted-label">Connect to Azure or load demo data to scan activity logs.</p>
+    </div>
+  </article>
+</section>
+
+<!-- TAB: OSINT SCANNER -->
+<section id="tab-osint" class="tab-panel" role="tabpanel" hidden>
+  <div class="osint-layout">
+    <article class="panel panel-osint-form">
+      <div class="panel-header"><h2>External Attack Surface</h2></div>
+      <div class="osint-form">
+        <label class="config-label" for="osintTarget">Target IP or Domain</label>
+        <input id="osintTarget" class="input-sm" type="text" placeholder="8.8.8.8 or example.com" autocomplete="off" spellcheck="false">
+        <label class="config-label" for="shodanKey">Shodan API Key <span class="badge badge-warn">memory only</span></label>
+        <input id="shodanKey" class="input-sm" type="password" placeholder="Your Shodan API key" autocomplete="off">
+        <label class="config-label" for="osintProxy">CORS Proxy (optional)</label>
+        <input id="osintProxy" class="input-sm" type="url" placeholder="https://your-proxy.example.com" autocomplete="off">
+        <button id="runOsintBtn" class="btn-primary" type="button">Scan with Shodan</button>
+      </div>
+      <div id="osintNarrative" class="ai-narrative" aria-live="polite"></div>
+    </article>
+    <article class="panel" id="osintResultsPanel" hidden>
+      <div class="panel-header"><h2 id="osintResultTitle">Scan Results</h2></div>
+      <div id="osintResults" class="osint-results" aria-live="polite"></div>
+    </article>
+  </div>
+</section>
+
+<!-- TAB: BLUEPRINT ARCHITECT -->
+<section id="tab-blueprint" class="tab-panel" role="tabpanel" hidden>
+  <div class="blueprint-layout">
+    <aside class="blueprint-menu">
+      <div class="panel-header"><h2>Blueprints</h2></div>
+      <div id="blueprintList" class="blueprint-list"></div>
+      <div class="blueprint-format">
+        <label class="config-label" for="blueprintFormat">Output Format</label>
+        <select id="blueprintFormat" aria-label="Blueprint format">
+          <option value="terraform">Terraform HCL</option>
+          <option value="bicep">Bicep</option>
+        </select>
+      </div>
+    </aside>
+    <article class="panel blueprint-output">
+      <div class="panel-header">
+        <h2 id="blueprintTitle">Select a security blueprint</h2>
+        <button id="copyBlueprintBtn" class="btn-secondary" type="button">[COPY]</button>
+      </div>
+      <p id="blueprintDesc" class="ai-narrative"></p>
+      <pre id="blueprintOutput" class="code-output blueprint-code">Select a blueprint from the left panel.</pre>
+    </article>
+  </div>
+</section>
+
+<!-- TAB: DIGITAL TWIN -->
+<section id="tab-twin" class="tab-panel" role="tabpanel" hidden>
+  <div class="twin-layout">
+    <article class="panel">
+      <div class="panel-header"><h2>Tenant Snapshot</h2></div>
+      <div id="twinState" class="twin-state">
+        <p class="muted-label">Run an Analyzer payload first to load the digital twin.</p>
+      </div>
+      <div id="twinScore" class="twin-score" hidden>
+        <span class="score-label-sm">Twin Score</span>
+        <span id="twinScoreValue" class="score-value">&#8212;</span>
+      </div>
+      <div class="twin-actions">
+        <button id="twinEnableMfa"    class="btn-primary"   type="button">&#9654; Simulate: Enable MFA</button>
+        <button id="twinScopeRole"    class="btn-secondary" type="button">&#9654; Simulate: Scope Role &#8594; Reader</button>
+        <button id="twinRestrictPerm" class="btn-secondary" type="button">&#9654; Simulate: Restrict Permissions</button>
+        <button id="twinReset"        class="btn-ghost"     type="button">&#8635; Reset to Baseline</button>
+      </div>
+      <div id="twinSimResult" class="twin-sim-result" aria-live="polite" hidden></div>
+    </article>
+    <article class="panel">
+      <div class="panel-header"><h2>Attack Simulation</h2></div>
+      <div class="twin-attack-form">
+        <label class="config-label" for="twinAttackTech">MITRE Technique</label>
+        <select id="twinAttackTech">
+          <option value="T1078.004">T1078.004 &mdash; Cloud Account Compromise</option>
+          <option value="T1556">T1556 &mdash; Modify Authentication Process</option>
+          <option value="T1548">T1548 &mdash; Privilege Escalation</option>
+          <option value="T1090">T1090 &mdash; Proxy / C2 Relay</option>
+        </select>
+        <button id="twinSimulateAttack" class="btn-danger" type="button">Simulate Attack</button>
+      </div>
+      <div id="twinAttackResult" class="twin-attack-result" aria-live="polite"></div>
+    </article>
+  </div>
+</section>
+
+<!-- TAB: AZURE SCANNER -->
+<section id="tab-azure" class="tab-panel" role="tabpanel" hidden>
+  <div class="azure-layout">
+    <article class="panel azure-config-panel">
+      <div class="panel-header"><h2>Azure Tenant Scanner</h2></div>
+      <p class="ai-narrative">Conecta via PKCE OAuth2 (sin client secret en el navegador). Lee Conditional Access Policies, Service Principals y Audit Logs directamente desde tu tenant.</p>
+      <div class="azure-form">
+        <label class="config-label" for="azTenantId">Tenant ID (GUID)</label>
+        <input id="azTenantId" class="input-sm" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" spellcheck="false">
+        <label class="config-label" for="azClientId">App Registration Client ID</label>
+        <input id="azClientId" class="input-sm" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" spellcheck="false">
+        <label class="config-label" for="azRedirectUri">Redirect URI</label>
+        <input id="azRedirectUri" class="input-sm" type="url" value="https://juliocesarabreup.github.io/sec-architect/tools/enterprise-command-center.html">
+        <div class="azure-btn-row">
+          <button id="connectAzureBtn"    class="btn-primary" type="button">Connect to Azure</button>
+          <button id="disconnectAzureBtn" class="btn-ghost"   type="button" hidden>Disconnect</button>
+        </div>
+      </div>
+      <div id="azureStatus" class="azure-status" aria-live="polite"></div>
+    </article>
+    <article class="panel" id="azureDataPanel" hidden>
+      <div class="panel-header"><h2>Tenant Configuration</h2></div>
+      <div id="caPoliciesList" class="ca-list" aria-live="polite"></div>
+    </article>
+  </div>
+</section>
+
+</main>
+
+<aside class="soc-console-container">
+  <div class="console-header" id="consoleToggle" role="button" tabindex="0" aria-expanded="true">
+    <span class="console-title">SOC CONSOLE</span>
+    <span id="consoleLogCount" class="console-count">0</span>
+    <button id="clearConsoleBtn" class="console-clear" type="button" title="Clear console">&#10005;</button>
+  </div>
+  <div class="soc-console" id="shadowConsole" role="log" aria-live="polite" aria-label="SOC event console"></div>
+</aside>
+
+<script type="module" src="../main.js"></script>
 </body>
 </html>
