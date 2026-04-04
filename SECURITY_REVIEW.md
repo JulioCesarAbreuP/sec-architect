@@ -1,3 +1,12 @@
+## 15. Panel de resiliencia y degradación controlada (modular)
+
+El panel de resiliencia (`js/resilience.js`) detecta degradación combinando señales de healthcheck, alertas locales, logs de infraestructura y la línea temporal unificada:
+- Evalúa fallos consecutivos, latencia alta, picos de 5xx, eventos WAF y alertas críticas.
+- Determina el estado (NORMAL, DEGRADED, CRITICAL) y lo expone solo en sessionStorage.
+- La degradación controlada reduce la frecuencia de health checks y pausa métricas no esenciales en el cliente.
+- No se exponen datos sensibles ni información interna fuera del navegador.
+- El usuario está protegido ante degradación, evitando sobrecarga y mostrando avisos discretos.
+- El diseño cumple Trusted Types, SRI, nonce rotativo y CSP estricta.
 ## 13. Línea temporal unificada de eventos
 
 Se implementa una línea temporal unificada (`js/timeline.js`) que fusiona errores, métricas, health checks, alertas y logs de infraestructura:

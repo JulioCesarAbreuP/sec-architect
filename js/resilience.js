@@ -1,52 +1,42 @@
 // js/resilience.js
 // Panel de resiliencia y degradación controlada
+
 (function () {
   if (window.trustedTypes && window.trustedTypes.createPolicy) {
     window.trustedTypes.createPolicy('resiliencePolicy', {
       createHTML: (html) => html
     });
   }
-  const STATE_KEY = 'resilience_state';
-  const STATE_META_KEY = 'resilience_state_meta';
-  let lastState = 'NORMAL';
-  let lastChange = Date.now();
+  const STATE_KEY = 'resilienceState';
+  const SUBSCRIBERS = [];
+  let lastState = null;
   let lastSignals = [];
+  let lastChange = Date.now();
 
-  function evaluateResilience() {
-    let health = [];
-    try { health = JSON.parse(localStorage.getItem('healthcheck_results')) || []; } catch {}
-    let alerts = [];
-    try { alerts = JSON.parse(sessionStorage.getItem('local_alerts')) || []; } catch {}
-    let fdLogs = [], wafLogs = [];
-    const today = new Date().toISOString().slice(0, 10);
-    try {
-      const fd = localStorage.getItem(`fdlog_${today}`);
-      fdLogs = fd ? JSON.parse(fd) : [];
-    } catch {}
-    try {
-      const waf = localStorage.getItem(`waflog_${today}`);
-      wafLogs = waf ? JSON.parse(waf) : [];
-    } catch {}
-    // Señales
+  function evaluateResilienceState({ healthMetrics = [], localAlerts = [], infraEvents = [], timeline = [] }) {
     const signals = [];
-    // Health: latencia creciente o fallos consecutivos
-    const last5 = health.slice(-5);
-    if (last5.length >= 3 && last5.every(e => e.ok === false)) {
+    // Health: 3+ fallos seguidos
+    const last3 = healthMetrics.slice(-3);
+    if (last3.length === 3 && last3.every(e => e.ok === false)) {
       signals.push('3+ health checks fallidos');
     }
-    if (last5.length >= 3 && last5.every(e => typeof e.latency === 'number' && e.latency > 1500)) {
+    // Health: latencia alta
+    if (healthMetrics.slice(-3).every(e => typeof e.latency === 'number' && e.latency > 1500)) {
       signals.push('Latencia >1500ms en health checks');
     }
-    // Infra: picos de 5xx o throttling
-    const err5xx = fdLogs.filter(e => e.metadata && /^5\d\d$/.test(String(e.metadata.statusCode)));
-    if (err5xx.length >= 3) signals.push('3+ respuestas 5xx recientes en Front Door');
+    // Infra: 3+ 5xx recientes
+    const err5xx = infraEvents.filter(e => e.metadata && /^5\\d\\d$/.test(String(e.metadata.statusCode)));
+    if (err5xx.length >= 3) signals.push('3+ respuestas 5xx en Front Door');
     // WAF repetido
     const now = Date.now();
-    const recentWaf = wafLogs.filter(e => now - (e.timestamp || 0) < 180000);
+    const recentWaf = infraEvents.filter(e => e.source === 'waf' && now - (e.timestamp || 0) < 180000);
     if (recentWaf.length >= 3) signals.push('3+ eventos WAF en 3 min');
     // Alertas críticas
-    const critAlerts = alerts.filter(e => e.severity === 'critical');
+    const critAlerts = localAlerts.filter(e => e.severity === 'critical');
     if (critAlerts.length >= 2) signals.push('2+ alertas críticas recientes');
+    // Timeline: correlación de eventos críticos
+    const timelineCritical = (timeline||[]).filter(e => e.type === 'error' || (e.details && e.details.severity === 'critical'));
+    if (timelineCritical.length >= 5) signals.push('5+ eventos críticos recientes en timeline');
     // Estado
     let state = 'NORMAL';
     if (signals.length === 0) {
@@ -56,63 +46,81 @@
     } else {
       state = 'CRITICAL';
     }
+    // Cambio de estado
     if (state !== lastState) {
       lastChange = Date.now();
       lastState = state;
+      notifySubscribers();
     }
     lastSignals = signals;
-    sessionStorage.setItem(STATE_KEY, state);
-    sessionStorage.setItem(STATE_META_KEY, JSON.stringify({ signals, lastChange }));
+    sessionStorage.setItem(STATE_KEY, JSON.stringify({ state, signals, lastChange }));
+    // Degradación controlada
+    applyDegradation(state);
   }
-  // Exponer para dashboard
-  window.getResilienceState = function () {
-    const state = sessionStorage.getItem(STATE_KEY) || 'NORMAL';
-    let meta = { signals: [], lastChange: Date.now() };
-    try { meta = JSON.parse(sessionStorage.getItem(STATE_META_KEY)) || meta; } catch {}
-    return { state, ...meta };
-  };
+
+  function getResilienceState() {
+    let s = { state: 'NORMAL', signals: [], lastChange: Date.now() };
+    try { s = JSON.parse(sessionStorage.getItem(STATE_KEY)) || s; } catch {}
+    return s;
+  }
+
+  function subscribeResilienceChanges(cb) {
+    if (typeof cb === 'function') SUBSCRIBERS.push(cb);
+  }
+
+  function notifySubscribers() {
+    const s = getResilienceState();
+    SUBSCRIBERS.forEach(cb => { try { cb(s); } catch {} });
+  }
+
   // Degradación controlada (cliente)
-  function applyDegradation() {
-    const { state } = window.getResilienceState();
-    // DEGRADED: reducir frecuencia healthcheck
+  function applyDegradation(state) {
     if (state === 'DEGRADED') {
-      window.HEALTHCHECK_INTERVAL_OVERRIDE = 180000; // 3 min
+      window.HEALTHCHECK_INTERVAL_OVERRIDE = 120000; // x2
       window.DASHBOARD_MINIMAL = true;
+      window.DASHBOARD_PAUSE_METRICS = false;
+      hideCriticalBanner();
     } else if (state === 'CRITICAL') {
-      window.HEALTHCHECK_INTERVAL_OVERRIDE = 600000; // 10 min
+      window.HEALTHCHECK_INTERVAL_OVERRIDE = 300000; // x5
       window.DASHBOARD_MINIMAL = true;
       window.DASHBOARD_PAUSE_METRICS = true;
-      // Banner crítico
-      let banner = document.getElementById('resilience-critical-banner');
-      if (!banner) {
-        banner = document.createElement('div');
-        banner.id = 'resilience-critical-banner';
-        banner.style.position = 'fixed';
-        banner.style.top = '0';
-        banner.style.left = '0';
-        banner.style.right = '0';
-        banner.style.zIndex = '9999';
-        banner.style.background = '#c92a2a';
-        banner.style.color = '#fff';
-        banner.style.fontWeight = 'bold';
-        banner.style.fontSize = '15px';
-        banner.style.padding = '7px 0';
-        banner.style.textAlign = 'center';
-        banner.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-        document.body.appendChild(banner);
-      }
-      banner.textContent = 'Resiliencia CRÍTICA: el sistema está degradado. Algunas funciones están pausadas.';
-      banner.style.display = 'block';
+      showCriticalBanner();
     } else {
       window.HEALTHCHECK_INTERVAL_OVERRIDE = undefined;
       window.DASHBOARD_MINIMAL = false;
       window.DASHBOARD_PAUSE_METRICS = false;
-      const banner = document.getElementById('resilience-critical-banner');
-      if (banner) banner.style.display = 'none';
+      hideCriticalBanner();
     }
   }
-  setInterval(evaluateResilience, 20000);
-  setInterval(applyDegradation, 20000);
-  evaluateResilience();
-  applyDegradation();
+  function showCriticalBanner() {
+    let banner = document.getElementById('resilience-critical-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'resilience-critical-banner';
+      banner.style.position = 'fixed';
+      banner.style.top = '0';
+      banner.style.left = '0';
+      banner.style.right = '0';
+      banner.style.zIndex = '9999';
+      banner.style.background = '#c92a2a';
+      banner.style.color = '#fff';
+      banner.style.fontWeight = 'bold';
+      banner.style.fontSize = '15px';
+      banner.style.padding = '7px 0';
+      banner.style.textAlign = 'center';
+      banner.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+      document.body.appendChild(banner);
+    }
+    banner.textContent = 'Resiliencia CRÍTICA: el sistema está degradado. Algunas funciones están pausadas.';
+    banner.style.display = 'block';
+  }
+  function hideCriticalBanner() {
+    const banner = document.getElementById('resilience-critical-banner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  // Exponer API global
+  window.evaluateResilienceState = evaluateResilienceState;
+  window.getResilienceState = getResilienceState;
+  window.subscribeResilienceChanges = subscribeResilienceChanges;
 })();

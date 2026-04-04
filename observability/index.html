@@ -1,3 +1,16 @@
+    <section id="resilience-panel" style="margin-top:2em;">
+      <h2>Resiliencia del sistema</h2>
+      <div style="display:flex;align-items:center;gap:1em;flex-wrap:wrap;">
+        <span>Estado actual:
+          <span id="resilience-state-badge" style="display:inline-block;padding:2px 12px;border-radius:12px;font-weight:bold;background:#e9ecef;color:#222;min-width:80px;text-align:center;">NORMAL</span>
+        </span>
+        <span>Último cambio: <span id="resilience-lastchange">-</span></span>
+      </div>
+      <div style="margin-top:0.7em;">
+        <strong>Señales detectadas:</strong>
+        <ul id="resilience-signals-list" style="font-size:13px;margin:0.5em 0 0 1em;"></ul>
+      </div>
+    </section>
   <section id="timeline-section" style="margin-top:2em;">
     <h2>Línea temporal unificada</h2>
     <div>
@@ -138,7 +151,7 @@
   <script nonce="__NONCE__" defer src="../js/healthcheck.js" integrity="sha384-PLACEHOLDER" ></script>
   <script nonce="__NONCE__" defer src="../js/alerts.js"></script>
   <script nonce="__NONCE__" defer src="../js/timeline.js"></script>
-  <script nonce="__NONCE__" defer src="../js/resilience.js"></script>
+  <script nonce="__NONCE__" defer src="../js/resilience.js" integrity="sha384-PLACEHOLDER"></script>
   <script nonce="__NONCE__" defer src="../js/observability-dashboard.js"></script>
 </body>
 </html>

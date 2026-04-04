@@ -1,3 +1,10 @@
+# 2026-04-04 (7)
+- Resilience panel y lógica de degradación controlada:
+  - Nuevo módulo `js/resilience.js` modular, API global y suscripción para el dashboard.
+  - Panel de resiliencia en el dashboard con estado, señales y timestamp.
+  - Degradación controlada: reducción de health checks, pausa de métricas y aviso visual según estado.
+  - Sin exposición de datos sensibles ni persistencia fuera de sesión.
+  - Documentación de privacidad y protección en SECURITY_REVIEW.md.
 # 2026-04-04 (6)
 - Línea temporal unificada de eventos:
   - Nuevo módulo `js/timeline.js` que fusiona errores, métricas, health checks, alertas y logs de infraestructura en una sola vista ordenada y filtrable.

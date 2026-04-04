@@ -1,3 +1,34 @@
+    // --- Panel de resiliencia modular ---
+    function loadResilienceState() {
+      if (window.getResilienceState) return window.getResilienceState();
+      return { state: 'NORMAL', signals: [], lastChange: Date.now() };
+    }
+
+    function renderResiliencePanel() {
+      const { state, signals, lastChange } = loadResilienceState();
+      const badge = document.getElementById('resilience-state-badge');
+      if (badge) {
+        badge.textContent = state;
+        badge.style.background = state==='CRITICAL' ? '#c92a2a' : state==='DEGRADED' ? '#fbbf24' : '#e9ecef';
+        badge.style.color = state==='CRITICAL' ? '#fff' : state==='DEGRADED' ? '#222' : '#222';
+      }
+      const lastChangeEl = document.getElementById('resilience-lastchange');
+      if (lastChangeEl) lastChangeEl.textContent = lastChange ? new Date(lastChange).toLocaleTimeString() : '-';
+      const signalsEl = document.getElementById('resilience-signals-list');
+      if (signalsEl) {
+        signalsEl.innerHTML = '';
+        (signals||[]).forEach(s => {
+          const li = document.createElement('li');
+          li.textContent = s;
+          signalsEl.appendChild(li);
+        });
+      }
+    }
+
+    // Watcher en tiempo real
+    if (window.subscribeResilienceChanges) {
+      window.subscribeResilienceChanges(renderResiliencePanel);
+    }
   // --- Línea temporal unificada ---
   function renderTimeline() {
     if (!window.getUnifiedTimeline) return;
