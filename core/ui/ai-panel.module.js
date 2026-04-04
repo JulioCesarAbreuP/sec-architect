@@ -273,6 +273,55 @@ function resolveHandler(activeTab) {
   return mapControl;
 }
 
+function updateEntraRadar(level) {
+  var fill   = byId("entra-arc-fill");
+  var needle = byId("entra-needle");
+  var label  = byId("entra-radar-label");
+  if (!fill || !needle || !label) { return; }
+  if (level === "safe") {
+    fill.setAttribute("stroke", "#4ade80"); fill.setAttribute("stroke-dashoffset", "0");
+    needle.setAttribute("x2", "20"); needle.setAttribute("y2", "90"); needle.setAttribute("stroke", "#4ade80");
+    label.textContent = "MFA ENABLED \u2014 HARDENED"; label.className = "entra-radar-label entra-label-ok";
+  } else if (level === "risk") {
+    fill.setAttribute("stroke", "#f87171"); fill.setAttribute("stroke-dashoffset", "0");
+    needle.setAttribute("x2", "140"); needle.setAttribute("y2", "90"); needle.setAttribute("stroke", "#f87171");
+    label.textContent = "MFA DISABLED \u2014 CRITICAL RISK"; label.className = "entra-radar-label entra-label-crit";
+  } else {
+    fill.setAttribute("stroke", "#7e96ad"); fill.setAttribute("stroke-dashoffset", "102");
+    needle.setAttribute("x2", "80"); needle.setAttribute("y2", "30"); needle.setAttribute("stroke", "#7e96ad");
+    label.textContent = "AWAITING PAYLOAD"; label.className = "entra-radar-label";
+  }
+}
+
+function logEntraConsole(message, level) {
+  var list = byId("entra-console");
+  if (!list) { return; }
+  var li = document.createElement("li");
+  li.className = "entra-console-line entra-console-" + (level || "info");
+  var ts = new Date().toLocaleTimeString("es-ES", { hour12: false });
+  li.textContent = "[" + ts + "] " + message;
+  list.insertBefore(li, list.firstChild);
+  while (list.children.length > 10) { list.removeChild(list.lastChild); }
+}
+
+function setEntraMode(active) {
+  var entraEngine = byId("entra-engine");
+  var runBtnEl    = byId("ai-run");
+  var inputEl     = byId("ai-input");
+  if (entraEngine) { entraEngine.hidden = !active; }
+  if (inputEl) {
+    if (active) {
+      inputEl.classList.add("entra-active");
+      inputEl.placeholder = 'Pega un objeto Entra ID (JSON)\n\nEjemplo:\n{"user":"john@contoso.com","role":"Global Administrator","mfa":"disabled","resource":"KeyVault-Prod"}';
+    } else {
+      inputEl.classList.remove("entra-active");
+      inputEl.placeholder = "Introduce un control, riesgo o componente...";
+    }
+  }
+  if (runBtnEl) { runBtnEl.textContent = active ? "Analyze Payload" : "Ejecutar IA"; }
+  if (!active) { updateEntraRadar("neutral"); }
+}
+
 export function initAIPanel() {
   var container = byId("ai-panel-container");
   var traceStore = loadTraceStore();
@@ -288,10 +337,25 @@ export function initAIPanel() {
     '<button type="button" class="ai-tab active" data-tab="control" role="tab" aria-selected="true">Control Mapper</button>',
     '<button type="button" class="ai-tab" data-tab="risk" role="tab" aria-selected="false">Risk Analyzer</button>',
     '<button type="button" class="ai-tab" data-tab="arch" role="tab" aria-selected="false">Architecture Explainer</button>',
+    '<button type="button" class="ai-tab" data-tab="entra" role="tab" aria-selected="false">Entra ID</button>',
     "</div>",
     '<div class="ai-content">',
     '<textarea id="ai-input" placeholder="Introduce un control, riesgo o componente..." aria-label="Entrada para IA"></textarea>',
     '<button type="button" id="ai-run">Ejecutar IA</button>',
+    '<div id="entra-engine" class="entra-engine" hidden>',
+    '<div class="entra-radar-shell">',
+    '<svg class="entra-radar-svg" viewBox="0 0 160 90" aria-hidden="true">',
+    '<path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#1a2530" stroke-width="10" stroke-linecap="round"/>',
+    '<text x="10" y="86" font-size="8" fill="#4ade80" font-family="monospace">SAFE</text>',
+    '<text x="124" y="86" font-size="8" fill="#f87171" font-family="monospace">RISK</text>',
+    '<path id="entra-arc-fill" d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="#7e96ad" stroke-width="8" stroke-linecap="round" stroke-dasharray="204" stroke-dashoffset="102"/>',
+    '<line id="entra-needle" x1="80" y1="90" x2="80" y2="30" stroke="#7e96ad" stroke-width="2.5" stroke-linecap="round"/>',
+    '<circle cx="80" cy="90" r="4" fill="#e0e0e0"/>',
+    '</svg>',
+    '<div class="entra-radar-label" id="entra-radar-label">AWAITING PAYLOAD</div>',
+    '</div>',
+    '<ul class="entra-console" id="entra-console"></ul>',
+    '</div>',
     "</div>",
     '<div class="ai-trace">',
     '<div class="ai-trace-header">',
@@ -356,6 +420,7 @@ export function initAIPanel() {
 
       tab.classList.add("active");
       tab.setAttribute("aria-selected", "true");
+      setEntraMode(activeTab === "entra");
     };
   });
 
@@ -366,6 +431,31 @@ export function initAIPanel() {
       var engine = resolveEngineName(activeTab);
 
       if (!inputValue) {
+        return;
+      }
+
+      if (activeTab === "entra") {
+        var parsedId;
+        try {
+          parsedId = JSON.parse(inputValue);
+        } catch (_e) {
+          logEntraConsole("[ERROR] JSON de Identidad No V\u00e1lido", "error");
+          updateEntraRadar("neutral");
+          traceStore.unshift({ engine: "entra-id-validator", status: "error", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+          traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
+          return;
+        }
+        var mfaValue = String(parsedId.mfa || "").toLowerCase();
+        if (mfaValue === "disabled") {
+          updateEntraRadar("risk"); logEntraConsole("[WARN] MFA deshabilitado \u2014 riesgo cr\u00edtico de identidad.", "error");
+        } else if (mfaValue === "enabled") {
+          updateEntraRadar("safe"); logEntraConsole("[OK] MFA habilitado \u2014 postura de identidad endurecida.", "ok");
+        } else {
+          updateEntraRadar("neutral"); logEntraConsole("[INFO] Campo MFA no encontrado \u2014 postura indeterminada.", "info");
+        }
+        logEntraConsole("[INFO] Payload de Entra ID validado correctamente.", "info");
+        traceStore.unshift({ engine: "entra-id-validator", status: mfaValue === "disabled" ? "warning" : "ok", durationMs: Date.now() - startedAt, inputPreview: inputValue.slice(0, 90), at: new Date().toLocaleTimeString("es-ES"), requestId: createLocalRequestId(), startedAt: new Date(startedAt).toISOString() });
+        traceStore = traceStore.slice(0, MAX_TRACE_ITEMS); saveTraceStore(traceStore); renderTraceList(traceStore, traceFilter);
         return;
       }
 
