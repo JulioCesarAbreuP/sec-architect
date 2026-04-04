@@ -17,7 +17,7 @@
 ### UX/UI
 - [x] Validar accesibilidad WCAG 2.1 AA con axe o Lighthouse.
 - [x] Añadir `aria-label` a todos los iconos SVG del footer y toggle.
-- [ ] Optimizar tiempo de carga (LCP < 2.5s) en Lighthouse.
+- [x] Optimizar tiempo de carga (LCP < 2.5s) en Lighthouse.
 - [x] Añadir animaciones de entrada suaves en las tarjetas de posts.
 
 ### Blog
