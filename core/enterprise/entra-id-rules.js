@@ -6,6 +6,56 @@ function toTerraformSafeName(value) {
     .slice(0, 48) || "identity";
 }
 
+function normalizeRoleCandidates(parsedId) {
+  var raw = [];
+  var rolesFromArray = Array.isArray(parsedId && parsedId.roles) ? parsedId.roles : [];
+
+  if (parsedId && parsedId.role) {
+    raw.push(parsedId.role);
+  }
+  if (parsedId && parsedId.directoryRole) {
+    raw.push(parsedId.directoryRole);
+  }
+  if (parsedId && parsedId.privilege) {
+    raw.push(parsedId.privilege);
+  }
+
+  rolesFromArray.forEach(function (r) {
+    raw.push(r);
+  });
+
+  var normalized = raw
+    .map(function (r) { return String(r || "").trim(); })
+    .filter(function (r) { return r.length > 0; });
+
+  if (!normalized.length) {
+    normalized.push("unknown");
+  }
+
+  return normalized;
+}
+
+function calculateRiskScore(riskReasons, isPrivilegedRole, mfaDisabled, mfaMissing, requireMfa) {
+  var score = 0;
+
+  if (isPrivilegedRole) {
+    score += 30;
+  }
+  if (mfaDisabled) {
+    score += 45;
+  } else if (mfaMissing) {
+    score += 35;
+  }
+  if (requireMfa === false) {
+    score += 25;
+  }
+  if (!riskReasons.length) {
+    score = Math.max(score - 25, 0);
+  }
+
+  return Math.min(score, 100);
+}
+
 function buildTerraformRemediation(principal, role, riskReasons) {
   var roleName = role || "Unknown Role";
   var resourceName = "enforce_mfa_" + toTerraformSafeName(roleName);
@@ -17,6 +67,11 @@ function buildTerraformRemediation(principal, role, riskReasons) {
     "  conditions {",
     "    users {",
     '      included_roles = ["' + roleName.replace(/"/g, "\\\"") + '"]',
+    '      excluded_users = ["breakglass@contoso.com"]',
+    "    }",
+    "",
+    "    applications {",
+    '      included_applications = ["All"]',
     "    }",
     "  }",
     "",
@@ -37,8 +92,8 @@ export function evaluateEntraIdentity(parsedId) {
   var logs = [];
   var keys = Object.keys(parsedId || {});
   var principal = String(parsedId.user || parsedId.upn || parsedId.account || parsedId.identity || "unknown");
-  var role = String(parsedId.role || parsedId.directoryRole || parsedId.privilege || "unknown");
-  var roleNormalized = role.toLowerCase();
+  var roleCandidates = normalizeRoleCandidates(parsedId);
+  var role = roleCandidates[0] || "unknown";
   var criticalRolePatterns = [
     /global administrator/i,
     /global admin/i,
@@ -62,8 +117,11 @@ export function evaluateEntraIdentity(parsedId) {
   var requireMfa = typeof policyObj.requireMfa === "undefined" ? null : !!policyObj.requireMfa;
   var resource = String(parsedId.resource || parsedId.app || parsedId.workload || "unknown");
   var accountType = String(parsedId.accountType || parsedId.account_type || "cloud").toLowerCase();
-  var isPrivilegedRole = criticalRolePatterns.some(function (pattern) {
-    return pattern.test(roleNormalized);
+  var isPrivilegedRole = roleCandidates.some(function (candidate) {
+    var roleNormalized = String(candidate || "").toLowerCase();
+    return criticalRolePatterns.some(function (pattern) {
+      return pattern.test(roleNormalized);
+    });
   });
   var mfaEnabled = /^(enabled|true|on|yes|required)$/i.test(mfaRaw);
   var mfaMissing = mfaRaw === "" || /^(missing|null|unknown|n\/a)$/i.test(mfaRaw);
@@ -73,7 +131,7 @@ export function evaluateEntraIdentity(parsedId) {
 
   logs.push({
     level: "ok",
-    message: "[CHECK] Validating Identity Object... principal=" + principal + ", role=" + role + ", keys=" + keys.length
+    message: "[CHECK] Validating Identity Object... principal=" + principal + ", role=" + role + ", rolesDetected=" + roleCandidates.length + ", keys=" + keys.length
   });
 
   if (isPrivilegedRole && (mfaMissing || mfaDisabled)) {
@@ -120,15 +178,19 @@ export function evaluateEntraIdentity(parsedId) {
 
   var hasFix = riskReasons.length > 0;
   var terraformFix = hasFix ? buildTerraformRemediation(principal, role, riskReasons) : "";
+  var riskScore = calculateRiskScore(riskReasons, isPrivilegedRole, mfaDisabled, mfaMissing, requireMfa);
 
   return {
     radarLevel: radarLevel,
     status: radarLevel === "risk" ? "warning" : radarLevel === "safe" ? "ok" : "warning",
+    riskScore: riskScore,
     logs: logs,
     findings: riskReasons,
     remediation: {
       hasFix: hasFix,
-      terraform: terraformFix
+      terraform: terraformFix,
+      primaryRole: role,
+      principal: principal
     }
   };
 }

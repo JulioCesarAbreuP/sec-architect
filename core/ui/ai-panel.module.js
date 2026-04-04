@@ -308,6 +308,7 @@ function logEntraConsole(message, level) {
 function renderEntraRemediation(evaluation) {
   var codeEl = byId("entra-remediation-code");
   var copyBtn = byId("entra-copy-fix");
+  var scoreEl = byId("entra-risk-score");
   var fixText = evaluation && evaluation.remediation && evaluation.remediation.hasFix
     ? evaluation.remediation.terraform
     : "# No remediation generated.\n# Identity object passed or has indeterminate posture.";
@@ -318,6 +319,17 @@ function renderEntraRemediation(evaluation) {
 
   if (copyBtn) {
     copyBtn.disabled = !(evaluation && evaluation.remediation && evaluation.remediation.hasFix);
+    copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+  }
+
+  if (scoreEl) {
+    if (evaluation && typeof evaluation.riskScore === "number") {
+      scoreEl.textContent = "Risk Score: " + evaluation.riskScore + "/100";
+      scoreEl.className = "entra-risk-score " + (evaluation.radarLevel === "risk" ? "is-risk" : evaluation.radarLevel === "safe" ? "is-safe" : "is-neutral");
+    } else {
+      scoreEl.textContent = "Risk Score: N/A";
+      scoreEl.className = "entra-risk-score is-neutral";
+    }
   }
 }
 
@@ -340,6 +352,9 @@ function copyFixToClipboard() {
     }).catch(function () {
       if (copyBtn) {
         copyBtn.textContent = "[COPY BLOCKED]";
+        window.setTimeout(function () {
+          copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+        }, 1200);
       }
     });
     return;
@@ -361,6 +376,9 @@ function copyFixToClipboard() {
   } catch (_error) {
     if (copyBtn) {
       copyBtn.textContent = "[COPY BLOCKED]";
+      window.setTimeout(function () {
+        copyBtn.textContent = "[COPY FIX TO CLIPBOARD]";
+      }, 1200);
     }
   }
 }
@@ -423,6 +441,7 @@ export function initAIPanel() {
     '</div>',
     '<aside class="entra-remediation" aria-live="polite">',
     '<h4 class="entra-remediation-title">Remediation as Code</h4>',
+    '<div id="entra-risk-score" class="entra-risk-score is-neutral">Risk Score: N/A</div>',
     '<pre id="entra-remediation-code" class="entra-remediation-code"># No remediation generated.\n# Identity object passed or has indeterminate posture.</pre>',
     '<button type="button" id="entra-copy-fix" class="entra-copy-fix" disabled>[COPY FIX TO CLIPBOARD]</button>',
     '</aside>',

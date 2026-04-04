@@ -92,6 +92,17 @@
   color: #8cc9ff;
 }
 
+.entra-risk-score {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.entra-risk-score.is-risk { color: #f87171; }
+.entra-risk-score.is-safe { color: #4ade80; }
+.entra-risk-score.is-neutral { color: #7de3f4; }
+
 .entra-remediation-code {
   margin: 0;
   border: 1px solid #1f2f40;
