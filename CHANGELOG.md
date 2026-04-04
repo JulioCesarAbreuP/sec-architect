@@ -1,4 +1,10 @@
-# 2026-04-04 (4)
+# 2026-04-04 (5)
+- Alertas locales y señales tempranas:
+  - Nuevo módulo `js/alerts.js` que detecta anomalías en métricas, health checks y logs recientes.
+  - Genera alertas locales (console.warn, banner visual, sessionStorage).
+  - Sección "Alertas y señales tempranas" en el dashboard con visualización y limpieza de alertas.
+  - Sin exposición de datos sensibles ni personales.
+  - Documentación de privacidad y seguridad en SECURITY_REVIEW.md.
 - Correlación de eventos cliente ↔ infraestructura:
   - Se genera un `correlationId` UUID v4 por sesión en `js/telemetry.js` y se adjunta a todos los eventos de telemetría, errores, métricas y healthcheck.
   - `js/healthcheck.js` emite eventos con correlationId para correlación en tiempo real.

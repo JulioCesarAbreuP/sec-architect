@@ -20,6 +20,17 @@
 </head>
 <body>
   <h1>Dashboard de Observabilidad</h1>
+  <section id="local-alerts" style="margin-top:1.5em;">
+    <h2>Alertas y señales tempranas</h2>
+    <div>
+      <button id="clear-alerts-btn" style="font-size:12px;padding:3px 10px;margin-bottom:7px;">Limpiar alertas</button>
+      <table>
+        <thead><tr><th>Tipo</th><th>Mensaje</th><th>Severidad</th><th>Timestamp</th></tr></thead>
+        <tbody id="alerts-table"></tbody>
+      </table>
+      <div style="font-size:12px;color:#666;margin-top:4px;">Las alertas se generan y almacenan solo localmente en el navegador.</div>
+    </div>
+  </section>
   <div>
     Estado del endpoint de telemetría: <span id="obs-endpoint-status" class="obs-status offline">Offline</span>
   </div>
@@ -100,6 +111,7 @@
     </div>
   </section>
   <script nonce="__NONCE__" defer src="../js/healthcheck.js" integrity="sha384-PLACEHOLDER" ></script>
+  <script nonce="__NONCE__" defer src="../js/alerts.js"></script>
   <script nonce="__NONCE__" defer src="../js/observability-dashboard.js"></script>
 </body>
 </html>

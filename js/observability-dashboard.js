@@ -192,7 +192,32 @@
     }
   }
 
-  // --- Healthcheck: renderizar sección de disponibilidad ---
+  // --- Alertas locales: renderizar sección de alertas ---
+  function renderAlerts() {
+    let arr = [];
+    try { arr = JSON.parse(sessionStorage.getItem('local_alerts')) || []; } catch {}
+    const tbody = document.getElementById('alerts-table');
+    if (tbody) {
+      tbody.innerHTML = '';
+      arr.slice(-10).reverse().forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.type}</td><td>${e.message}</td><td><span style="font-weight:bold;color:${e.severity==='critical'?'#f87171':e.severity==='warning'?'#fbbf24':'#38bdf8'}">${e.severity}</span></td><td>${e.ts ? new Date(e.ts).toLocaleTimeString() : ''}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+
+  // Limpiar alertas
+  function clearAlerts() {
+    sessionStorage.removeItem('local_alerts');
+    renderAlerts();
+  }
+
+  // Botón limpiar alertas
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('clear-alerts-btn');
+    if (btn) btn.onclick = clearAlerts;
+  });
   function renderHealthcheck() {
     let arr = [];
     try { arr = JSON.parse(localStorage.getItem('healthcheck_results')) || []; } catch {}
@@ -283,8 +308,10 @@
   setInterval(loadInfrastructureLogs, 6000);
   setInterval(renderHealthcheck, 5000);
   setInterval(renderCorrelation, 7000);
+  setInterval(renderAlerts, 5000);
   updateDashboard();
   loadInfrastructureLogs();
   renderHealthcheck();
   renderCorrelation();
+  renderAlerts();
 })();

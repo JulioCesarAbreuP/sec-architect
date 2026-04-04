@@ -1,3 +1,17 @@
+## 12. Alertas locales y señales tempranas
+
+Se implementa un sistema de alertas locales en el navegador (`js/alerts.js`) que detecta anomalías en métricas, health checks y logs recientes:
+
+- Las alertas se generan, almacenan y visualizan solo en el cliente (sessionStorage, banner visual, dashboard).
+- No se envían ni exponen datos al backend ni a terceros.
+- No contienen datos personales, identificadores de usuario ni información sensible.
+- Solo se muestran mensajes técnicos sobre errores, latencia, códigos HTTP o eventos WAF anómalos.
+- El diseño cumple Trusted Types, SRI, nonce rotativo y CSP estricta.
+
+**Privacidad y seguridad:**
+- Las alertas no comprometen la privacidad del usuario ni exponen información fuera del navegador.
+- No se recolectan ni persisten datos sensibles.
+- El usuario puede limpiar las alertas en cualquier momento desde el dashboard.
 ## 7. Telemetría ligera del cliente
 
 Se implementó un módulo de telemetría ligera (`js/telemetry.js`) que:
