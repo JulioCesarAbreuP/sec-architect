@@ -35,9 +35,12 @@
 
 
 ### Added
-- Dashboard de salud y métricas en `observability/index.html`:
-  - Visualización de métricas técnicas (errores, LCP, FID, CLS, INP, TTFB) capturadas por `telemetry.js`.
-  - Estado del endpoint de telemetría (online/offline) y estadísticas básicas.
+- Integración de logs de infraestructura:
+  - Script Node.js (`observability/logs/ingest-logs.js`) para descargar y normalizar logs de Front Door, WAF y CDN.
+  - Ejemplos anonimizados en `docs/evidence/logs/`.
+  - Nueva sección en el dashboard para mostrar eventos de WAF, códigos de estado de Front Door y estadísticas de tráfico agregadas.
+  - Visualización segura: solo datos agregados/anonimizados, sin exponer información sensible.
+  - Documentación de protección y privacidad en SECURITY_REVIEW.md.
   - Gráficos simples de barras generados solo con JS/DOM, sin librerías externas.
   - Módulo `js/observability-dashboard.js` para leer métricas de localStorage/sessionStorage y endpoint remoto.
   - Actualización en tiempo real si telemetry.js sigue activo.

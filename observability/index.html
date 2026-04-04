@@ -48,6 +48,33 @@
       <tbody id="obs-last-events"></tbody>
     </table>
   </div>
+
+  <section id="infra-logs" style="margin-top:2em;">
+    <h2>Infraestructura</h2>
+    <div style="display:flex;gap:2em;flex-wrap:wrap;">
+      <div>
+        <strong>WAF Events</strong>
+        <table>
+          <thead><tr><th>Evento</th><th>Hora</th><th>Metadata</th></tr></thead>
+          <tbody id="infra-waf-events"></tbody>
+        </table>
+      </div>
+      <div>
+        <strong>Front Door Status Codes</strong>
+        <table>
+          <thead><tr><th>Código</th><th>URI</th><th>Hora</th></tr></thead>
+          <tbody id="infra-fd-status"></tbody>
+        </table>
+      </div>
+      <div>
+        <strong>Traffic Stats (requests/min)</strong>
+        <table>
+          <thead><tr><th>Minuto</th><th>Requests</th></tr></thead>
+          <tbody id="infra-traffic-stats"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
   <script nonce="__NONCE__" defer src="../js/observability-dashboard.js"></script>
 </body>
 </html>

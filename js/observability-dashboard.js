@@ -110,7 +110,91 @@
     renderBarChart('obs-ttfb-chart', metrics.filter(e => e.type === 'TTFB').map(e => e.data.value), 'TTFB');
   }
 
+  // --- Infraestructura: lectura y renderizado de logs ---
+  async function loadInfrastructureLogs() {
+    // Utilidad para anonimizar IPs
+    function anonymizeIP(ip) {
+      if (!ip) return '';
+      return ip.replace(/\d+$/, 'x');
+    }
+
+    // Cargar logs locales
+    async function fetchLog(file) {
+      try {
+        const resp = await fetch(file, { cache: 'no-store' });
+        if (!resp.ok) return [];
+        return await resp.json();
+      } catch { return []; }
+    }
+
+    // Paths relativos para entorno estático
+    const base = '../docs/evidence/logs/';
+    const today = new Date().toISOString().slice(0, 10);
+    const files = [
+      `${base}${today}-frontdoor.json`,
+      `${base}${today}-waf.json`,
+      `${base}${today}-cdn.json`
+    ];
+    const [fd, waf, cdn] = await Promise.all(files.map(fetchLog));
+
+    // --- Renderizar WAF ---
+    const wafEvents = (waf || []).slice(-5).map(e => ({
+      ...e,
+      metadata: { ...e.metadata, clientIP: anonymizeIP(e.metadata.clientIP) }
+    }));
+    const wafTbody = document.getElementById('infra-waf-events');
+    if (wafTbody) {
+      wafTbody.innerHTML = '';
+      wafEvents.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.event}</td><td>${e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : ''}</td><td>${JSON.stringify(e.metadata)}</td>`;
+        wafTbody.appendChild(tr);
+      });
+    }
+
+    // --- Renderizar códigos de estado Front Door ---
+    const statusCodes = (fd || [])
+      .filter(e => e.metadata && e.metadata.statusCode)
+      .slice(-10)
+      .map(e => ({
+        code: e.metadata.statusCode,
+        uri: e.metadata.requestUri || '',
+        time: e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : ''
+      }));
+    const fdTbody = document.getElementById('infra-fd-status');
+    if (fdTbody) {
+      fdTbody.innerHTML = '';
+      statusCodes.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.code}</td><td>${e.uri}</td><td>${e.time}</td>`;
+        fdTbody.appendChild(tr);
+      });
+    }
+
+    // --- Estadísticas de tráfico (requests/minuto) ---
+    // Agrupar por minuto
+    const reqs = (fd || []).filter(e => e.metadata && e.metadata.statusCode);
+    const traffic = {};
+    reqs.forEach(e => {
+      const min = e.timestamp ? e.timestamp.slice(0,16) : '';
+      if (!traffic[min]) traffic[min] = 0;
+      traffic[min]++;
+    });
+    const trafficArr = Object.entries(traffic).map(([minute, count]) => ({ minute, count }));
+    const trafficTbody = document.getElementById('infra-traffic-stats');
+    if (trafficTbody) {
+      trafficTbody.innerHTML = '';
+      trafficArr.slice(-10).forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.minute.replace('T',' ')}</td><td>${e.count}</td>`;
+        trafficTbody.appendChild(tr);
+      });
+    }
+  }
+
   // Actualización periódica
   setInterval(updateDashboard, 4000);
+  setInterval(loadInfrastructureLogs, 6000);
   updateDashboard();
+  loadInfrastructureLogs();
 })();

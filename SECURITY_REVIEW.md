@@ -22,7 +22,21 @@ La versión actual implementa:
 
 Ver detalles en docs/telemetry.md y CHANGELOG.md.
 
-## 8. Dashboard de salud y métricas
+
+## 9. Integración de logs de infraestructura
+
+El dashboard lee archivos JSON de logs anonimizados generados por scripts locales y almacenados en `docs/evidence/logs/`.
+
+- Solo se muestran datos agregados o anonimizados (sin IPs completas ni payloads sensibles).
+- Los eventos de WAF y códigos de estado de Front Door se presentan sin exponer información identificable.
+- Las estadísticas de tráfico solo muestran conteos por minuto, nunca detalles de usuario.
+- La lectura es local (fetch de archivos estáticos), sin exponer endpoints ni secretos.
+- El diseño cumple Trusted Types, SRI y nonce rotativo.
+
+**Privacidad y seguridad:**
+- No se exponen logs sensibles ni datos personales en el cliente.
+- La anonimización de IPs y la agregación de datos garantizan que la visualización es segura.
+- El acceso a los logs es solo lectura y no permite modificar ni consultar detalles individuales.
 
 Se implementó un dashboard estático en `/observability/index.html` que:
 - Muestra métricas técnicas capturadas por `telemetry.js` (errores, LCP, FID, CLS, INP, TTFB).
