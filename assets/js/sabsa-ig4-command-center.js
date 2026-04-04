@@ -164,6 +164,12 @@ function wait(ms){
     return new Promise(resolve=> setTimeout(resolve, ms));
 }
 
+function clearChildren(element){
+    while(element && element.firstChild){
+        element.removeChild(element.firstChild);
+    }
+}
+
 function clamp(value, min, max){
     return Math.min(max, Math.max(min, value));
 }
@@ -619,7 +625,7 @@ function initializeRadarChart(){
 
 /* --- Threat Matrix --- */
 function renderMatrix(scenarioKey, igLevel, riskIndex = 60){
-    matrixBody.innerHTML='';
+    clearChildren(matrixBody);
     const scenario = SCENARIOS[scenarioKey];
     const sensitivity = IG_LEVELS[igLevel].sensitivity;
     setThreatSeverityState(scenario.sev);
@@ -641,14 +647,31 @@ function renderMatrix(scenarioKey, igLevel, riskIndex = 60){
             action = 'Revisión contextual';
         }
 
-        matrixBody.innerHTML += `
-            <tr class="${isPrimary ? 'matrix-row-primary' : ''}">
-                <td>${attr}</td>
-                <td>${status}</td>
-                <td><span class="sev-pill sev-${sev}">${sev}</span></td>
-                <td>${action}</td>
-            </tr>
-        `;
+        const row = document.createElement('tr');
+        if(isPrimary){
+            row.className = 'matrix-row-primary';
+        }
+
+        const attrCell = document.createElement('td');
+        attrCell.textContent = attr;
+
+        const statusCell = document.createElement('td');
+        statusCell.textContent = status;
+
+        const severityCell = document.createElement('td');
+        const severityPill = document.createElement('span');
+        severityPill.className = `sev-pill sev-${sev}`;
+        severityPill.textContent = sev;
+        severityCell.appendChild(severityPill);
+
+        const actionCell = document.createElement('td');
+        actionCell.textContent = action;
+
+        row.appendChild(attrCell);
+        row.appendChild(statusCell);
+        row.appendChild(severityCell);
+        row.appendChild(actionCell);
+        matrixBody.appendChild(row);
     });
 }
 
@@ -664,36 +687,54 @@ function renderRemediation(scenarioKey, igLevel, profileKey, summary = null){
         ? `${summary.topFinding.mitre.tactic} · ${summary.topFinding.mitre.technique} · ${summary.topFinding.mitre.name} (${summary.topFinding.mitre.description})`
         : 'Sin técnica dominante en esta corrida';
 
-    const riskLine = summary
-        ? `Riesgo compuesto: <strong>${summary.riskIndex}/100</strong> · Hallazgos: <strong>${summary.failedCount}/${summary.total}</strong>`
-        : 'Riesgo compuesto: <strong>N/A</strong> · Hallazgos: <strong>N/A</strong>';
-
     animatePanelTransition(remediationPanel);
+    clearChildren(remediationPanel);
 
-    remediationPanel.innerHTML = `
-        <div class="remediation-card">
-            <strong style="color:var(--neon-red)">Directiva IG${igLevel}</strong><br>
-            Escenario: <strong>${s.name}</strong><br>
-            Atributo afectado: <strong>${s.attr}</strong><br>
-            Perfil: <strong>${profile.label}</strong>
-            <br>${riskLine}
-            <br>MITRE dominante: <strong>${mitreLine}</strong>
+    const card = document.createElement('div');
+    card.className = 'remediation-card';
 
-            <code>
-# Comando conceptual (no ejecuta nada real)
-# Contexto: ${s.cliHint}
-az ad user list --query "[].{id:id,displayName:displayName}" --all
+    const directive = document.createElement('strong');
+    directive.style.color = 'var(--neon-red)';
+    directive.textContent = `Directiva IG${igLevel}`;
+    card.appendChild(directive);
+    card.appendChild(document.createElement('br'));
 
-# Recomendación prioritaria
-${recommendation}
-            </code>
+    const lines = [
+        ['Escenario: ', s.name],
+        ['Atributo afectado: ', s.attr],
+        ['Perfil: ', profile.label],
+        ['Riesgo compuesto: ', summary ? `${summary.riskIndex}/100` : 'N/A'],
+        ['Hallazgos: ', summary ? `${summary.failedCount}/${summary.total}` : 'N/A'],
+        ['MITRE dominante: ', mitreLine]
+    ];
 
-            <p style="font-size:0.75rem; color:var(--text-dim);">
-                Esta salida representa una remediación conceptual basada en marcos SABSA y Zero Trust.
-                No se ejecutan acciones reales ni se interactúa con recursos de producción.
-            </p>
-        </div>
-    `;
+    lines.forEach(([label, value])=>{
+        const textNode = document.createTextNode(label);
+        const strong = document.createElement('strong');
+        strong.textContent = value;
+        card.appendChild(textNode);
+        card.appendChild(strong);
+        card.appendChild(document.createElement('br'));
+    });
+
+    const code = document.createElement('code');
+    code.textContent = [
+        '# Comando conceptual (no ejecuta nada real)',
+        `# Contexto: ${s.cliHint}`,
+        'az ad user list --query "[].{id:id,displayName:displayName}" --all',
+        '',
+        '# Recomendación prioritaria',
+        recommendation
+    ].join('\n');
+    card.appendChild(code);
+
+    const note = document.createElement('p');
+    note.style.fontSize = '0.75rem';
+    note.style.color = 'var(--text-dim)';
+    note.textContent = 'Esta salida representa una remediación conceptual basada en marcos SABSA y Zero Trust. No se ejecutan acciones reales ni se interactúa con recursos de producción.';
+    card.appendChild(note);
+
+    remediationPanel.appendChild(card);
 }
 
 /* --- IG Badge --- */
