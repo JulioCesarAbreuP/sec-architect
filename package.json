@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:enterprise": "node tests/run-enterprise-smoke.js"
+    "test:enterprise": "node tests/run-enterprise-smoke.js",
+    "test:entra": "node tests/run-entra-rules-smoke.js",
+    "test:smoke": "npm run test:enterprise && npm run test:entra"
   }
 }
