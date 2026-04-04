@@ -1,3 +1,9 @@
+---
+title: Identidad y Cuenta: Fundamentos Arquitectónicos
+date: 2026-04-01
+tags: identidad, entra id, acceso
+---
+
 # Identidad y Cuenta: Fundamentos Arquitectónicos
 
 **Arquitectura de identidad, control de acceso y principios de seguridad moderna.**

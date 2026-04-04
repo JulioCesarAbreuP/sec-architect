@@ -1,5 +1,6 @@
 const postsList = document.getElementById("postsList");
 const postsPagination = document.getElementById("postsPagination");
+const postsTagFilters = document.getElementById("postsTagFilters");
 const isNestedBlogIndex = /\/blog\/(?:index\.html)?$/i.test(window.location.pathname);
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_MARKDOWN_FILES = 200;
@@ -113,6 +114,34 @@ function formatDate(rawDate) {
   }).toUpperCase();
 }
 
+function parseTags(rawTags) {
+  if (!rawTags || typeof rawTags !== "string") {
+    return [];
+  }
+
+  const normalized = rawTags.replace(/^\[/, "").replace(/\]$/, "");
+  const tags = normalized
+    .split(",")
+    .map((tag) => tag.trim().toLowerCase())
+    .filter(Boolean)
+    .map((tag) => tag.replace(/[^a-z0-9- ]/gi, "").trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(tags));
+}
+
+function formatTagLabel(tag) {
+  if (!tag) {
+    return "";
+  }
+
+  return tag
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 async function discoverMarkdownFiles() {
   const candidates = new Set();
 
@@ -178,7 +207,8 @@ async function loadPostMetadata(fileName) {
     title: parsed.data.title || getTitleFromMarkdown(parsed.content) || fileName.replace(/\.md$/i, ""),
     dateRaw: parsed.data.date || "",
     dateValue: parseDateValue(parsed.data.date || ""),
-    dateLabel: formatDate(parsed.data.date || "")
+    dateLabel: formatDate(parsed.data.date || ""),
+    tags: parseTags(parsed.data.tags || "")
   };
 }
 
@@ -186,6 +216,9 @@ function renderEmptyState(message) {
   postsList.textContent = "";
   if (postsPagination) {
     postsPagination.textContent = "";
+  }
+  if (postsTagFilters) {
+    postsTagFilters.textContent = "";
   }
   const item = document.createElement("li");
   item.className = "empty-state";
@@ -280,6 +313,44 @@ function renderPaginatedPosts(posts) {
   updatePage(currentPage);
 }
 
+function renderTagFilters(posts, activeTag, onSelectTag) {
+  if (!postsTagFilters) {
+    return;
+  }
+
+  postsTagFilters.textContent = "";
+  const availableTags = Array.from(new Set(posts.flatMap((post) => post.tags || []))).sort((a, b) => a.localeCompare(b, "es"));
+
+  if (availableTags.length === 0) {
+    return;
+  }
+
+  const allButton = document.createElement("button");
+  allButton.type = "button";
+  allButton.className = "tag-filter-button";
+  allButton.setAttribute("aria-pressed", activeTag ? "false" : "true");
+  allButton.textContent = "Todos";
+  if (!activeTag) {
+    allButton.classList.add("is-active");
+  }
+  allButton.addEventListener("click", () => onSelectTag(""));
+  postsTagFilters.appendChild(allButton);
+
+  for (const tag of availableTags) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "tag-filter-button";
+    button.textContent = formatTagLabel(tag);
+    const isActive = activeTag === tag;
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    if (isActive) {
+      button.classList.add("is-active");
+    }
+    button.addEventListener("click", () => onSelectTag(tag));
+    postsTagFilters.appendChild(button);
+  }
+}
+
 function animatePostEntries(elements) {
   if (!elements || elements.length === 0) {
     return;
@@ -334,7 +405,35 @@ async function initBlog() {
     return;
   }
 
-  renderPaginatedPosts(posts);
+  const state = {
+    activeTag: ""
+  };
+
+  const updateView = () => {
+    const filteredPosts = state.activeTag
+      ? posts.filter((post) => Array.isArray(post.tags) && post.tags.includes(state.activeTag))
+      : posts;
+
+    if (filteredPosts.length === 0) {
+      postsList.textContent = "";
+      const item = document.createElement("li");
+      item.className = "empty-state";
+      item.textContent = "No hay artículos para el tag seleccionado.";
+      postsList.appendChild(item);
+      if (postsPagination) {
+        postsPagination.textContent = "";
+      }
+    } else {
+      renderPaginatedPosts(filteredPosts);
+    }
+
+    renderTagFilters(posts, state.activeTag, (tag) => {
+      state.activeTag = tag;
+      updateView();
+    });
+  };
+
+  updateView();
 }
 
 animateFeaturedPost();

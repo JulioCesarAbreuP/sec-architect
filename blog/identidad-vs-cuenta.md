@@ -1,6 +1,7 @@
 ---
 title: Identidad vs. cuenta vs. credencial
 date: 2026-04-02
+tags: identidad, arquitectura, zero trust
 ---
 
 # Identidad vs. cuenta vs. credencial: el triángulo que define la seguridad moderna
