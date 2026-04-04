@@ -21,7 +21,7 @@
 - [x] Añadir animaciones de entrada suaves en las tarjetas de posts.
 
 ### Blog
-- [ ] Publicar al menos 3 posts técnicos iniciales.
+- [x] Publicar al menos 3 posts técnicos iniciales.
 - [ ] Implementar paginación básica en el listado de posts.
 - [ ] Añadir campo `tags` al front matter de los posts.
 - [ ] Mostrar tags como filtros visuales en `blog.html`.
