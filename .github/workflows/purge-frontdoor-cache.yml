@@ -19,7 +19,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Purge Front Door cache
-        uses: azure/CLI@v2
+        uses: azure/CLI@v3
         with:
           azcliversion: 2.53.0
           inlineScript: |
